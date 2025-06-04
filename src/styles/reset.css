@@ -1,0 +1,132 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   reset.css
+   (Eric Meyer’s Reset + global box-sizing/transitions)
+   ─────────────────────────────────────────────────────────────────────────────
+*/
+#root {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+}
+
+/* make HTML5 elements block-level by default */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote::before,
+blockquote::after,
+q::before,
+q::after {
+  content: "";
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* box-sizing globally and a default transition */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
+}
+
+button {
+  border: none;
+  background-color: none;
+  background: none;
+  padding-inline: 0;
+  padding-block: 0;
+}

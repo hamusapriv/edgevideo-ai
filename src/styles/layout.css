@@ -1,0 +1,18 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   layout.css
+   (Layout-specific utilities: grid setups, responsive tweaks, etc.)
+   ─────────────────────────────────────────────────────────────────────────────
+*/
+.features__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+}
+
+@media (max-width: var(--breakpoint-md)) {
+  .features__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+

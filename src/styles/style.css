@@ -1,0 +1,382 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   style.css
+   (Page-specific/layout-specific styles: tabs, sliding panels, profile-sidebar,
+    product lists, etc.)
+   ─────────────────────────────────────────────────────────────────────────────
+*/
+
+/* ─── Tabs (main navigation at bottom) ───────────────────────────────────────── */
+.tabs {
+  top: auto;
+  display: flex;
+  z-index: 1;
+}
+
+.tab {
+  flex: 1;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s, border-bottom 0.2s;
+  border-bottom: 2px solid transparent;
+  color: var(--color-purple-text);
+}
+
+.tab.active svg {
+  fill: var(--color-light);
+  border-bottom-color: var(--color-primary);
+}
+
+/* ─── Sliding Panels (home/shop/live) ────────────────────────────────────────── */
+section {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 3%;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  transition: transform 0.3s ease-in-out;
+  /* start off-screen to the right */
+  transform: translateX(100%);
+  padding: 5px 20px;
+  flex: 1;
+  gap: 3rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.tab-content-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  gap: 50px;
+}
+
+.tab-content.active {
+  /* bring into view */
+  transform: translateX(0);
+}
+
+/* ─── Shopping Tabs (inside “shop” section) ───────────────────────────────────── */
+.shopping-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--color-light);
+  margin-bottom: var(--spacing-lg);
+}
+
+.shopping-tab {
+  flex: 1;
+  padding: var(--spacing);
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s, border-bottom 0.2s;
+  border-bottom: 2px solid transparent;
+}
+.shopping-tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+/* shopping-tab content panels */
+.shopping-tab-content {
+  display: none;
+}
+.shopping-tab-content.active {
+  display: block;
+}
+
+/* ─── Profile Sidebar ────────────────────────────────────────────────────────── */
+.profile-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  width: 280px;
+  position: fixed;
+  inset: 0 0 0 auto; /* right side */
+  z-index: 2;
+  padding: 6px 12px;
+  transform: translateX(100%);
+  overflow: auto;
+  gap: 1.25rem;
+  border-radius: 10px 0 0 10px;
+  background-color: #0f1224;
+}
+
+.profile-side.open {
+  transform: translateX(0);
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 30px;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.avatar-wrapper.big {
+  width: 120px;
+  height: 120px;
+  background-color: aliceblue;
+  padding: 6px;
+}
+.avatar-wrapper.small {
+  height: 24px;
+  width: 24px;
+  margin: auto auto 4px auto;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.43);
+  background-image: linear-gradient(
+    45deg,
+    rgba(106, 0, 255, 0.446),
+    rgba(0, 200, 255, 0.361)
+  );
+}
+.profile-button {
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  background-color: #f7c59e;
+  padding: 5px;
+  width: 30px;
+  height: 30px;
+}
+
+.profile-close {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+}
+
+.screen-title {
+  margin-right: auto;
+}
+
+.list-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.username,
+.list-row span {
+  font-size: 0.8rem;
+  color: var(--color-light);
+  opacity: 0.6;
+}
+
+/* ─── “Featured Products” & “Trending Now” Lists ───────────────────────────── */
+
+.most-clicked,
+.most-liked {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.most-clicked h4,
+.most-liked h4 {
+  color: #fff;
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+/* hide the template card if you preserve a .template class */
+.product-card.template {
+  display: none;
+}
+
+/* Featured = horizontal scrollable flex */
+#clicked-list {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 10px 0;
+  margin: 0;
+  list-style: none;
+}
+#clicked-list .product-card {
+  flex: 0 0 150px; /* card width */
+}
+
+/* Trending = responsive grid */
+#liked-list {
+  display: grid;
+  /* as many columns of at least 120px each as will fit */
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1.25rem;
+  padding: 10px 0;
+  margin: 0;
+  list-style: none;
+  width: 100%;
+}
+
+/* ── Common Card Styling ─────────────────────────────────────────────────────── */
+.product-card {
+  /* you can add any global card styles here */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.product-img-title {
+  /* replaces old “li a” rules */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  color: inherit;
+}
+
+.product-image-container {
+  width: 100%;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+}
+
+.product-image-container.clicked {
+  height: 150px;
+}
+.product-image-container.liked {
+  height: 120px;
+  width: 100%;
+}
+
+.product-image {
+  /* replaces old “li img” rules */
+  border-radius: 12px;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.product-name {
+  /* replaces old “li h5” rules */
+  margin: 0.5rem 0;
+  font-size: 0.75rem;
+  line-height: 1.2rem;
+  font-weight: 600;
+  color: var(--color-light);
+
+  /* two-line clamp (ellipsis) */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.product-count {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  /* replaces old “li p” / .info small rules */
+  margin: 0 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-purple-text);
+}
+
+/* Live Shopping */
+
+.item-container {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  opacity: 0.7;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+}
+
+.item-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  background: white;
+}
+
+.item-container.product0 {
+  transform: scale(0);
+}
+
+/* ─────── “Focused” card: scale + shadow ─────── */
+.item-container.focused {
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  opacity: 1;
+}
