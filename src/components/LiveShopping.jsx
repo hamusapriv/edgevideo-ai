@@ -7,6 +7,9 @@ export default function LiveShopping({ channelId }) {
   const beltRef = useRef(null);
   const liveObsRef = useRef(null);
 
+  // ───────── New: throttle flag for requestAnimationFrame ─────────
+  const pendingRAF = useRef(false);
+
   // ───────── Selected-card state ─────────
   const [selectedCardData, setSelectedCardData] = useState({
     name: "",
@@ -27,7 +30,7 @@ export default function LiveShopping({ channelId }) {
 
     //
     // ────────────────────────────────────────────────────────────────────────
-    // (A) Inject a <style> that hides all non-image fields and defines .focused
+    // (A) Inject a <style> that hides all non-image fields
     // ────────────────────────────────────────────────────────────────────────
     injectedStyle = document.createElement("style");
     injectedStyle.innerHTML = `
@@ -45,8 +48,6 @@ export default function LiveShopping({ channelId }) {
       .item-container [data-role="product-link"] {
         display: none !important;
       }
-
- 
     `;
     document.head.appendChild(injectedStyle);
 
@@ -123,9 +124,19 @@ export default function LiveShopping({ channelId }) {
 
     //
     // ────────────────────────────────────────────────────────────────────────
-    // (E) onScroll handler: pick the card whose center is closest to a dynamic focusX
+    // (E) Throttled onScroll: schedule focus logic via requestAnimationFrame
     // ────────────────────────────────────────────────────────────────────────
     function onScroll() {
+      if (pendingRAF.current) return;
+      pendingRAF.current = true;
+
+      requestAnimationFrame(() => {
+        pendingRAF.current = false;
+        updateFocusDuringScroll();
+      });
+    }
+
+    function updateFocusDuringScroll() {
       const containerRect = scrollBox.getBoundingClientRect();
       const containerWidth = containerRect.width;
       const scrollLeft = scrollBox.scrollLeft;
@@ -185,8 +196,8 @@ export default function LiveShopping({ channelId }) {
       }
     }
 
-    // Attach scroll listener
-    scrollBox.addEventListener("scroll", onScroll);
+    // Attach scroll listener as passive
+    scrollBox.addEventListener("scroll", onScroll, { passive: true });
 
     //
     // ────────────────────────────────────────────────────────────────────────
@@ -298,7 +309,7 @@ export default function LiveShopping({ channelId }) {
     // ────────────────────────────────────────────────────────────────────────
     return () => {
       liveObsRef.current?.disconnect();
-      scrollBox.removeEventListener("scroll", onScroll);
+      scrollBox.removeEventListener("scroll", onScroll, { passive: true });
       if (injectedScript) document.head.removeChild(injectedScript);
       if (injectedStyle) document.head.removeChild(injectedStyle);
     };
