@@ -120,6 +120,7 @@ section {
   gap: 1.25rem;
   border-radius: 10px 0 0 10px;
   background-color: #0f1224;
+  transition: all 0.3s ease;
 }
 
 .profile-side.open {
