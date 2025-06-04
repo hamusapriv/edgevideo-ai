@@ -6,11 +6,9 @@ export default function LiveShopping({ channelId }) {
   const scrollBoxRef = useRef(null);
   const beltRef = useRef(null);
   const liveObsRef = useRef(null);
+  const highlightRef = useRef(null);
 
-  // ───────── New: throttle flag for requestAnimationFrame ─────────
-  const pendingRAF = useRef(false);
-
-  // ───────── Selected-card state ─────────
+  // ───────── Selected‐card state ─────────
   const [selectedCardData, setSelectedCardData] = useState({
     name: "",
     price: "",
@@ -30,7 +28,7 @@ export default function LiveShopping({ channelId }) {
 
     //
     // ────────────────────────────────────────────────────────────────────────
-    // (A) Inject a <style> that hides all non-image fields
+    // (A) Inject a <style> that hides all non-image fields, plus base styles
     // ────────────────────────────────────────────────────────────────────────
     injectedStyle = document.createElement("style");
     injectedStyle.innerHTML = `
@@ -47,6 +45,17 @@ export default function LiveShopping({ channelId }) {
       .item-container [data-role="share-link"],
       .item-container [data-role="product-link"] {
         display: none !important;
+      }
+
+      /* The highlight overlay around the focused card */
+      .focus-highlight {
+        position: absolute;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
+        pointer-events: none;
+        transition: left 0.1s ease, top 0.1s ease, width 0.1s ease, height 0.1s ease;
+        z-index: 2;
       }
     `;
     document.head.appendChild(injectedStyle);
@@ -73,11 +82,23 @@ export default function LiveShopping({ channelId }) {
     // ────────────────────────────────────────────────────────────────────────
     const scrollBox = scrollBoxRef.current;
     const belt = beltRef.current;
+    let highlightEl = highlightRef.current;
+
     if (!scrollBox || !belt) {
       console.error(
         "[LiveShopping] Could not find #absolute-container or #itemContent"
       );
       return;
+    }
+
+    // If highlight div doesn’t exist yet, create & append it
+    if (!highlightEl) {
+      highlightEl = document.createElement("div");
+      highlightEl.className = "focus-highlight";
+      // Initially hide it until we first position it
+      highlightEl.style.display = "none";
+      scrollBox.appendChild(highlightEl);
+      highlightRef.current = highlightEl;
     }
 
     //
@@ -99,7 +120,9 @@ export default function LiveShopping({ channelId }) {
       watchProduct0();
 
       // Re-run scroll‐based focus logic after layout
-      requestAnimationFrame(onScroll);
+      requestAnimationFrame(() => {
+        scrollBox.dispatchEvent(new Event("scroll"));
+      });
     }
 
     function watchProduct0() {
@@ -124,37 +147,24 @@ export default function LiveShopping({ channelId }) {
 
     //
     // ────────────────────────────────────────────────────────────────────────
-    // (E) Throttled onScroll: schedule focus logic via requestAnimationFrame
+    // (E) onScroll handler: immediately update the “highlight” overlay each frame
     // ────────────────────────────────────────────────────────────────────────
     function onScroll() {
-      if (pendingRAF.current) return;
-      pendingRAF.current = true;
-
-      requestAnimationFrame(() => {
-        pendingRAF.current = false;
-        updateFocusDuringScroll();
-      });
-    }
-
-    function updateFocusDuringScroll() {
+      // (1) Compute the dynamic focus‐X exactly as before
       const containerRect = scrollBox.getBoundingClientRect();
       const containerWidth = containerRect.width;
       const scrollLeft = scrollBox.scrollLeft;
       const maxScroll = belt.scrollWidth - containerWidth;
 
-      // Define START and END positions (in px from left edge of viewport)
       const START = 150;
       const END = containerWidth - 150;
-
-      // Compute interpolation factor t from 0→1 based on scroll position
       let t = 0;
       if (maxScroll > 0) {
         t = scrollLeft / maxScroll;
       }
-      // Compute focusX in screen coordinates
       const focusX = containerRect.left + (START + t * (END - START));
 
-      // Find the card whose center is closest to focusX
+      // (2) Find the card whose center is closest to focusX
       const cards = Array.from(belt.querySelectorAll(".item-container"));
       let bestCard = null;
       let smallestDelta = Infinity;
@@ -170,12 +180,18 @@ export default function LiveShopping({ channelId }) {
       });
 
       if (bestCard) {
-        // 1) Remove .focused from everyone else
-        cards.forEach((c) => c.classList.remove("focused"));
-        // 2) Add .focused to bestCard
-        bestCard.classList.add("focused");
+        // (3) Position the highlight overlay over bestCard's bounding box
+        const cardRect = bestCard.getBoundingClientRect();
+        const relLeft = cardRect.left - containerRect.left;
+        const relTop = cardRect.top - containerRect.top;
+        const pad = 6; // small padding around the card
+        highlightEl.style.display = "block";
+        highlightEl.style.left = `${relLeft - pad}px`;
+        highlightEl.style.top = `${relTop - pad}px`;
+        highlightEl.style.width = `${cardRect.width + pad * 2}px`;
+        highlightEl.style.height = `${cardRect.height + pad * 2}px`;
 
-        // 3) Extract hidden fields and update details panel
+        // (4) Extract hidden fields and update details panel
         const nameEl = bestCard.querySelector("[data-role='product-name']");
         const priceEl = bestCard.querySelector("[data-role='product-price']");
         const descEl = bestCard.querySelector("[data-role='ai-description']");
@@ -196,7 +212,7 @@ export default function LiveShopping({ channelId }) {
       }
     }
 
-    // Attach scroll listener as passive
+    // Attach scroll listener as passive (no reflow on each scroll)
     scrollBox.addEventListener("scroll", onScroll, { passive: true });
 
     //
@@ -298,8 +314,10 @@ export default function LiveShopping({ channelId }) {
       }
       watchProduct0();
 
-      // Run one focus update so the first card is focused immediately
-      requestAnimationFrame(onScroll);
+      // Run one focus update so the first card is highlighted immediately
+      requestAnimationFrame(() => {
+        scrollBox.dispatchEvent(new Event("scroll"));
+      });
     }
     initializeBelt();
 
@@ -310,6 +328,9 @@ export default function LiveShopping({ channelId }) {
     return () => {
       liveObsRef.current?.disconnect();
       scrollBox.removeEventListener("scroll", onScroll, { passive: true });
+      if (highlightEl && scrollBox.contains(highlightEl)) {
+        scrollBox.removeChild(highlightEl);
+      }
       if (injectedScript) document.head.removeChild(injectedScript);
       if (injectedStyle) document.head.removeChild(injectedStyle);
     };
@@ -337,7 +358,7 @@ export default function LiveShopping({ channelId }) {
         id="absolute-container"
         ref={scrollBoxRef}
         style={{
-          position: "relative",
+          position: "relative", // so that .focus-highlight can be absolute inside
           overflowX: "auto",
           overflowY: "hidden",
           padding: "8px",
@@ -368,7 +389,7 @@ export default function LiveShopping({ channelId }) {
         style={{
           marginTop: "16px",
           borderRadius: "8px",
-          color: "rgb(255, 255, 255)",
+          color: "#fff",
           flex: "1",
           display: "flex",
           flexDirection: "column",
