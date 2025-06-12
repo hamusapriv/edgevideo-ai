@@ -9,6 +9,8 @@ export default function Tabs({
 }) {
   return (
     <footer className="footer">
+      {/* (j) AFFILIATE FOOTER */}
+
       <nav className="tabs">
         {tabs.map(({ key, label }) => (
           <button

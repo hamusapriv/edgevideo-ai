@@ -25,8 +25,12 @@
   color: var(--color-purple-text);
 }
 
+.tab.active {
+  color: var(--color-light);
+}
+
 .tab.active svg {
-  fill: var(--color-light);
+  border-color: var(--color-light);
   border-bottom-color: var(--color-primary);
 }
 
@@ -38,7 +42,7 @@ section {
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 3%;
+  padding: 2%;
 }
 
 .tab-content {
@@ -52,9 +56,7 @@ section {
   transition: transform 0.3s ease-in-out;
   /* start off-screen to the right */
   transform: translateX(100%);
-  padding: 5px 20px;
   flex: 1;
-  gap: 3rem;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -104,123 +106,36 @@ section {
   display: block;
 }
 
-/* ─── Profile Sidebar ────────────────────────────────────────────────────────── */
-.profile-side {
+/* ─── Nested Tabs ────────────────────────────────────────────────────────── */
+.nested-tabs {
   display: flex;
-  flex-direction: column;
   justify-content: flex-start;
-  align-items: stretch;
-  width: 280px;
-  position: fixed;
-  inset: 0 0 0 auto; /* right side */
-  z-index: 2;
-  padding: 6px 12px;
-  transform: translateX(100%);
-  overflow: auto;
-  gap: 1.25rem;
-  border-radius: 10px 0 0 10px;
-  background-color: #0f1224;
-  transition: all 0.3s ease;
-}
-
-.profile-side.open {
-  transform: translateX(0);
-}
-
-.profile-header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-}
-
-.profile {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 30px;
-}
-
-.avatar {
+  gap: 1rem;
+  padding: 0 10px;
   width: 100%;
-  height: 100%;
+  border-bottom: 1px solid var(--color-purple-text);
+  margin-bottom: 1rem;
 }
 
-.avatar-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
+.nested-tab {
+  padding: 10px 12px;
+  color: var(--color-purple-text);
+  margin-bottom: -1px;
+  font-size: 0.9rem;
+}
+.nested-tab.active {
+  color: var(--color-light);
+  border-bottom: 2px solid var(--color-light);
+}
+.subtab-section {
   overflow: hidden;
 }
 
-.avatar-wrapper.big {
-  width: 120px;
-  height: 120px;
-  background-color: aliceblue;
-  padding: 6px;
-}
-.avatar-wrapper.small {
-  height: 24px;
-  width: 24px;
-  margin: auto auto 4px auto;
-  padding: 2px;
-  border: 1px solid rgba(255, 255, 255, 0.43);
-  background-image: linear-gradient(
-    45deg,
-    rgba(106, 0, 255, 0.446),
-    rgba(0, 200, 255, 0.361)
-  );
-}
-.profile-button {
-  padding: 0;
-  margin: 0;
-  background-color: transparent;
-  border: none;
-  border-radius: 50%;
-  background-color: #f7c59e;
-  padding: 5px;
-  width: 30px;
-  height: 30px;
+.nested-content {
+  overflow-y: auto;
 }
 
-.profile-close {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 30px;
-  height: 30px;
-}
-
-.screen-title {
-  margin-right: auto;
-}
-
-.list-block {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 1.25rem;
-  width: 100%;
-}
-
-.list-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.username,
-.list-row span {
-  font-size: 0.8rem;
-  color: var(--color-light);
-  opacity: 0.6;
-}
 
 /* ─── “Featured Products” & “Trending Now” Lists ───────────────────────────── */
 
@@ -236,7 +151,8 @@ section {
 .most-liked h4 {
   color: #fff;
   font-size: 1.25rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.25rem;
+  padding: 10px;
 }
 
 /* hide the template card if you preserve a .template class */
@@ -249,7 +165,6 @@ section {
   display: flex;
   gap: 1rem;
   overflow-x: auto;
-  padding: 10px 0;
   margin: 0;
   list-style: none;
 }
@@ -263,10 +178,13 @@ section {
   /* as many columns of at least 120px each as will fit */
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 1.25rem;
-  padding: 10px 0;
   margin: 0;
   list-style: none;
   width: 100%;
+}
+#clicked-list,
+#liked-list {
+  padding: 10px;
 }
 
 /* ── Common Card Styling ─────────────────────────────────────────────────────── */
@@ -352,6 +270,7 @@ section {
   align-items: center;
   background-color: white;
   opacity: 0.7;
+  transform: scale(1);
   flex: 0 0 auto;
   border-radius: 8px;
   overflow: hidden;
@@ -370,8 +289,11 @@ section {
   background: white;
 }
 
-.item-container.product0 {
+.item-container.product0,
+.item-container.product0.focused {
   transform: scale(0);
+  width: 0px;
+  height: 0px;
 }
 
 /* ─────── “Focused” card: scale + shadow ─────── */
@@ -379,6 +301,25 @@ section {
   transform: scale(1.1);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   z-index: 1;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   opacity: 1;
+}
+
+#absolute-container {
+  -webkit-overflow-scrolling: touch;
+}
+
+.liveshopping-container {
+  color: #fff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0 0 20px;
+}
+
+.channel-logo {
+  height: 24px;
+  width: auto;
+  object-fit: contain;
+  margin: 0 auto 0 10px;
 }

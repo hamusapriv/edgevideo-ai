@@ -1,13 +1,24 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
+    <!-- ① Define your channelId once -->
+    <script>
+      // you can also pull this from an env var if you prefer:
+      // window.channelId = import.meta.env.VITE_CHANNEL_ID;
+      window.channelId = "ada3896d-0456-4589-95fa-cf71718b79c8";
+    </script>
+
+    <!-- ② Load screenNoAnim.js globally -->
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script src="/screen.js"></script>
   </body>
 </html>

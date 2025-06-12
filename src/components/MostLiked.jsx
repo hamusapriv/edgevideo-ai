@@ -1,7 +1,27 @@
-// src/components/Trending.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-export default function Trending({ items }) {
+export default function MostLiked() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch("https://fastapi.edgevideo.ai/tracking/products/most-liked")
+      .then((res) => {
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        return res.json();
+      })
+      .then((data) => setItems(data))
+      .catch((err) => {
+        console.error("Failed to load most-liked:", err);
+        setError("Could not load liked products");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <p>Loading liked…</p>;
+  if (error) return <p className="error">{error}</p>;
+
   return (
     <div className="most-liked">
       <h4>Trending Now</h4>
@@ -35,8 +55,8 @@ export default function Trending({ items }) {
                          C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
                          c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
                 />
-              </svg>
-              <span>{p.click_count}</span>
+              </svg>{" "}
+              <span>{p.net_likes}</span>
             </small>
           </li>
         ))}

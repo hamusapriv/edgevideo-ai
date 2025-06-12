@@ -1,17 +1,32 @@
 // src/components/LiveShopping.jsx
 import React, { useEffect, useRef, useState } from "react";
+import ChannelLogo from "./ChannelLogo";
+import { useAuth } from "../auth/AuthContext";
+import { useSidebar } from "../ui/SidebarContext";
 
-export default function LiveShopping({ channelId }) {
+import LikeButton from "./LikeButton";
+import DislikeButton from "./DislikeButton";
+import ShareButton from "./ShareButton";
+
+export default function LiveShopping({ channelId, onLike }) {
+  const { user } = useAuth();
+  const { openSidebar } = useSidebar();
   // ───────── Refs ─────────
   const scrollBoxRef = useRef(null);
   const beltRef = useRef(null);
   const liveObsRef = useRef(null);
 
+  const actionsRef = useRef(null);
+
   // ───────── New: throttle flag for requestAnimationFrame ─────────
   const pendingRAF = useRef(false);
 
+  // ───────── add at top of your useEffect ─────────
+  const lastBestRef = useRef(null);
+
   // ───────── Selected-card state ─────────
   const [selectedCardData, setSelectedCardData] = useState({
+    id: null,
     name: "",
     price: "",
     description: "",
@@ -51,7 +66,7 @@ export default function LiveShopping({ channelId }) {
     `;
     document.head.appendChild(injectedStyle);
 
-    //
+    /*     //
     // ────────────────────────────────────────────────────────────────────────
     // (B) Define window.channelId if missing, then inject screenNoAnim.js once
     // ────────────────────────────────────────────────────────────────────────
@@ -65,7 +80,7 @@ export default function LiveShopping({ channelId }) {
       injectedScript.async = true;
       document.head.appendChild(injectedScript);
       console.log("[LiveShopping] Injected screenNoAnim.js →", url);
-    }
+    } */
 
     //
     // ────────────────────────────────────────────────────────────────────────
@@ -122,10 +137,7 @@ export default function LiveShopping({ channelId }) {
       });
     }
 
-    //
-    // ────────────────────────────────────────────────────────────────────────
-    // (E) Throttled onScroll: schedule focus logic via requestAnimationFrame
-    // ────────────────────────────────────────────────────────────────────────
+    // ───────── E) Throttled onScroll ─────────
     function onScroll() {
       if (pendingRAF.current) return;
       pendingRAF.current = true;
@@ -136,64 +148,66 @@ export default function LiveShopping({ channelId }) {
       });
     }
 
+    // ───────── updateFocusDuringScroll: only run when focus really changes ─────────
     function updateFocusDuringScroll() {
       const containerRect = scrollBox.getBoundingClientRect();
       const containerWidth = containerRect.width;
       const scrollLeft = scrollBox.scrollLeft;
       const maxScroll = belt.scrollWidth - containerWidth;
 
-      // Define START and END positions (in px from left edge of viewport)
       const START = 150;
       const END = containerWidth - 150;
-
-      // Compute interpolation factor t from 0→1 based on scroll position
-      let t = 0;
-      if (maxScroll > 0) {
-        t = scrollLeft / maxScroll;
-      }
-      // Compute focusX in screen coordinates
+      const t = maxScroll > 0 ? scrollLeft / maxScroll : 0;
       const focusX = containerRect.left + (START + t * (END - START));
 
-      // Find the card whose center is closest to focusX
+      // find the card whose center is closest to focusX
       const cards = Array.from(belt.querySelectorAll(".item-container"));
       let bestCard = null;
       let smallestDelta = Infinity;
 
       cards.forEach((card) => {
-        const cardRect = card.getBoundingClientRect();
-        const cardCenterX = cardRect.left + cardRect.width / 2;
-        const delta = Math.abs(cardCenterX - focusX);
+        const rect = card.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const delta = Math.abs(centerX - focusX);
         if (delta < smallestDelta) {
           smallestDelta = delta;
           bestCard = card;
         }
       });
 
-      if (bestCard) {
-        // 1) Remove .focused from everyone else
-        cards.forEach((c) => c.classList.remove("focused"));
-        // 2) Add .focused to bestCard
-        bestCard.classList.add("focused");
+      // nothing to do if no card or it’s the same one
+      if (!bestCard || bestCard === lastBestRef.current) return;
 
-        // 3) Extract hidden fields and update details panel
-        const nameEl = bestCard.querySelector("[data-role='product-name']");
-        const priceEl = bestCard.querySelector("[data-role='product-price']");
-        const descEl = bestCard.querySelector("[data-role='ai-description']");
-        const frameEl = bestCard.querySelector("[data-role='frame-image']");
-        const matchEl = bestCard.querySelector("[data-role='matchText']");
-        const vendorEl = bestCard.querySelector("[data-role='vendor-logo']");
-        const linkEl = bestCard.querySelector("[data-role='product-link']");
-
-        setSelectedCardData({
-          name: nameEl ? nameEl.innerText : "",
-          price: priceEl ? priceEl.innerText : "",
-          description: descEl ? descEl.innerText : "",
-          frameImageUrl: frameEl ? frameEl.src : "",
-          matchText: matchEl ? matchEl.innerText : "",
-          vendorLogoUrl: vendorEl ? vendorEl.src : "",
-          productUrl: linkEl ? linkEl.href : "",
-        });
+      // 1) remove old focus
+      if (lastBestRef.current) {
+        lastBestRef.current.classList.remove("focused");
       }
+
+      // 2) add new focus
+      bestCard.classList.add("focused");
+      lastBestRef.current = bestCard;
+
+      // 3) update details panel once
+      const id = bestCard.getAttribute("data-id"); // ← read it
+      setSelectedCardData({
+        id,
+        name:
+          bestCard.querySelector('[data-role="product-name"]')?.innerText || "",
+        price:
+          bestCard.querySelector('[data-role="product-price"]')?.innerText ||
+          "",
+        description:
+          bestCard.querySelector('[data-role="ai-description"]')?.innerText ||
+          "",
+        frameImageUrl:
+          bestCard.querySelector('[data-role="frame-image"]')?.src || "",
+        matchText:
+          bestCard.querySelector('[data-role="matchText"]')?.innerText || "",
+        vendorLogoUrl:
+          bestCard.querySelector('[data-role="vendor-logo"]')?.src || "",
+        productUrl:
+          bestCard.querySelector('[data-role="product-link"]')?.href || "",
+      });
     }
 
     // Attach scroll listener as passive
@@ -315,21 +329,49 @@ export default function LiveShopping({ channelId }) {
     };
   }, [channelId]);
 
+  /* useEffect(() => {
+    const container = actionsRef.current;
+    if (!container) return;
+    container.innerHTML = ""; // clear any old buttons
+
+    const id = selectedCardData.id;
+    if (!id) return; // nothing selected yet
+
+    // find the matching belt card
+    const card = beltRef.current?.querySelector(
+      `.item-container[data-id="${id}"]`
+    );
+    if (!card) return;
+
+    // grab the real buttons
+    const realBtns = card.querySelectorAll(
+      "[data-role='share-link'],[data-role='like'],[data-role='dislike']"
+    );
+
+    realBtns.forEach((btn) => {
+      const clone = btn.cloneNode(true); // copy all attributes & handlers
+      clone.style.display = ""; // make visible
+
+      // wrap the click: require login, otherwise call the original
+      const original = btn.onclick;
+      clone.onclick = (e) => {
+        e.stopPropagation();
+        if (!user) return openSidebar();
+        original?.call(btn, e);
+        onLike?.(); // ← tell the parent a like just happened
+      };
+
+      container.appendChild(clone);
+    });
+  }, [selectedCardData.id, user, openSidebar]); */
+
   //
   // ─────────────────────────────────────────────────────────────────
   // Render
   // ─────────────────────────────────────────────────────────────────
   return (
-    <div
-      style={{
-        color: "#fff",
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
-    >
+    <div className="liveshopping-container" style={{ width: "100%" }}>
+      <ChannelLogo className="channel-logo" />{" "}
       {/* ─────────────────────────────────────────────────────────────────
            (1) SCROLLABLE BELT: only images are visible here
       ───────────────────────────────────────────────────────────────── */}
@@ -337,10 +379,11 @@ export default function LiveShopping({ channelId }) {
         id="absolute-container"
         ref={scrollBoxRef}
         style={{
+          WebkitOverflowScrolling: "touch",
           position: "relative",
           overflowX: "auto",
           overflowY: "hidden",
-          padding: "8px",
+          padding: "10px",
           borderRadius: "8px",
           minHeight: "250px",
         }}
@@ -355,18 +398,17 @@ export default function LiveShopping({ channelId }) {
             padding: "12px 6px",
             alignItems: "flex-start",
             whiteSpace: "nowrap",
+            position: "absolute",
           }}
         >
           {/* screenNoAnim.js will insert <div class="item-container product0">…</div> cards here */}
         </div>
       </div>
-
       {/* ─────────────────────────────────────────────────────────────────
            (2) DETAILS PANEL: visible when a card is in focus
       ───────────────────────────────────────────────────────────────── */}
       <div
         style={{
-          marginTop: "16px",
           borderRadius: "8px",
           color: "rgb(255, 255, 255)",
           flex: "1",
@@ -374,6 +416,7 @@ export default function LiveShopping({ channelId }) {
           flexDirection: "column",
           justifyContent: "space-between",
           alignItems: "stretch",
+          padding: "10px",
         }}
       >
         {selectedCardData.name ? (
@@ -382,7 +425,7 @@ export default function LiveShopping({ channelId }) {
             <h2
               style={{
                 margin: "8px 0",
-                fontSize: "1.25rem",
+                fontSize: "1rem",
                 lineHeight: "1.3",
               }}
             >
@@ -446,7 +489,15 @@ export default function LiveShopping({ channelId }) {
             )}
 
             {/* (h) CTA + SOCIAL BUTTONS */}
-            <div style={{ marginTop: "12px", display: "flex", gap: "8px" }}>
+            <div
+              style={{
+                marginTop: "12px",
+                display: "flex",
+                gap: "8px",
+                justifyContent: "space-between",
+                padding: "6px",
+              }}
+            >
               {/* Shop Now */}
               {selectedCardData.productUrl && (
                 <a
@@ -458,14 +509,14 @@ export default function LiveShopping({ channelId }) {
                     justifyContent: "center",
                     alignItems: "center",
                     gap: "1rem",
-                    flex: 1,
-                    background: "#556b2f",
+                    background: "var(--color-primary)",
                     color: "#fff",
                     textAlign: "center",
                     textDecoration: "none",
-                    padding: "10px 0",
+                    padding: "6px 10px",
                     borderRadius: "6px",
                     fontSize: "0.95rem",
+                    fontWeight: "bald",
                   }}
                 >
                   <p>Shop On</p>
@@ -477,102 +528,37 @@ export default function LiveShopping({ channelId }) {
                       style={{
                         width: "30px",
                         height: "auto",
+                        borderRadius: "6px",
                       }}
                     />
                   )}
                 </a>
               )}
-
-              {/* Add to Favorites */}
-              <button
+              {/*  … inside your JSX: */}
+              <div
                 style={{
-                  flex: 1,
-                  background: "#30336b",
-                  color: "#fff",
-                  border: "none",
-                  padding: "10px 0",
-                  borderRadius: "6px",
-                  fontSize: "0.95rem",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  alert(
-                    `“Add to Favorites” clicked for ${selectedCardData.name}`
-                  );
+                  marginTop: "12px",
+                  display: "flex",
+                  gap: 8,
+                  justifyContent: "space-around",
                 }}
               >
-                Add to Favorites
-              </button>
+                <LikeButton
+                  itemId={selectedCardData.id}
+                  itemTypeName={selectedCardData.itemTypeName}
+                  onSuccess={onLike}
+                />
+                <DislikeButton
+                  itemId={selectedCardData.id}
+                  itemTypeName={selectedCardData.itemTypeName}
+                  onSuccess={onLike}
+                />
+                <ShareButton
+                  title={selectedCardData.name}
+                  url={selectedCardData.productUrl}
+                />
+              </div>
             </div>
-
-            {/* (i) SHARE / LIKE / DISLIKE Buttons */}
-            <div
-              style={{
-                marginTop: "12px",
-                display: "flex",
-                justifyContent: "space-around",
-              }}
-            >
-              <button
-                style={{
-                  background: "#444",
-                  border: "none",
-                  color: "#fff",
-                  padding: "8px 12px",
-                  borderRadius: "4px",
-                  fontSize: "0.9rem",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  alert(`Share clicked for ${selectedCardData.name}`);
-                }}
-              >
-                Share
-              </button>
-              <button
-                style={{
-                  background: "#444",
-                  border: "none",
-                  color: "#fff",
-                  padding: "8px 12px",
-                  borderRadius: "4px",
-                  fontSize: "0.9rem",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  alert(`Like clicked for ${selectedCardData.name}`);
-                }}
-              >
-                Like
-              </button>
-              <button
-                style={{
-                  background: "#444",
-                  border: "none",
-                  color: "#fff",
-                  padding: "8px 12px",
-                  borderRadius: "4px",
-                  fontSize: "0.9rem",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  alert(`Dislike clicked for ${selectedCardData.name}`);
-                }}
-              >
-                Dislike
-              </button>
-            </div>
-
-            {/* (j) AFFILIATE FOOTER */}
-            <p
-              style={{
-                marginTop: "12px",
-                fontSize: "0.85rem",
-                color: "var(--color-purple-text)",
-              }}
-            >
-              edgevideo.ai
-            </p>
           </>
         ) : (
           <p style={{ color: "#aaa" }}>Loading products…</p>

@@ -6,8 +6,8 @@
 :root {
   /* Colors */
   --bg-dark-blue: #101323;
-  --bg-light-blue: #181d35;
-  --color-primary: #4c7cff;
+  --bg-light-blue: #0d153c;
+  --color-primary: #617afa;
   --color-secondary: #21284a;
   --color-black: #111111;
   --color-grey: #777777;
@@ -15,6 +15,7 @@
   --color-white: #ffffff;
   --color-black-30: #00000030;
   --color-purple-text: #8f99cc;
+  --color-white-02: rgba(255, 255, 255, 0.2);
 
   /* Typography */
   --font-sans: "Inter", system-ui, sans-serif;

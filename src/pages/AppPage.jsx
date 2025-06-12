@@ -4,32 +4,16 @@ import Tabs from "../components/Tabs";
 import ProfileSidebar from "../components/ProfileSidebar";
 
 // Import each tab‐pane component:
-import HomeTab from "../components/HomeTab";
-import ShopTab from "../components/ShopTab";
-import LiveTab from "../components/LiveTab";
-import LiveShopping from "../components/LiveShopping";
+import ShoppingTab from "../components/ShoppingTab";
+import GamesTab from "../components/GamesTab";
+import GamesIcon from "../components/GamesIcon";
 
 export default function AppPage() {
   // 1) Build a single array with exactly one entry per tab.
   // To add a new tab, just add another object here with its own `key`, `label`, and `Component`.
   const tabConfig = [
     {
-      key: "home",
-      label: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="currentColor"
-          viewBox="0 0 256 256"
-        >
-          <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z" />
-        </svg>
-      ),
-      Component: HomeTab,
-    },
-    {
-      key: "shop",
+      key: "shopping",
       label: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -41,37 +25,12 @@ export default function AppPage() {
           <path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM176,88a48,48,0,0,1-96,0,8,8,0,0,1,16,0,32,32,0,0,0,64,0,8,8,0,0,1,16,0Z" />
         </svg>
       ),
-      Component: ShopTab,
+      Component: ShoppingTab,
     },
     {
-      key: "live",
-      label: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="currentColor"
-          viewBox="0 0 256 256"
-        >
-          <path d="M164.44,105.34l-48-32A8,8,0,0,0,104,80v64a8,8,0,0,0,12.44,6.66l48-32a8,8,0,0,0,0-13.32ZM120,129.05V95l25.58,17ZM216,40H40A16,16,0,0,0,24,56V168a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,128H40V56H216V168Zm16,40a8,8,0,0,1-8,8H32a8,8,0,0,1,0-16H224A8,8,0,0,1,232,208Z" />
-        </svg>
-      ),
-      Component: LiveTab,
-    },
-    {
-      key: "liveShopping",
-      label: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="currentColor"
-          viewBox="0 0 256 256"
-        >
-          <path d="M164.44,105.34l-48-32A8,8,0,0,0,104,80v64a8,8,0,0,0,12.44,6.66l48-32a8,8,0,0,0,0-13.32ZM120,129.05V95l25.58,17ZM216,40H40A16,16,0,0,0,24,56V168a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,128H40V56H216V168Zm16,40a8,8,0,0,1-8,8H32a8,8,0,0,1,0-16H224A8,8,0,0,1,232,208Z" />
-        </svg>
-      ),
-      Component: LiveShopping,
+      key: "games",
+      label: <GamesIcon />,
+      Component: GamesTab,
     },
 
     // 🚀 To add a new tab later, just insert another object here:
