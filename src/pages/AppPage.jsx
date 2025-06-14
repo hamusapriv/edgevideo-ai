@@ -105,7 +105,6 @@ export default function AppPage() {
 
   return (
     <>
-      <p>hello</p>
       <AppHeader onToggleSidebar={handleToggleSidebar} />
 
       <section
