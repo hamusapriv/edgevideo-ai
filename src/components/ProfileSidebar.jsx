@@ -1,7 +1,6 @@
 // src/components/ProfileSidebar.jsx
 import React from "react";
 import { useAuth } from "../auth/AuthContext";
-import SignInButton from "../auth/GoogleSignInButton";
 import LogoutButton from "../auth/LogoutButton";
 import GoogleSignInButton from "../auth/GoogleSignInButton";
 
