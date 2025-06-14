@@ -566,7 +566,7 @@ export default function LiveShopping({ channelId, onLike }) {
                     padding: "6px 10px",
                     borderRadius: "6px",
                     fontSize: "0.95rem",
-                    fontWeight: "bald",
+                    fontWeight: "bold",
                   }}
                 >
                   <p>Shop On</p>
