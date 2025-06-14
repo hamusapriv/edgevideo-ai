@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
 
   // Pull in our env vars
   const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-  const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI; // e.g. http://localhost:5173/oauth2callback
+  const REDIRECT_URI = `${window.location.origin}/app/oauth2callback`;
   const USERINFO_URL = import.meta.env.VITE_USERINFO_URL; // e.g. https://fastapi.edgevideo.ai/auth_google/details
 
   // Fetch user profile from our backend
@@ -73,7 +73,7 @@ export function AuthProvider({ children }) {
   function login() {
     window.location.href =
       `${import.meta.env.VITE_AUTH_BASE_URL}/google` +
-      `?redirectUri=${encodeURIComponent(import.meta.env.VITE_REDIRECT_URI)}`;
+      `?redirectUri=${encodeURIComponent(REDIRECT_URI)}`;
   }
 
   // Clear the session
