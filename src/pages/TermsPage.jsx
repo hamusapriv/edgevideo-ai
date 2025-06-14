@@ -74,31 +74,6 @@ export default function TermsPage() {
             </div>
           </div>
         </section>
-
-        <section className="terms-page__footer">
-          <div className="terms-page__container">
-            <div className="terms-page__footer-top">
-              {/* Replace with your logo if you like */}
-              <Link to="/" className="terms-page__brand">
-                Edge Video AI
-              </Link>
-            </div>
-
-            <div className="terms-page__divider" />
-
-            <div className="terms-page__footer-links">
-              <p className="terms-page__copyright">© 2025 Edge Video B.V.</p>
-              <div className="terms-page__links">
-                <a href="mailto:developers@edgevideo.ai">Reach Out</a>
-                <Link to="/privacy-policy">Privacy Policy</Link>
-                <Link to="/terms-and-service" className="active">
-                  Terms of Service
-                </Link>
-                <Link to="/cookies-settings">Cookies Settings</Link>
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
     </div>
   );
