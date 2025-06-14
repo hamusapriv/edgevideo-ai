@@ -11,6 +11,7 @@ import "./styles/components.css";
 import "./styles/style.css";
 import "./styles/google.css";
 import "./styles/favorites.css";
+import "./styles/FAQ.css";
 
 import App from "./App";
 import { AuthProvider } from "./auth/AuthContext";

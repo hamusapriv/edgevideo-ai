@@ -16,6 +16,16 @@
   --color-black-30: #00000030;
   --color-purple-text: #8f99cc;
   --color-white-02: rgba(255, 255, 255, 0.2);
+  --color-white-01: rgba(255, 255, 255, 0.1);
+  --color-black-01: rgba(0, 0, 0, 0.1);
+  --color-turqoise-light: #00eeff;
+  --color-turqoise-dark: #007078;
+  --color-green-light: #00d37e;
+  --color-green-dark: rgb(0, 128, 77);
+  --color-blue-light: rgb(0, 31, 209);
+  --color-blue-dark: rgb(0, 13, 85);
+  --color-purple-light: rgb(137, 0, 201);
+  --color-purple-dark: rgb(44, 0, 85);
 
   /* Typography */
   --font-sans: "Inter", system-ui, sans-serif;

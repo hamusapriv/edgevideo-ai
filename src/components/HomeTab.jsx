@@ -1,6 +1,6 @@
 import React from "react";
-import MostClicked from "../components/MostClicked";
-import MostLiked from "../components/MostLiked";
+import MostClicked from "./MostClicked";
+import MostLiked from "./MostLiked";
 
 export default function HomeTab() {
   return (

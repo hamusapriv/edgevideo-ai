@@ -1,9 +1,15 @@
 // src/components/FavouritesTab.jsx
 import React, { useEffect, useRef } from "react";
 import { useFavorites } from "../favorites/FavoritesContext";
+import { useAuth } from "../auth/AuthContext";
 
-export default function FavouritesTab({ refreshKey }) {
+export default function FavouritesTab({
+  refreshKey,
+  onNavigateToLive,
+  openProfileSidebar,
+}) {
   const { favorites, removeFavorite, fetchFavorites } = useFavorites();
+  const { user } = useAuth();
   const containerRef = useRef(null);
   const pullStartY = useRef(null);
 
@@ -18,7 +24,6 @@ export default function FavouritesTab({ refreshKey }) {
     if (!container) return;
 
     function onTouchStart(e) {
-      // only start if you're scrolled all the way to top
       if (container.scrollTop === 0) {
         pullStartY.current = e.touches[0].clientY;
       } else {
@@ -29,28 +34,51 @@ export default function FavouritesTab({ refreshKey }) {
     function onTouchMove(e) {
       if (pullStartY.current === null) return;
       const deltaY = e.touches[0].clientY - pullStartY.current;
-      // once you've pulled down 60px, trigger refresh
       if (deltaY > 60) {
         fetchFavorites();
-        pullStartY.current = null; // reset so you don't refire immediately
+        pullStartY.current = null;
       }
     }
 
     container.addEventListener("touchstart", onTouchStart, { passive: true });
     container.addEventListener("touchmove", onTouchMove, { passive: true });
-
     return () => {
       container.removeEventListener("touchstart", onTouchStart);
       container.removeEventListener("touchmove", onTouchMove);
     };
   }, [fetchFavorites]);
 
+  // EMPTY STATES
   if (!favorites.length) {
-    return (
-      <p style={{ padding: "1rem" }}>Sign in to see your Favorite Products</p>
-    );
+    if (user) {
+      // logged-in, no favorites
+      return (
+        <div style={{ padding: "1rem", textAlign: "center" }}>
+          <p style={{ marginBottom: "1rem", color: "#fff", lineHeight: "1.5" }}>
+            You haven’t liked any products yet. Discover something you love in
+            Live Shopping!
+          </p>
+          <button onClick={onNavigateToLive} className="favorites-cta">
+            Go to Live
+          </button>
+        </div>
+      );
+    } else {
+      // not signed-in
+      return (
+        <div style={{ padding: "1rem", textAlign: "center" }}>
+          <p style={{ marginBottom: "1rem", color: "#fff", lineHeight: "1.5" }}>
+            Sign in to see your Favorite Products
+          </p>
+          <button onClick={openProfileSidebar} className="favorites-cta">
+            Sign In
+          </button>
+        </div>
+      );
+    }
   }
 
+  // NORMAL STATE: render favorites list
   return (
     <div
       id="favs"
@@ -70,7 +98,12 @@ export default function FavouritesTab({ refreshKey }) {
             target="_blank"
             rel="noopener noreferrer"
             className="fav-item-link w-inline-block"
-            style={{ flex: 1, display: "flex", textDecoration: "none" }}
+            style={{
+              flex: 1,
+              display: "flex",
+              textDecoration: "none",
+              width: "100%",
+            }}
           >
             <div className="fav-img-container" style={{ marginRight: 8 }}>
               <img
@@ -80,10 +113,9 @@ export default function FavouritesTab({ refreshKey }) {
                 className="fav-img"
               />
             </div>
-            <h6 className="fav-h" style={{ color: "#fff", lineHeight: 1.2 }}>
-              {item.name}
-            </h6>
+            <h6 className="fav-h">{item.name}</h6>
           </a>
+
           <button
             className="fav-remove"
             aria-label="Remove favorite"

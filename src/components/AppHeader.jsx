@@ -1,8 +1,8 @@
-// src/components/Header.jsx
+// src/components/AppHeader.jsx
 import React from "react";
 import EdgeLogo from "../assets/edgevideoai-logo.png";
 
-export default function Header() {
+export default function AppHeader() {
   return (
     <header className="header">
       <img src={EdgeLogo} alt="EdgeVideo" height="30" />

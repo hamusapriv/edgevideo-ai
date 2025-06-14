@@ -12,9 +12,7 @@
   position: sticky;
   top: 0;
   z-index: 2;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   padding: 14px;
-  background-color: var(--color-black-30);
 }
 
 .header__inner {
@@ -170,7 +168,8 @@
 
 /* Footer */
 .footer {
-  background: var(--bg-light-blue);
+  backdrop-filter: blur(20px);
+  background-color: var(--color-black-01);
   font-size: 0.875rem;
   text-align: center;
   margin-top: auto;

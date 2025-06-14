@@ -1,8 +1,8 @@
-// src/components/ShareButton.jsx
+// src/components/buttons/ShareButton.jsx
 import React from "react";
-import SvgShare from "./SvgShare";
-import { useAuth } from "../auth/AuthContext";
-import { useSidebar } from "../ui/SidebarContext";
+import SvgShare from "../svgs/SvgShare";
+import { useAuth } from "../../auth/AuthContext";
+import { useSidebar } from "../../ui/SidebarContext";
 
 export default function ShareButton({ title, url }) {
   const { user } = useAuth();

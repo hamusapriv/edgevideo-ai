@@ -1,3 +1,16 @@
+// Inject channelId into window for any non-React scripts
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  let channelId =
+    params.get("channelId") ||
+    localStorage.getItem("channelId") ||
+    "ba08370c-0362-462d-b299-97cc36973340";
+  try {
+    localStorage.setItem("channelId", channelId);
+  } catch {}
+  window.channelId = channelId;
+})();
+
 const wsUrl = "wss://slave-ws-service-342233178764.us-west1.run.app"; // WebSocket server URL
 
 // Add these near other configuration variables
@@ -1043,7 +1056,7 @@ function UpdateProductViaDataRole(i, time = null) {
         shareButton.style.display = "none";
       }
     });
-    itemContainer.setAttribute("data-id", product.id);
+    itemContainer.setAttribute("data-product-id", product.id);
 
     // Update price display (existing logic)
     if ("price" in product && product.price !== null && product.price !== "") {

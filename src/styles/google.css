@@ -124,8 +124,9 @@
   overflow: auto;
   gap: 1.25rem;
   border-radius: 10px 0 0 10px;
-  background-color: #0f1224;
+  background-color: rgba(15, 18, 36, 0.7);
   transition: all 0.3s ease;
+  backdrop-filter: blur(20px);
 }
 
 .profile-side.open {
@@ -152,14 +153,16 @@
   gap: 1rem;
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 .profile {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   gap: 0.75rem;
+  flex: 1;
 }
 
 .avatar {
@@ -178,8 +181,8 @@
 }
 
 .avatar-wrapper.big {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   background-color: aliceblue;
   padding: 6px;
 }
@@ -239,6 +242,7 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  color: var(--color-purple-text);
 }
 
 .username,
@@ -254,4 +258,11 @@
 
 .contact-btn {
   margin: 0;
+}
+
+.favorites-cta {
+  color: white;
+  padding: 8px 12px;
+  background-color: var(--color-primary);
+  border-radius: 6px;
 }

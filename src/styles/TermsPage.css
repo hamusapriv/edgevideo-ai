@@ -1,0 +1,119 @@
+/* src/pages/TermsPage.css */
+
+.terms-page {
+  background-color: #0a0e1a;
+  color: #fff;
+  font-family: "Montserrat", sans-serif;
+  min-height: 100vh;
+}
+
+/* Centered container */
+.terms-page__container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Back button */
+.terms-page__back-btn {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.terms-page__back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Title */
+.terms-page__title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Policy content */
+.terms-page__policy h2 {
+  font-size: 1.25rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  border-top: 1px solid #555;
+  padding-top: 1rem;
+}
+
+.terms-page__policy p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.terms-page__policy ul {
+  list-style: disc inside;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+.terms-page__policy ul li {
+  margin-bottom: 0.5rem;
+}
+
+/* Footer */
+.terms-page__footer {
+  background-color: #050618;
+  padding: 2rem 0;
+}
+
+.terms-page__footer-top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.terms-page__brand {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 1.25rem;
+}
+
+.terms-page__divider {
+  border-top: 1px solid #555;
+  margin: 1rem 0;
+}
+
+.terms-page__footer-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.terms-page__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.terms-page__links a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.875rem;
+  position: relative;
+}
+
+.terms-page__links a.active::after {
+  content: "";
+  position: absolute;
+  bottom: -0.25rem;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #fff;
+}
+
+.terms-page__copyright {
+  font-size: 0.75rem;
+}

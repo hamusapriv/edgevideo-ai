@@ -1,0 +1,77 @@
+/* AppBg.css */
+
+.app-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1; /* behind all your app content */
+  pointer-events: none; /* clicks go through */
+  opacity: 0.7;
+}
+
+.app-bg .circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 1;
+  filter: blur(50px);
+  opacity: 0.6;
+}
+
+/* tweak size / color / position as you like: */
+.app-bg .circle-1 {
+  width: 50vw;
+  height: 50vw;
+  top: -10%;
+  left: -10%;
+  background: radial-gradient(
+    circle at center,
+    var(--color-purple-light),
+    var(--color-purple-dark)
+  );
+}
+
+.app-bg .circle-2 {
+  width: 50vw;
+  height: 50vw;
+  top: 20%;
+  right: -15%;
+  background: radial-gradient(
+    circle at center,
+    var(--color-turqoise-light),
+    var(--color-turqoise-dark)
+  );
+}
+
+.app-bg .circle-3 {
+  width: 50vw;
+  height: 50vw;
+  bottom: -15%;
+  left: 5%;
+  background: radial-gradient(
+    circle at center,
+    var(--color-blue-light),
+    var(--color-blue-dark)
+  );
+}
+
+/*
+{itemId: "63525P21", itemTypeName: "Viator Ticket"}
+itemId
+: 
+"63525P21"
+itemTypeName
+: 
+"Viator Ticket"
+
+{itemId: "7974925", itemTypeName: "DB Product"}
+itemId
+: 
+"7974925"
+itemTypeName
+: 
+"DB Product"
+
+*/

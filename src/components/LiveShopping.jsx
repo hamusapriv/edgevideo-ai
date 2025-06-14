@@ -1,12 +1,9 @@
 // src/components/LiveShopping.jsx
 import React, { useEffect, useRef, useState } from "react";
 import ChannelLogo from "./ChannelLogo";
-import { useAuth } from "../auth/AuthContext";
-import { useSidebar } from "../ui/SidebarContext";
-
-import LikeButton from "./LikeButton";
-import DislikeButton from "./DislikeButton";
-import ShareButton from "./ShareButton";
+import { useAuth } from "./../auth/AuthContext";
+import { useSidebar } from "./../ui/SidebarContext";
+import SvgFrame from "./svgs/SvgFrame";
 
 export default function LiveShopping({ channelId, onLike }) {
   const { user } = useAuth();
@@ -27,6 +24,8 @@ export default function LiveShopping({ channelId, onLike }) {
   // ───────── Selected-card state ─────────
   const [selectedCardData, setSelectedCardData] = useState({
     id: null,
+    itemTypeName: "", // ← add this
+
     name: "",
     price: "",
     description: "",
@@ -35,6 +34,10 @@ export default function LiveShopping({ channelId, onLike }) {
     vendorLogoUrl: "",
     productUrl: "",
   });
+
+  // ───────── Mount & animate frame states ─────────
+  const [mountFrame, setMountFrame] = useState(false);
+  const [animateFrame, setAnimateFrame] = useState(false);
 
   // ───────── Detect hover (desktop vs mobile) ─────────
   const deviceCanHover = window.matchMedia("(any-hover:hover)").matches;
@@ -66,23 +69,6 @@ export default function LiveShopping({ channelId, onLike }) {
     `;
     document.head.appendChild(injectedStyle);
 
-    /*     //
-    // ────────────────────────────────────────────────────────────────────────
-    // (B) Define window.channelId if missing, then inject screenNoAnim.js once
-    // ────────────────────────────────────────────────────────────────────────
-    if (typeof window.channelId === "undefined") {
-      window.channelId = channelId || "ada3896d-0456-4589-95fa-cf71718b79c8";
-    }
-    if (!document.querySelector('script[src*="screenNoAnim.js"]')) {
-      const url = `https://storage.googleapis.com/edge_cloud_storage/screenNoAnim.js?t=${Date.now()}`;
-      injectedScript = document.createElement("script");
-      injectedScript.src = url;
-      injectedScript.async = true;
-      document.head.appendChild(injectedScript);
-      console.log("[LiveShopping] Injected screenNoAnim.js →", url);
-    } */
-
-    //
     // ────────────────────────────────────────────────────────────────────────
     // (C) Grab DOM nodes & bail if missing
     // ────────────────────────────────────────────────────────────────────────
@@ -188,9 +174,12 @@ export default function LiveShopping({ channelId, onLike }) {
       lastBestRef.current = bestCard;
 
       // 3) update details panel once
-      const id = bestCard.getAttribute("data-id"); // ← read it
+      const id = bestCard.getAttribute("data-product-id"); // ← read it
+      const typeId = bestCard.getAttribute("data-type-id"); // or whatever your attribute is
       setSelectedCardData({
         id,
+        itemTypeName: "product", // ← now included
+
         name:
           bestCard.querySelector('[data-role="product-name"]')?.innerText || "",
         price:
@@ -218,77 +207,25 @@ export default function LiveShopping({ channelId, onLike }) {
     // (F) CARD FACTORY: create a minimal `.item-container`
     // ────────────────────────────────────────────────────────────────────────
     function makeCard(isP0 = false) {
-      const wrapper = document.createElement("div");
-      wrapper.innerHTML = `
-  <div class="item-container ${isP0 ? "product0" : ""}">
-    <!-- Visible product image -->
-    <img
-      data-role="product-image"
-      src=""
-      alt="Product Image"
-    />
-    <!-- Newly added frame-image -->
-    <img
-      class="frame-image"
-      data-role="frame-image"
-      src=""
-      alt=""
-    />
+      // 1) Grab the <template> by ID
+      const tpl = document.getElementById("live-shopping-card");
+      if (!tpl) {
+        console.error("[LiveShopping] Template #live-shopping-card not found");
+        return document.createElement("div");
+      }
 
-    <!-- Hidden link element; screenNoAnim.js will populate its href -->
-    <a data-role="product-link" href="" style="display: none;"></a>
+      // 2) Deep-clone its content
+      const clone = tpl.content.cloneNode(true);
+      const card = clone.querySelector(".item-container");
+      if (!card) {
+        console.error("[LiveShopping] .item-container missing in template");
+        return document.createElement("div");
+      }
 
-    <!-- Hidden fields (name, price, description) -->
-    <div
-      data-role="matchText"
-      style="display: none; padding: 8px; font-size: 1rem; font-weight: bold;"
-    ></div>
+      // 3) If this is the “live” slot, add the marker class
+      if (isP0) card.classList.add("product0");
 
-    <img
-      data-role="vendor-logo"
-      src=""
-      alt="Vendor Logo"
-      style="display: none;"
-    />
-
-    <div
-      data-role="product-name"
-      style="display: none; padding: 8px; font-size: 1rem; font-weight: bold;"
-    ></div>
-    <div
-      data-role="product-price"
-      style="display: none; padding: 4px 8px; font-size: 0.9rem; color: #aaf;"
-    ></div>
-    <div
-      data-role="ai-description"
-      class="ai-query"
-      style="display: none; padding: 8px; font-size: 0.85rem; color: #ddd;"
-    ></div>
-
-    <!-- Info button (hidden) -->
-    <div
-      class="info-button"
-      style="display: none; position: absolute; top: 8px; right: 8px; color: #fff; font-size: 1.2rem;"
-    >
-      &#9432;
-    </div>
-
-    <!-- Like/Dislike/Share row (hidden) -->
-    <div style="display: none; flex: 1; justify-content: space-around; padding: 8px 0;">
-      <button data-role="like" style="background: #444; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
-        Like
-      </button>
-      <button data-role="dislike" style="background: #444; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
-        Dislike
-      </button>
-      <button data-role="share-link" style="background: #444; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
-        Share
-      </button>
-    </div>
-  </div>
-      `.trim();
-
-      const card = wrapper.firstElementChild;
+      // 4) Re-attach hover listeners (same as before)
       if (deviceCanHover) {
         card.addEventListener("mouseenter", () => card.classList.add("opened"));
         card.addEventListener("mouseleave", () => {
@@ -297,6 +234,7 @@ export default function LiveShopping({ channelId, onLike }) {
           if (ai) ai.classList.remove("query-opened");
         });
       }
+
       return card;
     }
 
@@ -329,7 +267,7 @@ export default function LiveShopping({ channelId, onLike }) {
     };
   }, [channelId]);
 
-  /* useEffect(() => {
+  useEffect(() => {
     const container = actionsRef.current;
     if (!container) return;
     container.innerHTML = ""; // clear any old buttons
@@ -339,7 +277,7 @@ export default function LiveShopping({ channelId, onLike }) {
 
     // find the matching belt card
     const card = beltRef.current?.querySelector(
-      `.item-container[data-id="${id}"]`
+      `.item-container[data-product-id="${id}"]`
     );
     if (!card) return;
 
@@ -363,15 +301,38 @@ export default function LiveShopping({ channelId, onLike }) {
 
       container.appendChild(clone);
     });
-  }, [selectedCardData.id, user, openSidebar]); */
+  }, [selectedCardData.id, user, openSidebar]);
 
-  //
+  // when mountFrame flips on, start the entry animation next tick
+  useEffect(() => {
+    if (mountFrame) {
+      requestAnimationFrame(() => {
+        setAnimateFrame(true);
+      });
+    }
+  }, [mountFrame]);
+
+  // when animateFrame flips off, unmount after the transition finishes
+  useEffect(() => {
+    if (!animateFrame && mountFrame) {
+      const timer = setTimeout(() => setMountFrame(false), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [animateFrame, mountFrame]);
+
+  // ───────── Hide frame when user focuses a different product ─────────
+  useEffect(() => {
+    // collapse and unmount immediately
+    setAnimateFrame(false);
+    setMountFrame(false);
+  }, [selectedCardData.id]);
+
   // ─────────────────────────────────────────────────────────────────
   // Render
   // ─────────────────────────────────────────────────────────────────
   return (
     <div className="liveshopping-container" style={{ width: "100%" }}>
-      <ChannelLogo className="channel-logo" />{" "}
+      <ChannelLogo channelId={channelId} className="channel-logo" />{" "}
       {/* ─────────────────────────────────────────────────────────────────
            (1) SCROLLABLE BELT: only images are visible here
       ───────────────────────────────────────────────────────────────── */}
@@ -394,7 +355,6 @@ export default function LiveShopping({ channelId, onLike }) {
           style={{
             display: "flex",
             flexDirection: "row",
-            gap: "16px",
             padding: "12px 6px",
             alignItems: "flex-start",
             whiteSpace: "nowrap",
@@ -407,59 +367,97 @@ export default function LiveShopping({ channelId, onLike }) {
       {/* ─────────────────────────────────────────────────────────────────
            (2) DETAILS PANEL: visible when a card is in focus
       ───────────────────────────────────────────────────────────────── */}
-      <div
-        style={{
-          borderRadius: "8px",
-          color: "rgb(255, 255, 255)",
-          flex: "1",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          alignItems: "stretch",
-          padding: "10px",
-        }}
-      >
+      <div className="live-details">
         {selectedCardData.name ? (
           <>
             {/* (e) NAME */}
-            <h2
-              style={{
-                margin: "8px 0",
-                fontSize: "1rem",
-                lineHeight: "1.3",
-              }}
-            >
-              {selectedCardData.name}
-            </h2>
+            <h2 className="live-product-name">{selectedCardData.name}</h2>
 
             {/* (f) DESCRIPTION */}
             <p
               style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "6px",
                 margin: "8px 0",
                 fontSize: "0.95rem",
                 lineHeight: "1.4",
                 color: "#ddd",
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.5rem",
               }}
             >
-              {/* (c) MATCH TEXT (if present) */}
-              {selectedCardData.matchText && (
-                <span
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  marginRight: "8px",
+                }}
+              >
+                {/* (c) MATCH TEXT */}
+                {selectedCardData.matchText && (
+                  <span
+                    style={{
+                      display: "inline",
+                      fontSize: "1rem",
+                      fontWeight: "600",
+                      color: "#fff",
+                      lineHeight: "110%",
+                    }}
+                  >
+                    AI {selectedCardData.matchText}
+                  </span>
+                )}
+
+                {/* Inline toggle */}
+                <button
+                  onClick={() => {
+                    if (!mountFrame) {
+                      setMountFrame(true);
+                    } else {
+                      setAnimateFrame(false);
+                    }
+                  }}
                   style={{
-                    margin: "12px 0 0 0",
-                    fontSize: "1rem",
-                    fontWeight: "600",
-                    color: "#fff",
-                    lineHeight: "110%",
+                    display: "inline-flex",
+                    padding: 0,
+                    marginLeft: "4px",
+                    border: "none",
+                    background: "transparent",
+                    color: "#4fa",
+                    cursor: "pointer",
+                    fontSize: "0.9rem",
                   }}
                 >
-                  AI {selectedCardData.matchText}
-                </span>
-              )}
+                  <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
+                  {animateFrame ? "Hide Frame" : "Show Frame"}
+                </button>
+              </span>
               {selectedCardData.description}
             </p>
+
+            {/* (d-1) FRAME IMAGE: only when toggled on */}
+            {mountFrame && selectedCardData.frameImageUrl && (
+              <img
+                src={selectedCardData.frameImageUrl}
+                alt={`Frame for ${selectedCardData.name}`}
+                className="live-frame-image"
+                style={{
+                  overflow: "hidden",
+
+                  width: "100%",
+                  maxHeight: animateFrame ? "200px" : "0px",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                  marginTop: "8px",
+                  opacity: animateFrame ? 1 : 0,
+                  transform: animateFrame
+                    ? "translateY(0)"
+                    : "translateY(-20px)",
+                  transition:
+                    "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
+                }}
+              />
+            )}
 
             {/* (g) PRICE */}
             {selectedCardData.price && (
@@ -491,11 +489,11 @@ export default function LiveShopping({ channelId, onLike }) {
             {/* (h) CTA + SOCIAL BUTTONS */}
             <div
               style={{
-                marginTop: "12px",
                 display: "flex",
                 gap: "8px",
                 justifyContent: "space-between",
-                padding: "6px",
+                alignItems: "stretch",
+                marginTop: "auto",
               }}
             >
               {/* Shop Now */}
@@ -526,38 +524,24 @@ export default function LiveShopping({ channelId, onLike }) {
                       src={selectedCardData.vendorLogoUrl}
                       alt="Vendor Logo"
                       style={{
-                        width: "30px",
-                        height: "auto",
+                        width: "auto",
+                        height: "24px",
                         borderRadius: "6px",
+                        backgroundColor: "white",
                       }}
                     />
                   )}
                 </a>
               )}
-              {/*  … inside your JSX: */}
+              {/*  … inside your JSX: */}{" "}
               <div
+                ref={actionsRef}
                 style={{
-                  marginTop: "12px",
                   display: "flex",
                   gap: 8,
                   justifyContent: "space-around",
                 }}
-              >
-                <LikeButton
-                  itemId={selectedCardData.id}
-                  itemTypeName={selectedCardData.itemTypeName}
-                  onSuccess={onLike}
-                />
-                <DislikeButton
-                  itemId={selectedCardData.id}
-                  itemTypeName={selectedCardData.itemTypeName}
-                  onSuccess={onLike}
-                />
-                <ShareButton
-                  title={selectedCardData.name}
-                  url={selectedCardData.productUrl}
-                />
-              </div>
+              />
             </div>
           </>
         ) : (

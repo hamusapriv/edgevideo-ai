@@ -29,8 +29,8 @@
   text-decoration: none;
   overflow: hidden;
   color: white;
-  background-color: var(--bg-dark-blue);
-  box-shadow: 1px 1px 2px 1px var(--color-secondary);
+  background-color: rgba(130, 255, 253, 0.06);
+  backdrop-filter: blur(20px);
 }
 
 .fav-item-link {
@@ -67,13 +67,12 @@
 }
 
 .fav-remove {
-  background-color: var(--color-secondary);
   padding: 6px 10px;
   border-radius: 8px;
   color: white;
   cursor: pointer;
   font-size: 0.7rem;
-  border: 1px solid var(--color-light);
+  border: 1px solid var(--color-white-02);
 }
 
 .fav-img {
