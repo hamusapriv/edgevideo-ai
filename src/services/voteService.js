@@ -3,6 +3,19 @@ const BASE = "https://fastapi.edgevideo.ai/tracking";
 const UPVOTE_URL = `${BASE}/vote/up`;
 const DOWNVOTE_URL = `${BASE}/vote/down`;
 
+function normalizeItemTypeName(name) {
+  if (!name) return "DB Product";
+  const n = String(name).trim().toLowerCase();
+  if (n === "product" || n === "db product" || n === "db_product")
+    return "DB Product";
+  if (n === "ticket" || n === "db ticket" || n === "db_ticket")
+    return "DB Ticket";
+  if (n === "viator" || n === "viator ticket" || n === "viator_ticket")
+    return "Viator Ticket";
+  if (n === "deal") return "Deal";
+  return name;
+}
+
 async function postVote(url, itemId, itemTypeName) {
   const token = localStorage.getItem("authToken");
   if (!token) throw new Error("No auth token");
@@ -12,7 +25,10 @@ async function postVote(url, itemId, itemTypeName) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ itemId, itemTypeName }),
+    body: JSON.stringify({
+      itemId,
+      itemTypeName: normalizeItemTypeName(itemTypeName),
+    }),
   });
   if (!res.ok) {
     const err = await res.text().catch(() => res.statusText);
@@ -42,3 +58,4 @@ export function getItemTypeNameFromId(typeId) {
       return null;
   }
 }
+
