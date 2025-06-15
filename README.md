@@ -14,3 +14,4 @@ If you are developing a production application, we recommend using TypeScript wi
 ## Directory structure
 
 Only the root `index.html` is used for hosting. The former `edgevideo-ai/` folder has been removed.
+Legacy non-React scripts now reside in the top-level `legacy/` directory.

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { startScreen } from "../legacy/screen";
+import { startScreen } from "../../legacy/screen";
 
 export default function ScreenInitializer() {
   useEffect(() => {
