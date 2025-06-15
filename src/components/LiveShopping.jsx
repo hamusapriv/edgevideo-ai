@@ -173,11 +173,24 @@ export default function LiveShopping({ channelId, onLike }) {
       lastBestRef.current = bestCard;
 
       // 3) update details panel once
-      const id = bestCard.getAttribute("data-product-id"); // ← read it
-      const typeId = bestCard.getAttribute("data-type-id"); // or whatever your attribute is
+      const id = bestCard.getAttribute("data-product-id");
+
+      function inferItemTypeName(card) {
+        const url =
+          card.querySelector("[data-role='product-link']")?.href?.toLowerCase() ||
+          "";
+        if (card.classList.contains("ticket-style")) {
+          return url.includes("viator") ? "Viator Ticket" : "DB Ticket";
+        }
+        if (card.classList.contains("coupon-style")) {
+          return "Deal";
+        }
+        return "DB Product";
+      }
+
       setSelectedCardData({
         id,
-        itemTypeName: "product", // ← now included
+        itemTypeName: inferItemTypeName(bestCard),
 
         name:
           bestCard.querySelector('[data-role="product-name"]')?.innerText || "",
