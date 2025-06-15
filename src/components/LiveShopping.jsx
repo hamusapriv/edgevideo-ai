@@ -98,7 +98,9 @@ export default function LiveShopping({ channelId, onLike }) {
       watchProduct0();
 
       // Re-run scroll‐based focus logic after layout
-      requestAnimationFrame(onScroll);
+      if (!deviceCanHover) {
+        requestAnimationFrame(onScroll);
+      }
     }
 
     function watchProduct0() {
