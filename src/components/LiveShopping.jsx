@@ -47,30 +47,25 @@ export default function LiveShopping({ channelId, onLike }) {
 
     //
     // ────────────────────────────────────────────────────────────────────────
-    // (A) Inject desktop/mobile specific <style>
+    // (A) Inject a <style> that hides all non-image fields
     // ────────────────────────────────────────────────────────────────────────
     injectedStyle = document.createElement("style");
-    if (deviceCanHover) {
-      // Desktop: hide only the frame image that comes from the stream
-      injectedStyle.innerHTML = `.item-container .frame-image { display: none !important; }`;
-    } else {
-      // Mobile: hide everything except the two images
-      injectedStyle.innerHTML = `
-        .item-container [data-role="product-name"],
-        .item-container [data-role="product-price"],
-        .item-container [data-role="ai-description"],
-        .item-container [data-role="frame-image"],
-        .item-container [data-role="matchText"],
-        .item-container [data-role="vendor-logo"],
-        .item-container .info-button,
-        .item-container [data-role="like"],
-        .item-container [data-role="dislike"],
-        .item-container [data-role="share-link"],
-        .item-container [data-role="product-link"] {
-          display: none !important;
-        }
-      `;
-    }
+    injectedStyle.innerHTML = `
+      /* Hide everything except the two images */
+      .item-container [data-role="product-name"],
+      .item-container [data-role="product-price"],
+      .item-container [data-role="ai-description"],
+      .item-container [data-role="frame-image"],
+      .item-container [data-role="matchText"],
+      .item-container [data-role="vendor-logo"],
+      .item-container .info-button,
+      .item-container [data-role="like"],
+      .item-container [data-role="dislike"],
+      .item-container [data-role="share-link"],
+      .item-container [data-role="product-link"] {
+        display: none !important;
+      }
+    `;
     document.head.appendChild(injectedStyle);
 
     // ────────────────────────────────────────────────────────────────────────
@@ -129,7 +124,6 @@ export default function LiveShopping({ channelId, onLike }) {
 
     // ───────── E) Throttled onScroll ─────────
     function onScroll() {
-      if (deviceCanHover) return;
       if (pendingRAF.current) return;
       pendingRAF.current = true;
 
@@ -141,7 +135,6 @@ export default function LiveShopping({ channelId, onLike }) {
 
     // ───────── updateFocusDuringScroll: only run when focus really changes ─────────
     function updateFocusDuringScroll() {
-      if (deviceCanHover) return;
       const containerRect = scrollBox.getBoundingClientRect();
       const containerWidth = containerRect.width;
       const scrollLeft = scrollBox.scrollLeft;
@@ -218,10 +211,8 @@ export default function LiveShopping({ channelId, onLike }) {
       });
     }
 
-    // Attach scroll listener only for mobile
-    if (!deviceCanHover) {
-      scrollBox.addEventListener("scroll", onScroll, { passive: true });
-    }
+    // Attach scroll listener as passive
+    scrollBox.addEventListener("scroll", onScroll, { passive: true });
 
     //
     // ────────────────────────────────────────────────────────────────────────
@@ -244,7 +235,6 @@ export default function LiveShopping({ channelId, onLike }) {
       data-role="frame-image"
       src=""
       alt=""
-      style="display: none;"
     />
 
     <!-- Hidden link element; screenNoAnim.js will populate its href -->
@@ -253,40 +243,40 @@ export default function LiveShopping({ channelId, onLike }) {
     <!-- Hidden fields (name, price, description) -->
     <div
       data-role="matchText"
-      style="${deviceCanHover ? '' : 'display: none;'} padding: 8px; font-size: 1rem; font-weight: bold;"
+      style="display: none; padding: 8px; font-size: 1rem; font-weight: bold;"
     ></div>
 
     <img
       data-role="vendor-logo"
       src=""
       alt="Vendor Logo"
-      style="${deviceCanHover ? '' : 'display: none;'}"
+      style="display: none;"
     />
 
     <div
       data-role="product-name"
-      style="${deviceCanHover ? '' : 'display: none;'} padding: 8px; font-size: 1rem; font-weight: bold;"
+      style="display: none; padding: 8px; font-size: 1rem; font-weight: bold;"
     ></div>
     <div
       data-role="product-price"
-      style="${deviceCanHover ? '' : 'display: none;'} padding: 4px 8px; font-size: 0.9rem; color: #aaf;"
+      style="display: none; padding: 4px 8px; font-size: 0.9rem; color: #aaf;"
     ></div>
     <div
       data-role="ai-description"
       class="ai-query"
-      style="${deviceCanHover ? '' : 'display: none;'} padding: 8px; font-size: 0.85rem; color: #ddd;"
+      style="display: none; padding: 8px; font-size: 0.85rem; color: #ddd;"
     ></div>
 
     <!-- Info button (hidden) -->
     <div
       class="info-button"
-      style="${deviceCanHover ? '' : 'display: none;'} position: absolute; top: 8px; right: 8px; color: #fff; font-size: 1.2rem;"
+      style="display: none; position: absolute; top: 8px; right: 8px; color: #fff; font-size: 1.2rem;"
     >
       &#9432;
     </div>
 
     <!-- Like/Dislike/Share row (hidden) -->
-    <div style="${deviceCanHover ? '' : 'display: none;'} flex: 1; justify-content: space-around; padding: 8px 0;">
+    <div style="display: none; flex: 1; justify-content: space-around; padding: 8px 0;">
       <button data-role="like" style="background: #444; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
         Like
       </button>
@@ -324,10 +314,8 @@ export default function LiveShopping({ channelId, onLike }) {
       }
       watchProduct0();
 
-      // Run one focus update so the first card is focused immediately on mobile
-      if (!deviceCanHover) {
-        requestAnimationFrame(onScroll);
-      }
+      // Run one focus update so the first card is focused immediately
+      requestAnimationFrame(onScroll);
     }
     initializeBelt();
 
@@ -337,9 +325,7 @@ export default function LiveShopping({ channelId, onLike }) {
     // ────────────────────────────────────────────────────────────────────────
     return () => {
       liveObsRef.current?.disconnect();
-      if (!deviceCanHover) {
-        scrollBox.removeEventListener("scroll", onScroll, { passive: true });
-      }
+      scrollBox.removeEventListener("scroll", onScroll, { passive: true });
       if (injectedScript) document.head.removeChild(injectedScript);
       if (injectedStyle) document.head.removeChild(injectedStyle);
     };
@@ -377,58 +363,40 @@ export default function LiveShopping({ channelId, onLike }) {
     <div className="liveshopping-container" style={{ width: "100%" }}>
       <ChannelLogo channelId={channelId} className="channel-logo" />{" "}
       {/* ─────────────────────────────────────────────────────────────────
-           (1) PRODUCT LIST
+           (1) SCROLLABLE BELT: only images are visible here
       ───────────────────────────────────────────────────────────────── */}
       <div
         id="absolute-container"
         ref={scrollBoxRef}
-        style={deviceCanHover
-          ? {
-              WebkitOverflowScrolling: "touch",
-              overflowX: "hidden",
-              overflowY: "auto",
-              padding: "10px",
-              borderRadius: "8px",
-              height: "100%",
-            }
-          : {
-              WebkitOverflowScrolling: "touch",
-              position: "relative",
-              overflowX: "auto",
-              overflowY: "hidden",
-              padding: "10px",
-              borderRadius: "8px",
-              minHeight: "250px",
-            }}
+        style={{
+          WebkitOverflowScrolling: "touch",
+          position: "relative",
+          overflowX: "auto",
+          overflowY: "hidden",
+          padding: "10px",
+          borderRadius: "8px",
+          minHeight: "250px",
+        }}
       >
         <div
           id="itemContent"
           ref={beltRef}
-          style={deviceCanHover
-            ? {
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-                gap: "12px",
-                padding: "12px 6px",
-                alignItems: "flex-start",
-              }
-            : {
-                display: "flex",
-                flexDirection: "row",
-                padding: "12px 6px",
-                alignItems: "flex-start",
-                whiteSpace: "nowrap",
-                position: "absolute",
-              }}
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            padding: "12px 6px",
+            alignItems: "flex-start",
+            whiteSpace: "nowrap",
+            position: "absolute",
+          }}
         >
           {/* screenNoAnim.js will insert <div class="item-container product0">…</div> cards here */}
         </div>
       </div>
       {/* ─────────────────────────────────────────────────────────────────
-           (2) DETAILS PANEL: mobile only
+           (2) DETAILS PANEL: visible when a card is in focus
       ───────────────────────────────────────────────────────────────── */}
-      {!deviceCanHover && (
-        <div className="live-details">
+      <div className="live-details">
         {selectedCardData.name ? (
           <>
             {/* (e) NAME */}
@@ -621,8 +589,7 @@ export default function LiveShopping({ channelId, onLike }) {
         ) : (
           <p style={{ color: "#aaa" }}>Loading products…</p>
         )}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
