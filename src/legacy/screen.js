@@ -36,16 +36,7 @@ const REMOVE_VOTE_URL = `${VOTE_TRACKING_BASE_URL}/vote`;
 
 let votedProducts = []; // Stores products fetched from /votes/products
 
-// Expose a simple console wrapper for other legacy modules
-const edgeConsole = {
-  log: (...args) => window.console.log(...args),
-  info: (...args) => window.console.info(...args),
-  warn: (...args) => window.console.warn(...args),
-  error: (...args) => window.console.error(...args),
-  // add warn, debug, etc.
-};
-// Make it globally accessible so modules like faces.js and products.js can use it
-window.edgeConsole = edgeConsole;
+
 
 /**
  * Fetches the list of ALL voted items (Products, Viator Tickets, etc.)
