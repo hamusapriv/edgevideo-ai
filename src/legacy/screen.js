@@ -771,6 +771,9 @@ function UpdateProductViaDataRole(i, time = null) {
   }
 }
 
+// Expose for other modules that rely on a global function
+window.UpdateProductViaDataRole = UpdateProductViaDataRole;
+
 /**
  * Updates the visual style of ALL like/dislike buttons on the page
  * matching a specific product ID.
@@ -1383,4 +1386,6 @@ function initializeApp() {
 export function startScreen() {
   initializeApp();
 }
+
+export { UpdateProductViaDataRole };
 

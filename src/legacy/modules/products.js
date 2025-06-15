@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { UpdateProductViaDataRole } from "../screen";
 export let products = [];
 export let productDataQueue = [];
 export let productsPaused = false;
