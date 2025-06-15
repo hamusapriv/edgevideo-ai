@@ -36,6 +36,16 @@ const REMOVE_VOTE_URL = `${VOTE_TRACKING_BASE_URL}/vote`;
 
 let votedProducts = []; // Stores products fetched from /votes/products
 
+// Basic wrapper around the standard console so legacy code can log
+// without relying on a global provided elsewhere. This mirrors the
+// definition used in the standalone public script.
+let edgeConsole = {
+  log: (...args) => window.console.log(...args),
+  info: (...args) => window.console.info(...args),
+  error: (...args) => window.console.error(...args),
+  // add warn, debug, etc. as needed
+};
+
 
 
 /**
