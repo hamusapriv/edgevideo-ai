@@ -17,7 +17,7 @@ export default function DislikeButton({ itemId, itemTypeName, onSuccess }) {
   };
 
   return (
-    <button data-role="dislike" onClick={handleClick}>
+    <button className="product-cta" data-role="dislike" onClick={handleClick}>
       <SvgDislike />
     </button>
   );

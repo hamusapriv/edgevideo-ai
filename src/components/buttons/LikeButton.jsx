@@ -17,7 +17,7 @@ export default function LikeButton({ itemId, itemTypeName, onSuccess }) {
   };
 
   return (
-    <button data-role="like" onClick={handleClick}>
+    <button className="product-cta" data-role="like" onClick={handleClick}>
       <SvgLike />
     </button>
   );

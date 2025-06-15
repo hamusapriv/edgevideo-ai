@@ -13,7 +13,6 @@ export default function LiveShopping({ channelId, onLike }) {
   const beltRef = useRef(null);
   const liveObsRef = useRef(null);
 
-
   // ───────── New: throttle flag for requestAnimationFrame ─────────
   const pendingRAF = useRef(false);
 
@@ -177,8 +176,9 @@ export default function LiveShopping({ channelId, onLike }) {
 
       function inferItemTypeName(card) {
         const url =
-          card.querySelector("[data-role='product-link']")?.href?.toLowerCase() ||
-          "";
+          card
+            .querySelector("[data-role='product-link']")
+            ?.href?.toLowerCase() || "";
         if (card.classList.contains("ticket-style")) {
           return url.includes("viator") ? "Viator Ticket" : "DB Ticket";
         }
@@ -331,7 +331,6 @@ export default function LiveShopping({ channelId, onLike }) {
     };
   }, [channelId]);
 
-
   // when mountFrame flips on, start the entry animation next tick
   useEffect(() => {
     if (mountFrame) {
@@ -430,7 +429,6 @@ export default function LiveShopping({ channelId, onLike }) {
                       fontSize: "1rem",
                       fontWeight: "600",
                       color: "#fff",
-                      lineHeight: "110%",
                     }}
                   >
                     AI {selectedCardData.matchText}
@@ -477,7 +475,6 @@ export default function LiveShopping({ channelId, onLike }) {
                   maxHeight: animateFrame ? "200px" : "0px",
                   objectFit: "cover",
                   borderRadius: "8px",
-                  marginTop: "8px",
                   opacity: animateFrame ? 1 : 0,
                   transform: animateFrame
                     ? "translateY(0)"
@@ -492,7 +489,7 @@ export default function LiveShopping({ channelId, onLike }) {
             {selectedCardData.price && (
               <p
                 style={{
-                  margin: "8px 0",
+                  margin: "8px 0 12px",
                   fontSize: "1rem",
                   color: "#fff",
                   display: "flex",
@@ -523,6 +520,12 @@ export default function LiveShopping({ channelId, onLike }) {
                 justifyContent: "space-between",
                 alignItems: "stretch",
                 marginTop: "auto",
+                position: "sticky",
+                bottom: "0px",
+                left: "0",
+                right: "0",
+                backdropFilter: " blur(10px)",
+                padding: "6px",
               }}
             >
               {/* Shop Now */}

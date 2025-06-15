@@ -19,7 +19,11 @@ export default function ShareButton({ title, url }) {
   };
 
   return (
-    <button data-role="share-link" onClick={handleClick}>
+    <button
+      className="product-cta"
+      data-role="share-link"
+      onClick={handleClick}
+    >
       <SvgShare />
     </button>
   );
