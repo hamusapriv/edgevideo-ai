@@ -39,6 +39,8 @@ export default function LiveShopping({ channelId, onLike }) {
 
   // ───────── Detect hover (desktop vs mobile) ─────────
   const deviceCanHover = window.matchMedia("(any-hover:hover)").matches;
+  const isDesktop =
+    deviceCanHover && window.matchMedia("(min-width: 768px)").matches;
 
   useEffect(() => {
     let injectedScript = null;
@@ -50,18 +52,18 @@ export default function LiveShopping({ channelId, onLike }) {
     // ────────────────────────────────────────────────────────────────────────
     injectedStyle = document.createElement("style");
     injectedStyle.innerHTML = `
-      /* Hide everything except the two images */
-      .item-container [data-role="product-name"],
-      .item-container [data-role="product-price"],
-      .item-container [data-role="ai-description"],
-      .item-container [data-role="frame-image"],
-      .item-container [data-role="matchText"],
-      .item-container [data-role="vendor-logo"],
-      .item-container .info-button,
-      .item-container [data-role="like"],
-      .item-container [data-role="dislike"],
-      .item-container [data-role="share-link"],
-      .item-container [data-role="product-link"] {
+      /* Hide details when card is not opened */
+      .item-container:not(.opened) [data-role="product-name"],
+      .item-container:not(.opened) [data-role="product-price"],
+      .item-container:not(.opened) [data-role="ai-description"],
+      .item-container:not(.opened) [data-role="frame-image"],
+      .item-container:not(.opened) [data-role="matchText"],
+      .item-container:not(.opened) [data-role="vendor-logo"],
+      .item-container:not(.opened) .info-button,
+      .item-container:not(.opened) [data-role="like"],
+      .item-container:not(.opened) [data-role="dislike"],
+      .item-container:not(.opened) [data-role="share-link"],
+      .item-container:not(.opened) [data-role="product-link"] {
         display: none !important;
       }
     `;
@@ -221,7 +223,7 @@ export default function LiveShopping({ channelId, onLike }) {
     function makeCard(isP0 = false) {
       const wrapper = document.createElement("div");
       wrapper.innerHTML = `
-  <div class="item-container ${isP0 ? "product0" : ""}">
+  <div class="item-container ${isP0 ? "product0" : ""} ${isDesktop ? "desktop-layout" : ""}">
     <!-- Visible product image -->
     <img
       data-role="product-image"
@@ -380,14 +382,26 @@ export default function LiveShopping({ channelId, onLike }) {
         <div
           id="itemContent"
           ref={beltRef}
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            padding: "12px 6px",
-            alignItems: "flex-start",
-            whiteSpace: "nowrap",
-            position: "absolute",
-          }}
+          style={
+            isDesktop
+              ? {
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fill, minmax(200px, 1fr))",
+                  gridAutoRows: "200px",
+                  gap: "12px",
+                  padding: "12px 6px",
+                  position: "absolute",
+                }
+              : {
+                  display: "flex",
+                  flexDirection: "row",
+                  padding: "12px 6px",
+                  alignItems: "flex-start",
+                  whiteSpace: "nowrap",
+                  position: "absolute",
+                }
+          }
         >
           {/* screenNoAnim.js will insert <div class="item-container product0">…</div> cards here */}
         </div>
