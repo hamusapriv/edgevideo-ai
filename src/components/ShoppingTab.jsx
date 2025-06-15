@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import HomeTab from "./HomeTab";
 import LiveShopping from "./LiveShopping";
-import FavouritesTab from "./FavouritesTab";
+import FavouritesTab from "./FavoritesTab";
 
 export default function ShoppingTab({ channelId, openProfileSidebar }) {
   const nestedConfig = [

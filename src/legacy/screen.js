@@ -12,8 +12,9 @@ import {
   FormatTicketDateTime,
   FormatPrice,
 } from "./modules/products";
+import { BACKEND_BASE_URL, VOTE_TRACKING_BASE_URL } from "../src/config/api";
 // Inject channelId into window for any non-React scripts
-(function () {
+(function() {
   const DEFAULT_CHANNEL_ID =
     window.DEFAULT_CHANNEL_ID || "3d8c4c38-2d6e-483c-bdc5-e1eeeadd155e";
   const params = new URLSearchParams(window.location.search);
@@ -45,8 +46,6 @@ let edgeConsole = {
   error: (...args) => window.console.error(...args),
   // add warn, debug, etc. as needed
 };
-
-
 
 /**
  * Fetches the list of ALL voted items (Products, Viator Tickets, etc.)
@@ -223,7 +222,6 @@ async function getCachedProducts() {
   }
 }
 
-
 function initializeWebSocket() {
   //channelId = "ba398d25-ef88-4762-bcd6-d75a2930fbeb";
   if (typeof channelId !== "undefined" && channelId !== null) {
@@ -360,7 +358,6 @@ function RemoveClassFromAll(element, className) {
     child.classList.remove(className);
   });
 }
-
 
 /**
  * Sends click tracking data to the backend endpoint.
@@ -507,7 +504,7 @@ function UpdateProductViaDataRole(i, time = null) {
   // Preload the main product image
   let productImage = new Image();
 
-  productImage.onload = function () {
+  productImage.onload = function() {
     if (
       productImage.currentSrc &&
       productImage.currentSrc.includes("noimage")
@@ -690,7 +687,7 @@ function UpdateProductViaDataRole(i, time = null) {
           domain = domainParts.join(".");
         }
         vendorImage.src = `https://s2.googleusercontent.com/s2/favicons?domain=${domain}&sz=64`;
-        vendorImage.onerror = function () {
+        vendorImage.onerror = function() {
           this.onerror = null;
           this.src = `https://${product.domain_url}/favicon.ico`;
         };
@@ -753,7 +750,7 @@ function UpdateProductViaDataRole(i, time = null) {
     }
   }; // End of productImage.onload
 
-  productImage.onerror = function () {
+  productImage.onerror = function() {
     edgeConsole.error(
       `Failed to load product image for index ${i}: ${product.image}`
     );
@@ -991,7 +988,6 @@ async function DownvoteProduct(productId, itemTypeNameParam = null) {
     );
   }
 }
-
 
 // initializeWebSocket();
 // getCachedProducts();
@@ -1388,4 +1384,3 @@ export function startScreen() {
 }
 
 export { UpdateProductViaDataRole };
-

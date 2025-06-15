@@ -5,7 +5,7 @@ import React, {
   useState,
   useCallback,
 } from "react";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 import { getItemTypeNameFromId } from "../services/voteService";
 
 const VOTES_PRODUCTS = "https://fastapi.edgevideo.ai/tracking/votes/products";
