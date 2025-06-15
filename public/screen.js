@@ -4,7 +4,7 @@
   let channelId =
     params.get("channelId") ||
     localStorage.getItem("channelId") ||
-    "ba08370c-0362-462d-b299-97cc36973340";
+    "3d8c4c38-2d6e-483c-bdc5-e1eeeadd155e";
   try {
     localStorage.setItem("channelId", channelId);
   } catch {}
