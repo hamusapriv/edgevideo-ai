@@ -12,7 +12,6 @@ import {
   FormatTicketDateTime,
   FormatPrice,
 } from "./modules/products";
-import { BACKEND_BASE_URL, VOTE_TRACKING_BASE_URL } from "../config/api";
 // Inject channelId into window for any non-React scripts
 (function () {
   const DEFAULT_CHANNEL_ID =
@@ -28,6 +27,7 @@ import { BACKEND_BASE_URL, VOTE_TRACKING_BASE_URL } from "../config/api";
 const wsUrl = "wss://slave-ws-service-342233178764.us-west1.run.app"; // WebSocket server URL
 
 // Add these near other configuration variables
+const VOTE_TRACKING_BASE_URL = "https://fastapi.edgevideo.ai/tracking";
 const UPVOTE_URL = `${VOTE_TRACKING_BASE_URL}/vote/up`;
 const DOWNVOTE_URL = `${VOTE_TRACKING_BASE_URL}/vote/down`;
 const VOTED_PRODUCTS_URL = `${VOTE_TRACKING_BASE_URL}/votes/products`;
@@ -212,7 +212,7 @@ function SetShoppingAIStatus(messageText) {
 async function getCachedProducts() {
   if (typeof channelId !== "undefined" && channelId !== null) {
     let cachedProductResponse = await fetch(
-      `${BACKEND_BASE_URL}/product_search/recent_products/${channelId}/4`
+      `https://fastapi.edgevideo.ai/product_search/recent_products/${channelId}/4`
     );
     let cachedProductData = await cachedProductResponse.json();
     for (let cachedProduct of cachedProductData)
@@ -439,7 +439,7 @@ async function trackClick(productData) {
 
     try {
       const response = await fetch(
-        `${VOTE_TRACKING_BASE_URL}/click`,
+        "https://fastapi.edgevideo.ai/tracking/click",
         {
           method: "POST",
           headers: {
@@ -1141,7 +1141,8 @@ function populateFavoritesTab() {
 // This bit handles logging in
 function setupLoginHandling() {
   // --- Configuration ---
-  const authRouteBase = `${BACKEND_BASE_URL}/auth_google`;
+  const backendBaseUrl = "https://fastapi.edgevideo.ai";
+  const authRouteBase = `${backendBaseUrl}/auth_google`;
   const userInfoUrl = `${authRouteBase}/details`; // URL to get user details
   const frontendUrl = window.location.origin + window.location.pathname; // URL for redirect
 
