@@ -1,19 +1,18 @@
 // src/components/LiveShopping.jsx
 import React, { useEffect, useRef, useState } from "react";
 import ChannelLogo from "./ChannelLogo";
-import { useAuth } from "./../auth/AuthContext";
-import { useSidebar } from "./../ui/SidebarContext";
+
 import SvgFrame from "./svgs/SvgFrame";
+import LikeButton from "./buttons/LikeButton";
+import DislikeButton from "./buttons/DislikeButton";
+import ShareButton from "./buttons/ShareButton";
 
 export default function LiveShopping({ channelId, onLike }) {
-  const { user } = useAuth();
-  const { openSidebar } = useSidebar();
   // ───────── Refs ─────────
   const scrollBoxRef = useRef(null);
   const beltRef = useRef(null);
   const liveObsRef = useRef(null);
 
-  const actionsRef = useRef(null);
 
   // ───────── New: throttle flag for requestAnimationFrame ─────────
   const pendingRAF = useRef(false);
@@ -174,11 +173,24 @@ export default function LiveShopping({ channelId, onLike }) {
       lastBestRef.current = bestCard;
 
       // 3) update details panel once
-      const id = bestCard.getAttribute("data-product-id"); // ← read it
-      const typeId = bestCard.getAttribute("data-type-id"); // or whatever your attribute is
+      const id = bestCard.getAttribute("data-product-id");
+
+      function inferItemTypeName(card) {
+        const url =
+          card.querySelector("[data-role='product-link']")?.href?.toLowerCase() ||
+          "";
+        if (card.classList.contains("ticket-style")) {
+          return url.includes("viator") ? "Viator Ticket" : "DB Ticket";
+        }
+        if (card.classList.contains("coupon-style")) {
+          return "Deal";
+        }
+        return "DB Product";
+      }
+
       setSelectedCardData({
         id,
-        itemTypeName: "product", // ← now included
+        itemTypeName: inferItemTypeName(bestCard),
 
         name:
           bestCard.querySelector('[data-role="product-name"]')?.innerText || "",
@@ -319,41 +331,6 @@ export default function LiveShopping({ channelId, onLike }) {
     };
   }, [channelId]);
 
-  useEffect(() => {
-    const container = actionsRef.current;
-    if (!container) return;
-    container.innerHTML = ""; // clear any old buttons
-
-    const id = selectedCardData.id;
-    if (!id) return; // nothing selected yet
-
-    // find the matching belt card
-    const card = beltRef.current?.querySelector(
-      `.item-container[data-product-id="${id}"]`
-    );
-    if (!card) return;
-
-    // grab the real buttons
-    const realBtns = card.querySelectorAll(
-      "[data-role='share-link'],[data-role='like'],[data-role='dislike']"
-    );
-
-    realBtns.forEach((btn) => {
-      const clone = btn.cloneNode(true); // copy all attributes & handlers
-      clone.style.display = ""; // make visible
-
-      // wrap the click: require login, otherwise call the original
-      const original = btn.onclick;
-      clone.onclick = (e) => {
-        e.stopPropagation();
-        if (!user) return openSidebar();
-        original?.call(btn, e);
-        onLike?.(); // ← tell the parent a like just happened
-      };
-
-      container.appendChild(clone);
-    });
-  }, [selectedCardData.id, user, openSidebar]);
 
   // when mountFrame flips on, start the entry animation next tick
   useEffect(() => {
@@ -585,15 +562,28 @@ export default function LiveShopping({ channelId, onLike }) {
                   )}
                 </a>
               )}
-              {/*  … inside your JSX: */}{" "}
               <div
-                ref={actionsRef}
                 style={{
                   display: "flex",
                   gap: 8,
                   justifyContent: "space-around",
                 }}
-              />
+              >
+                <LikeButton
+                  itemId={selectedCardData.id}
+                  itemTypeName={selectedCardData.itemTypeName}
+                  onSuccess={onLike}
+                />
+                <DislikeButton
+                  itemId={selectedCardData.id}
+                  itemTypeName={selectedCardData.itemTypeName}
+                  onSuccess={onLike}
+                />
+                <ShareButton
+                  title={selectedCardData.name}
+                  url={selectedCardData.productUrl}
+                />
+              </div>
             </div>
           </>
         ) : (
