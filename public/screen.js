@@ -782,15 +782,12 @@ function UpdateProductViaDataRole(i, time = null) {
   let links = itemContainer.querySelectorAll('[data-role="product-link"]');
   let names = itemContainer.querySelectorAll('[data-role="product-name"]');
   let moreButtons = itemContainer.querySelectorAll('[data-role="more-link"]');
-  let shareButtons = itemContainer.querySelectorAll('[data-role="share-link"]');
   let explanations = itemContainer.querySelectorAll(
     '[data-role="ai-description"]'
   );
   let vendorImages = itemContainer.querySelectorAll(
     '[data-role="vendor-logo"]'
   );
-  let likeButtons = itemContainer.querySelectorAll('[data-role="like"]');
-  let dislikeButtons = itemContainer.querySelectorAll('[data-role="dislike"]');
   let prices = itemContainer.querySelectorAll('[data-role="product-price"]');
   let matchTexts = itemContainer.querySelectorAll('[data-role="matchText"]');
 
@@ -1010,51 +1007,7 @@ function UpdateProductViaDataRole(i, time = null) {
       )}`;
     });
 
-    // Hook up the like buttons
-    likeButtons.forEach((likeButton) => {
-      likeButton.setAttribute("data-product-id", product.id); // Add product ID attribute
-      likeButton.onclick = null;
-      likeButton.onclick = function (event) {
-        UpvoteProduct(this.getAttribute("data-product-id")); // Get ID from attribute
-        event.stopPropagation();
-      };
-      // Remove any 'voted' class initially
-      // likeButton.classList.remove('voted');
-    });
-
-    // Hook up the dislike buttons
-    dislikeButtons.forEach((dislikeButton) => {
-      dislikeButton.setAttribute("data-product-id", product.id); // Add product ID attribute
-      dislikeButton.onclick = null;
-      dislikeButton.onclick = function (event) {
-        DownvoteProduct(this.getAttribute("data-product-id")); // Get ID from attribute
-        event.stopPropagation();
-      };
-      // Remove any 'voted' class initially
-      // dislikeButton.classList.remove('voted');
-    });
-
-    // Update share buttons (existing logic)
-    shareButtons.forEach((shareButton) => {
-      if (navigator.share) {
-        shareButton.style.display = ""; // Ensure it's visible
-        // Remove previous handler before adding new one
-        shareButton.onclick = null; // Simple way for inline handlers
-        shareButton.onclick = function (event) {
-          navigator
-            .share({
-              title: product.title,
-              text: `Check out this product: ${product.title}`,
-              url: product.link,
-            })
-            .then(() => edgeConsole.log("Successful share"))
-            .catch((error) => edgeConsole.log("Error sharing:", error));
-          event.stopPropagation();
-        };
-      } else {
-        shareButton.style.display = "none";
-      }
-    });
+    // Like/Dislike/Share buttons are handled by React components now
     itemContainer.setAttribute("data-product-id", product.id);
 
     // Update price display (existing logic)
@@ -1332,110 +1285,6 @@ async function DownvoteProduct(productId, itemTypeNameParam = null) {
   }
 }
 
-/**
- * Sends an upvote request to the backend for a given product ID.
- * @param {string} productId - The ID of the item to upvote.
- */
-async function UpvoteProduct(productId) {
-  edgeConsole.log(`Attempting to upvote product ${productId}`);
-
-  // 1. Get Auth Token
-  const token = localStorage.getItem("authToken");
-  if (!token) {
-    edgeConsole.error(
-      "Upvote failed: User not logged in (no auth token found)."
-    );
-    // Optionally: Prompt user to login
-    console.error("Please log in to vote."); // Simple feedback
-    document.getElementById("profileBtn").click(); // Switch to Profile tab
-    return;
-  }
-
-  // 2. Find Product Data to get Type Name
-  const product = products.find((p) => p.id === productId);
-  if (!product) {
-    edgeConsole.error(
-      `Upvote failed: Product data not found for ID ${productId}`
-    );
-    return;
-  }
-
-  // 3. Determine Item Type Name
-  const itemTypeName = getItemTypeName(product);
-  if (!itemTypeName) {
-    edgeConsole.error(
-      `Upvote failed: Could not determine item type name for product ${productId}`
-    );
-    // Optionally provide user feedback about data inconsistency
-    return;
-  }
-
-  // *** Trigger UI update for vote buttons ***
-  updateVoteButtonStyles(productId, "upvote");
-
-  // 4. Prepare API Request Payload
-  const payload = {
-    itemId: productId,
-    itemTypeName: itemTypeName,
-  };
-
-  // 5. Send Fetch Request
-  try {
-    const response = await fetch(UPVOTE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    // 6. Handle Response
-    if (response.ok) {
-      edgeConsole.log(
-        `Successfully upvoted product ${productId} (Type: ${itemTypeName})`
-      );
-
-      const existingVoteIndex = votedProducts.findIndex(
-        (vp) => String(vp.item_id) === String(productId)
-      );
-      const now = new Date().toISOString();
-
-      if (existingVoteIndex !== -1) {
-        // Already in the list, update its type and time
-        votedProducts[existingVoteIndex].vote_type = 1;
-        votedProducts[existingVoteIndex].voted_at = now;
-        edgeConsole.log(
-          `Updated local vote status for ${productId} to upvote.`
-        );
-      } else {
-        // Not in the list, add it (ensure necessary fields are present)
-        votedProducts.push({
-          item_id: String(productId), // Ensure consistent type (string)
-          vote_type: 1,
-          voted_at: now,
-          item_type_id:
-            product.type === "ticket" ? 2 : product.type === "deal" ? 3 : 1, // Map type to ID (adjust if needed)
-          name: product.title || product.name, // Use appropriate name field
-          affiliate_link: product.link,
-          image_link: product.image,
-        });
-        edgeConsole.log(`Added ${productId} to local voted list as upvoted.`);
-      }
-    } else {
-      const errorData = await response.json(); // Try to get error message from backend
-      edgeConsole.error(
-        `Upvote API call failed for ${productId}: ${response.status}`,
-        errorData
-      );
-    }
-  } catch (error) {
-    edgeConsole.error(
-      `Network or other error sending upvote for ${productId}:`,
-      error
-    );
-  }
-}
 
 // initializeWebSocket();
 // getCachedProducts();
