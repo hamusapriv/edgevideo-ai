@@ -2,16 +2,16 @@
 import React, { useState, useRef, useEffect } from "react";
 import HomeTab from "./HomeTab";
 import LiveShopping from "./LiveShopping";
-import FavoritesTab from "./FavoritesTab";
+import FavouritesTab from "./FavouritesTab";
 
 export default function ShoppingTab({ channelId, openProfileSidebar }) {
   const nestedConfig = [
     { key: "live", label: "Live", Component: LiveShopping },
     { key: "home", label: "Home", Component: HomeTab },
-    { key: "favorites", label: "Favorites", Component: FavoritesTab },
+    { key: "favourites", label: "Favourites", Component: FavouritesTab },
   ];
 
-  const [refreshFavoritesKey, setRefreshFavoritesKey] = useState(0);
+  const [refreshFavouritesKey, setRefreshFavouritesKey] = useState(0);
   const [active, setActive] = useState(nestedConfig[0].key);
 
   const prevRef = useRef(0);
@@ -82,16 +82,16 @@ export default function ShoppingTab({ channelId, openProfileSidebar }) {
         style={{ position: "relative", width: "100%", height: "100%" }}
       >
         {nestedConfig.map(({ key, Component }, i) => {
-          // pass props into FavoritesTab only
-          if (key === "favorites") {
+          // pass props into FavouritesTab only
+          if (key === "favourites") {
             return (
               <div
                 key={key}
                 ref={panelRefs.current[i]}
                 className="nested-content"
               >
-                <FavoritesTab
-                  refreshKey={refreshFavoritesKey}
+                <FavouritesTab
+                  refreshKey={refreshFavouritesKey}
                   onNavigateToLive={() => setActive("live")}
                   openProfileSidebar={openProfileSidebar}
                 />
@@ -109,7 +109,7 @@ export default function ShoppingTab({ channelId, openProfileSidebar }) {
               {key === "live" ? (
                 <LiveShopping
                   channelId={channelId}
-                  onLike={() => setRefreshFavoritesKey((k) => k + 1)}
+                  onLike={() => setRefreshFavouritesKey((k) => k + 1)}
                 />
               ) : (
                 <HomeTab />

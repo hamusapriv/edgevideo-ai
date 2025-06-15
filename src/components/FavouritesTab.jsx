@@ -1,9 +1,9 @@
-// src/components/FavoritesTab.jsx
+// src/components/FavouritesTab.jsx
 import React, { useEffect, useRef } from "react";
 import { useFavorites } from "../favorites/FavoritesContext";
 import { useAuth } from "../auth/AuthContext";
 
-export default function FavoritesTab({
+export default function FavouritesTab({
   refreshKey,
   onNavigateToLive,
   openProfileSidebar,
