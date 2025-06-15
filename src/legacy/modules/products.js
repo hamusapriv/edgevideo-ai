@@ -13,7 +13,7 @@ export function UnpauseProducts() {
 }
 
 export function addToProductDataQueue(data) {
-  edgeConsole.log(data);
+
   const exists = productDataQueue.some((product) => product.id === data.id);
   if (!exists) {
     productDataQueue.push(data);

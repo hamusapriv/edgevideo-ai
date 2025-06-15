@@ -27,7 +27,7 @@ export function UpdateFaces() {
     startTime -= 1;
     const faceId = faceDiv.getAttribute("data-id");
     if (faceId == faceData.id) {
-      edgeConsole.log("Duplicate face ID");
+
       return;
     }
   }
@@ -111,6 +111,6 @@ export function UpdateFaces() {
       targetFaceDiv.parentElement.firstChild
     );
   } catch (error) {
-    edgeConsole.error("Error updating face data:", error);
+
   }
 }

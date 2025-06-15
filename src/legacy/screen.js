@@ -36,12 +36,7 @@ const REMOVE_VOTE_URL = `${VOTE_TRACKING_BASE_URL}/vote`;
 
 let votedProducts = []; // Stores products fetched from /votes/products
 
-let edgeConsole = {
-  log: (...args) => window.console.log(...args),
-  info: (...args) => window.console.info(...args),
-  error: (...args) => window.console.error(...args),
-  // add warn, debug, etc.
-};
+
 
 /**
  * Fetches the list of ALL voted items (Products, Viator Tickets, etc.)
