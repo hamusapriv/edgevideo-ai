@@ -1,7 +1,7 @@
 // src/services/voteService.js
-const BASE = "https://fastapi.edgevideo.ai/tracking";
-const UPVOTE_URL = `${BASE}/vote/up`;
-const DOWNVOTE_URL = `${BASE}/vote/down`;
+import { VOTE_TRACKING_BASE_URL } from "../config/api";
+const UPVOTE_URL = `${VOTE_TRACKING_BASE_URL}/vote/up`;
+const DOWNVOTE_URL = `${VOTE_TRACKING_BASE_URL}/vote/down`;
 
 function normalizeItemTypeName(name) {
   if (!name) return "DB Product";
