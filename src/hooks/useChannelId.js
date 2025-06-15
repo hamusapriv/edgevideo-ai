@@ -1,7 +1,7 @@
 // src/hooks/useChannelId.js
 import { useMemo } from "react";
 
-const DEFAULT_CHANNEL_ID = "ba08370c-0362-462d-b299-97cc36973340";
+const DEFAULT_CHANNEL_ID = "3d8c4c38-2d6e-483c-bdc5-e1eeeadd155e";
 
 export function useChannelId() {
   return useMemo(() => {
