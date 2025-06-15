@@ -1,8 +1,8 @@
 // src/components/buttons/DislikeButton.jsx
 import React from "react";
 import SvgDislike from "../svgs/SvgDislike";
-import { useAuth } from "../../auth/AuthContext";
-import { useSidebar } from "../../ui/SidebarContext";
+import { useAuth } from "../../contexts/AuthContext";
+import { useSidebar } from "../../contexts/SidebarContext";
 import { downvoteProduct } from "../../services/voteService";
 
 export default function DislikeButton({ itemId, itemTypeName, onSuccess }) {

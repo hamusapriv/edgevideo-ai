@@ -12,7 +12,7 @@ import {
   FormatTicketDateTime,
   FormatPrice,
 } from "./modules/products";
-import { BACKEND_BASE_URL, VOTE_TRACKING_BASE_URL } from "../config/api";
+import { BACKEND_BASE_URL, VOTE_TRACKING_BASE_URL } from "../src/config/api";
 // Inject channelId into window for any non-React scripts
 (function () {
   const DEFAULT_CHANNEL_ID =
