@@ -1,7 +1,7 @@
 // src/components/ProfileSidebar.jsx
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 import LogoutButton from "../auth/LogoutButton";
 import GoogleSignInButton from "../auth/GoogleSignInButton";
 import Socials from "./Socials";

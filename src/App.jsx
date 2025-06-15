@@ -3,7 +3,7 @@ import React from "react";
 import ScreenInitializer from "./screen/ScreenInitializer";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import ProfileSidebar from "./components/ProfileSidebar";
-import { useSidebar } from "./ui/SidebarContext";
+import { useSidebar } from "./contexts/SidebarContext";
 
 // Page components
 import AppPage from "./pages/AppPage";
