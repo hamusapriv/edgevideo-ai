@@ -14,9 +14,9 @@ import "./styles/favorites.css";
 import "./styles/FAQ.css";
 
 import App from "./App";
-import { AuthProvider } from "./auth/AuthContext";
-import { FavoritesProvider } from "./favorites/FavoritesContext";
-import { SidebarProvider } from "./ui/SidebarContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import { FavoritesProvider } from "./contexts/FavoritesContext";
+import { SidebarProvider } from "./contexts/SidebarContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <>
