@@ -11,6 +11,7 @@ import InTravelLivestorePage from "./pages/InTravelLivestorePage";
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
 import HomePage from "./pages/HomePage";
+import BuildInfo from "./components/BuildInfo";
 
 // OAuth callback
 import OAuthCallback from "./auth/OAuthCallback";
@@ -47,6 +48,7 @@ export default function App() {
         {/* 4) Fallback */}
         <Route path="*" element={<Navigate to="/app" replace />} />
       </Routes>
+      <BuildInfo />
     </>
   );
 }
