@@ -132,6 +132,53 @@ export default function LiveShopping({ channelId, onLike }) {
       });
     }
 
+    function applyFocus(card) {
+      if (!card || card === lastBestRef.current) return;
+
+      if (lastBestRef.current) {
+        lastBestRef.current.classList.remove("focused");
+      }
+
+      card.classList.add("focused");
+      lastBestRef.current = card;
+
+      const id = card.getAttribute("data-product-id");
+
+      function inferItemTypeName(target) {
+        const url =
+          target
+            .querySelector("[data-role='product-link']")
+            ?.href?.toLowerCase() || "";
+        if (target.classList.contains("ticket-style")) {
+          return url.includes("viator") ? "Viator Ticket" : "DB Ticket";
+        }
+        if (target.classList.contains("coupon-style")) {
+          return "Deal";
+        }
+        return "DB Product";
+      }
+
+      setSelectedCardData({
+        id,
+        itemTypeName: inferItemTypeName(card),
+
+        name:
+          card.querySelector('[data-role="product-name"]')?.innerText || "",
+        price:
+          card.querySelector('[data-role="product-price"]')?.innerText || "",
+        description:
+          card.querySelector('[data-role="ai-description"]')?.innerText || "",
+        frameImageUrl:
+          card.querySelector('[data-role="frame-image"]')?.src || "",
+        matchText:
+          card.querySelector('[data-role="matchText"]')?.innerText || "",
+        vendorLogoUrl:
+          card.querySelector('[data-role="vendor-logo"]')?.src || "",
+        productUrl:
+          card.querySelector('[data-role="product-link"]')?.href || "",
+      });
+    }
+
     // ───────── updateFocusDuringScroll: only run when focus really changes ─────────
     function updateFocusDuringScroll() {
       const containerRect = scrollBox.getBoundingClientRect();
@@ -159,60 +206,13 @@ export default function LiveShopping({ channelId, onLike }) {
         }
       });
 
-      // nothing to do if no card or it’s the same one
-      if (!bestCard || bestCard === lastBestRef.current) return;
-
-      // 1) remove old focus
-      if (lastBestRef.current) {
-        lastBestRef.current.classList.remove("focused");
-      }
-
-      // 2) add new focus
-      bestCard.classList.add("focused");
-      lastBestRef.current = bestCard;
-
-      // 3) update details panel once
-      const id = bestCard.getAttribute("data-product-id");
-
-      function inferItemTypeName(card) {
-        const url =
-          card
-            .querySelector("[data-role='product-link']")
-            ?.href?.toLowerCase() || "";
-        if (card.classList.contains("ticket-style")) {
-          return url.includes("viator") ? "Viator Ticket" : "DB Ticket";
-        }
-        if (card.classList.contains("coupon-style")) {
-          return "Deal";
-        }
-        return "DB Product";
-      }
-
-      setSelectedCardData({
-        id,
-        itemTypeName: inferItemTypeName(bestCard),
-
-        name:
-          bestCard.querySelector('[data-role="product-name"]')?.innerText || "",
-        price:
-          bestCard.querySelector('[data-role="product-price"]')?.innerText ||
-          "",
-        description:
-          bestCard.querySelector('[data-role="ai-description"]')?.innerText ||
-          "",
-        frameImageUrl:
-          bestCard.querySelector('[data-role="frame-image"]')?.src || "",
-        matchText:
-          bestCard.querySelector('[data-role="matchText"]')?.innerText || "",
-        vendorLogoUrl:
-          bestCard.querySelector('[data-role="vendor-logo"]')?.src || "",
-        productUrl:
-          bestCard.querySelector('[data-role="product-link"]')?.href || "",
-      });
+      applyFocus(bestCard);
     }
 
     // Attach scroll listener as passive
-    scrollBox.addEventListener("scroll", onScroll, { passive: true });
+    if (!deviceCanHover) {
+      scrollBox.addEventListener("scroll", onScroll, { passive: true });
+    }
 
     //
     // ────────────────────────────────────────────────────────────────────────
@@ -292,12 +292,7 @@ export default function LiveShopping({ channelId, onLike }) {
 
       const card = wrapper.firstElementChild;
       if (deviceCanHover) {
-        card.addEventListener("mouseenter", () => card.classList.add("opened"));
-        card.addEventListener("mouseleave", () => {
-          card.classList.remove("opened", "query-opened");
-          const ai = card.querySelector("[data-role='ai-description']");
-          if (ai) ai.classList.remove("query-opened");
-        });
+        card.addEventListener("mouseenter", () => applyFocus(card));
       }
       return card;
     }
@@ -314,8 +309,12 @@ export default function LiveShopping({ channelId, onLike }) {
       }
       watchProduct0();
 
-      // Run one focus update so the first card is focused immediately
-      requestAnimationFrame(onScroll);
+      if (deviceCanHover) {
+        const firstCard = belt.querySelector(".item-container");
+        if (firstCard) applyFocus(firstCard);
+      } else {
+        requestAnimationFrame(onScroll);
+      }
     }
     initializeBelt();
 
@@ -325,7 +324,9 @@ export default function LiveShopping({ channelId, onLike }) {
     // ────────────────────────────────────────────────────────────────────────
     return () => {
       liveObsRef.current?.disconnect();
-      scrollBox.removeEventListener("scroll", onScroll, { passive: true });
+      if (!deviceCanHover) {
+        scrollBox.removeEventListener("scroll", onScroll, { passive: true });
+      }
       if (injectedScript) document.head.removeChild(injectedScript);
       if (injectedStyle) document.head.removeChild(injectedStyle);
     };
