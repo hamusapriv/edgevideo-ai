@@ -40,7 +40,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
           }}
         />
 
-        <p
+        <div
           style={{
             display: "flex",
             flexDirection: "column",
@@ -50,7 +50,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
             color: "#ddd",
           }}
         >
-          <span
+          <div
             style={{
               display: "flex",
               alignItems: "center",
@@ -75,40 +75,40 @@ export default function ProductCard({ isP0, showDetails = false }) {
                   ...hidden,
                 }}
               />
-              {/* Inline toggle */}
-              <button
-                data-role="frame-toggle"
-                onClick={() => {
-                  setAnimateFrame((prev) => !prev);
-                }}
-                style={{
-                  display: "inline-flex",
-                  padding: 0,
-                  marginLeft: "4px",
-                  border: "none",
-                  background: "transparent",
-                  color: "#4fa",
-                  cursor: "pointer",
-                  fontSize: "0.9rem",
-                }}
-              >
-                <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
-                <span data-role="toggle-text">
-                  {animateFrame ? "Hide Frame" : "Show Frame"}
-                </span>
-              </button>
-              <div
-                data-role="ai-description"
-                className="ai-query"
-                style={{
-                  ...hidden,
-                  fontSize: "0.85rem",
-                  color: "#ddd",
-                }}
-              />
             </span>
-          </span>
-        </p>
+            {/* Inline toggle */}
+            <button
+              data-role="frame-toggle"
+              onClick={() => {
+                setAnimateFrame((prev) => !prev);
+              }}
+              style={{
+                display: "inline-flex",
+                padding: 0,
+                marginLeft: "4px",
+                border: "none",
+                background: "transparent",
+                color: "#4fa",
+                cursor: "pointer",
+                fontSize: "0.9rem",
+              }}
+            >
+              <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
+              <span data-role="toggle-text">
+                {animateFrame ? "Hide Frame" : "Show Frame"}
+              </span>
+            </button>
+          </div>
+          <div
+            data-role="ai-description"
+            className="ai-query"
+            style={{
+              ...hidden,
+              fontSize: "0.85rem",
+              color: "#ddd",
+            }}
+          />
+        </div>
         <div
           className="live-frame-image-container"
           data-role="frame-container"
