@@ -36,7 +36,7 @@ export default function App() {
         <Route path="/oauth2callback" element={<OAuthCallback />} />
 
         {/* 2) Default landing */}
-        <Route index element={<Navigate to="/app" replace />} />
+        <Route index element={<Navigate to="/home" replace />} />
 
         {/* 3) Top‐level pages */}
         <Route path="/app" element={<AppPage />} />
@@ -46,7 +46,7 @@ export default function App() {
         <Route path="/home" element={<HomePage />} />
 
         {/* 4) Fallback */}
-        <Route path="*" element={<Navigate to="/app" replace />} />
+        <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
       <BuildInfo />
     </>

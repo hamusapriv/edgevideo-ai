@@ -15,6 +15,7 @@ import "./styles/FAQ.css";
 import "./styles/liveShoppingDesktop.css";
 import "./styles/liveShoppingTablet.css";
 import "./styles/scrollBar.css";
+import "./styles/HomePage.css";
 
 import App from "./App";
 import { AuthProvider } from "./contexts/AuthContext";
