@@ -209,7 +209,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
             style={{
               ...hidden,
               display: "flex",
-              gap: 8,
+              gap: 16,
               justifyContent: "space-around",
             }}
           >

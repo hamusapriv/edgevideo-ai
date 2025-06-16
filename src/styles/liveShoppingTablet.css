@@ -1,6 +1,9 @@
 /* Live Shopping Desktop CSS */
 
 @media (any-hover: hover) and (max-width: 860px) {
+  #itemContent {
+    gap: 10px;
+  }
   .live-image-container {
     width: 200px;
     height: 200px;
@@ -8,9 +11,18 @@
 
   .item-container {
     gap: 10px;
+    transform: scale(0.95);
+  }
+
+  .item-container.focused {
+    transform: scale(1);
   }
   .card-details [data-role="product-name"] {
     -webkit-line-clamp: 2;
     min-height: 2.4rem;
+  }
+  .live-details {
+    padding: 12px;
+    width: 300px;
   }
 }
