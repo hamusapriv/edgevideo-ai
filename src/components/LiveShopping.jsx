@@ -1,6 +1,6 @@
 // src/components/LiveShopping.jsx
 import React, { useEffect, useRef, useState } from "react";
-import { renderToStaticMarkup } from "react-dom/server.browser";
+import { createRoot } from "react-dom/client";
 import ChannelLogo from "./ChannelLogo";
 
 import SvgFrame from "./svgs/SvgFrame";
@@ -225,7 +225,7 @@ export default function LiveShopping({ channelId, onLike }) {
     // ────────────────────────────────────────────────────────────────────────
       function makeCard(isP0 = false) {
         const wrapper = document.createElement("div");
-        wrapper.innerHTML = renderToStaticMarkup(
+        createRoot(wrapper).render(
           <ProductCard isP0={isP0} showDetails={deviceCanHover} />
         );
         const card = wrapper.firstElementChild;
