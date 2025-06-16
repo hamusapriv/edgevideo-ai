@@ -21,29 +21,31 @@ export default function ProductCard({ isP0, showDetails = false }) {
         showDetails ? "show-details" : ""
       }`}
     >
-      <img
-        data-role="product-image"
-        src={null}
-        alt="Product Image"
-        loading="lazy"
-      />
+      <a
+        data-role="product-link"
+        href=""
+        target="_blank"
+        rel="noopener noreferrer"
+        className="live-image-container"
+      >
+        <img
+          data-role="product-image"
+          src={null}
+          alt="Product Image"
+          loading="lazy"
+        />
+      </a>
       <div
         className="card-details live-details"
         style={showDetails ? {} : { display: "none" }}
       >
-        <a
-          data-role="product-link"
-          href=""
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <div
-            data-role="product-name"
-            style={{
-              ...hidden,
-            }}
-          />
-        </a>
+        <div
+          data-role="product-name"
+          style={{
+            ...hidden,
+          }}
+        />
+
         <p
           style={{
             display: "flex",
