@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import LikeButton from "./buttons/LikeButton";
 import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
@@ -6,6 +6,30 @@ import SvgFrame from "./svgs/SvgFrame";
 
 export default function ProductCard({ isP0, showDetails = false }) {
   const hidden = showDetails ? {} : { display: "none" };
+  const [mountFrame, setMountFrame] = useState(false);
+  const [animateFrame, setAnimateFrame] = useState(false);
+
+  useEffect(() => {
+    if (mountFrame) {
+      requestAnimationFrame(() => {
+        setAnimateFrame(true);
+      });
+    }
+  }, [mountFrame]);
+
+  useEffect(() => {
+    if (!animateFrame && mountFrame) {
+      const timer = setTimeout(() => setMountFrame(false), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [animateFrame, mountFrame]);
+
+  useEffect(() => {
+    if (!showDetails) {
+      setAnimateFrame(false);
+      setMountFrame(false);
+    }
+  }, [showDetails]);
 
   return (
     <div
@@ -79,12 +103,14 @@ export default function ProductCard({ isP0, showDetails = false }) {
               />
             </span>
             {/* Inline toggle */}
-            {/*  <button
+            <button
               onClick={() => {
                 if (!mountFrame) {
+                  // mount the frame and start animation
                   setMountFrame(true);
                 } else {
-                  setAnimateFrame(false);
+                  // toggle visibility when already mounted
+                  setAnimateFrame((prev) => !prev);
                 }
               }}
               style={{
@@ -100,33 +126,34 @@ export default function ProductCard({ isP0, showDetails = false }) {
             >
               <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
               {animateFrame ? "Hide Frame" : "Show Frame"}
-            </button> */}
+            </button>
           </span>
         </p>
-        {/* <div
-          className="live-frame-image-container"
-          style={{
-            overflow: "hidden",
-            aspectRatio: "16/9",
-            maxWidth: "calc(200px * 16 / 9)",
-            width: "fit-content",
-            //maxHeight: animateFrame ? "200px" : "0px",
-            objectFit: "cover",
-            borderRadius: "8px",
-            //opacity: animateFrame ? 1 : 0,
-            //transform: animateFrame ? "translateY(0)" : "translateY(-20px)",
-            transition:
-              "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
-          }}
-        >
-          {" "}
-          <img
-            className="live-frame-image"
-            data-role="frame-image"
-            src={null}
-            alt=""
-          />
-        </div> */}
+        {mountFrame && (
+          <div
+            className="live-frame-image-container"
+            style={{
+              overflow: "hidden",
+              aspectRatio: "16/9",
+              maxWidth: "calc(200px * 16 / 9)",
+              width: "fit-content",
+              maxHeight: animateFrame ? "200px" : "0px",
+              objectFit: "cover",
+              borderRadius: "8px",
+              opacity: animateFrame ? 1 : 0,
+              transform: animateFrame ? "translateY(0)" : "translateY(-20px)",
+              transition:
+                "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
+            }}
+          >
+            <img
+              className="live-frame-image"
+              data-role="frame-image"
+              src={null}
+              alt=""
+            />
+          </div>
+        )}
 
         <p
           style={{
