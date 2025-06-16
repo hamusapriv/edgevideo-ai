@@ -1,5 +1,6 @@
 // src/components/LiveShopping.jsx
 import React, { useEffect, useRef, useState } from "react";
+import { hydrateRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server.browser";
 import ChannelLogo from "./ChannelLogo";
 
@@ -228,8 +229,11 @@ export default function LiveShopping({ channelId, onLike }) {
           <ProductCard isP0={isP0} showDetails={deviceCanHover} />
         );
         const card = wrapper.firstElementChild;
-        if (card && deviceCanHover) {
-          card.addEventListener("mouseenter", () => applyFocus(card));
+        if (card) {
+          hydrateRoot(card, <ProductCard isP0={isP0} showDetails={deviceCanHover} />);
+          if (deviceCanHover) {
+            card.addEventListener("mouseenter", () => applyFocus(card));
+          }
         }
 
         const toggle = card.querySelector('[data-role="frame-toggle"]');
