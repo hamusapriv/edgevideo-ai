@@ -75,6 +75,25 @@ export default function ProductCard({ isP0, showDetails = false }) {
                   fontWeight: "bold",
                 }}
               />
+              {/* Inline toggle */}
+              <button
+                onClick={() => {
+                  setAnimateFrame((prev) => !prev);
+                }}
+                style={{
+                  display: "inline-flex",
+                  padding: 0,
+                  marginLeft: "4px",
+                  border: "none",
+                  background: "transparent",
+                  color: "#4fa",
+                  cursor: "pointer",
+                  fontSize: "0.9rem",
+                }}
+              >
+                <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
+                {animateFrame ? "Hide Frame" : "Show Frame"}
+              </button>
               <div
                 data-role="ai-description"
                 className="ai-query"

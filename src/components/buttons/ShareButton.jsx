@@ -1,26 +1,33 @@
 // src/components/buttons/ShareButton.jsx
 import React from "react";
 import SvgShare from "../svgs/SvgShare";
-import { useAuth } from "../../contexts/AuthContext";
-import { useSidebar } from "../../contexts/SidebarContext";
 
 export default function ShareButton({ title, url }) {
-  const { user } = useAuth();
-  const { openSidebar } = useSidebar();
-
   const handleClick = (e) => {
     e.stopPropagation();
-    if (!user) return openSidebar();
+
+    let shareTitle = title;
+    let shareUrl = url;
+
+    if (!shareUrl) {
+      const card = e.currentTarget.closest(".item-container");
+      shareTitle =
+        shareTitle ||
+        card?.querySelector("[data-role='product-name']")?.innerText ||
+        "";
+      shareUrl = card?.querySelector("[data-role='product-link']")?.href || "";
+    }
+
     if (navigator.share) {
-      navigator.share({ title, text: title, url });
+      navigator.share({ title: shareTitle, text: shareTitle, url: shareUrl });
     } else {
-      navigator.clipboard.writeText(url).then(() => alert("Link copied!"));
+      navigator.clipboard.writeText(shareUrl).then(() => alert("Link copied!"));
     }
   };
 
   return (
     <button
-      className="product-cta"
+      className="product-cta share-button"
       data-role="share-link"
       onClick={handleClick}
     >
