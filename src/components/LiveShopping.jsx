@@ -352,8 +352,7 @@ export default function LiveShopping({ channelId, onLike }) {
       if (injectedScript) document.head.removeChild(injectedScript);
       if (injectedStyle) document.head.removeChild(injectedStyle);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelId, deviceCanHover]);
+  }, [channelId, deviceCanHover, handleLike, handleDislike, handleShare]);
 
 
   // ───────── Hide frame when user focuses a different product ─────────
