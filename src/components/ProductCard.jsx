@@ -6,28 +6,12 @@ import SvgFrame from "./svgs/SvgFrame";
 
 export default function ProductCard({ isP0, showDetails = false }) {
   const hidden = showDetails ? {} : { display: "none" };
-  const [mountFrame, setMountFrame] = useState(false);
   const [animateFrame, setAnimateFrame] = useState(false);
 
-  useEffect(() => {
-    if (mountFrame) {
-      requestAnimationFrame(() => {
-        setAnimateFrame(true);
-      });
-    }
-  }, [mountFrame]);
-
-  useEffect(() => {
-    if (!animateFrame && mountFrame) {
-      const timer = setTimeout(() => setMountFrame(false), 400);
-      return () => clearTimeout(timer);
-    }
-  }, [animateFrame, mountFrame]);
-
+  // collapse the frame when details hide
   useEffect(() => {
     if (!showDetails) {
       setAnimateFrame(false);
-      setMountFrame(false);
     }
   }, [showDetails]);
 
@@ -105,13 +89,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
             {/* Inline toggle */}
             <button
               onClick={() => {
-                if (!mountFrame) {
-                  // mount the frame and start animation
-                  setMountFrame(true);
-                } else {
-                  // toggle visibility when already mounted
-                  setAnimateFrame((prev) => !prev);
-                }
+                setAnimateFrame((prev) => !prev);
               }}
               style={{
                 display: "inline-flex",
@@ -129,8 +107,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
             </button>
           </span>
         </p>
-        {mountFrame && (
-          <div
+        <div
             className="live-frame-image-container"
             style={{
               overflow: "hidden",
@@ -153,7 +130,6 @@ export default function ProductCard({ isP0, showDetails = false }) {
               alt=""
             />
           </div>
-        )}
 
         <p
           style={{
