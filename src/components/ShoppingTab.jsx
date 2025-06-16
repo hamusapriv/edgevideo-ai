@@ -1,15 +1,18 @@
 // src/components/ShoppingTab.jsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import HomeTab from "./HomeTab";
 import LiveShopping from "./LiveShopping";
 import FavouritesTab from "./FavoritesTab";
 
 export default function ShoppingTab({ channelId, openProfileSidebar }) {
-  const nestedConfig = [
-    { key: "live", label: "Live", Component: LiveShopping },
-    { key: "home", label: "Home", Component: HomeTab },
-    { key: "favourites", label: "Favourites", Component: FavouritesTab },
-  ];
+  const nestedConfig = useMemo(
+    () => [
+      { key: "live", label: "Live", Component: LiveShopping },
+      { key: "home", label: "Home", Component: HomeTab },
+      { key: "favourites", label: "Favourites", Component: FavouritesTab },
+    ],
+    []
+  );
 
   const [refreshFavouritesKey, setRefreshFavouritesKey] = useState(0);
   const [active, setActive] = useState(nestedConfig[0].key);
@@ -37,7 +40,7 @@ export default function ShoppingTab({ channelId, openProfileSidebar }) {
         transform: i === 0 ? "translateX(0)" : "translateX(100%)",
       });
     });
-  }, []);
+  }, [nestedConfig]);
 
   useEffect(() => {
     const newIndex = nestedConfig.findIndex((t) => t.key === active);
@@ -61,7 +64,7 @@ export default function ShoppingTab({ channelId, openProfileSidebar }) {
     newEl.style.transform = "translateX(0)";
 
     prevRef.current = newIndex;
-  }, [active]);
+  }, [active, nestedConfig]);
 
   return (
     <>

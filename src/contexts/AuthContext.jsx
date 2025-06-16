@@ -1,5 +1,11 @@
 // src/contexts/AuthContext.jsx
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 
 const AuthContext = createContext({
   user: null,
@@ -16,7 +22,7 @@ export function AuthProvider({ children }) {
   const USERINFO_URL = import.meta.env.VITE_USERINFO_URL; // e.g. https://fastapi.edgevideo.ai/auth_google/details
 
   // Fetch user profile from our backend
-  async function fetchUser(token) {
+  const fetchUser = useCallback(async (token) => {
     try {
       const res = await fetch(USERINFO_URL, {
         headers: { Authorization: `Bearer ${token}` },
@@ -32,16 +38,16 @@ export function AuthProvider({ children }) {
       console.error("Auth fetch failed:", err);
       logout();
     }
-  }
+  }, [USERINFO_URL]);
 
   // Called when GSI returns a credential
-  function handleCredentialResponse(response) {
+  const handleCredentialResponse = useCallback((response) => {
     const token = response.credential;
     localStorage.setItem("authToken", token);
     fetchUser(token);
     // Clean up the URL if GSI used redirect
     window.history.replaceState({}, "", window.location.pathname);
-  }
+  }, [fetchUser]);
 
   // Initialize GSI and check for existing token/credential
   useEffect(() => {
@@ -67,7 +73,7 @@ export function AuthProvider({ children }) {
       // Already have token from a previous session
       fetchUser(stored);
     }
-  }, [CLIENT_ID, REDIRECT_URI, USERINFO_URL]);
+  }, [CLIENT_ID, REDIRECT_URI, fetchUser, handleCredentialResponse]);
 
   // Trigger the GSI prompt (popup or redirect)
   function login() {
@@ -90,6 +96,7 @@ export function AuthProvider({ children }) {
 }
 
 // Hook for easy access in components
-export function useAuth() {
+// eslint-disable-next-line react-refresh/only-export-components
+export const useAuth = () => {
   return useContext(AuthContext);
-}
+};
