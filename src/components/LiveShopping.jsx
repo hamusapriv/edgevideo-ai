@@ -164,8 +164,7 @@ export default function LiveShopping({ channelId, onLike }) {
         id,
         itemTypeName: inferItemTypeName(card),
 
-        name:
-          card.querySelector('[data-role="product-name"]')?.innerText || "",
+        name: card.querySelector('[data-role="product-name"]')?.innerText || "",
         price:
           card.querySelector('[data-role="product-price"]')?.innerText || "",
         description:
@@ -367,31 +366,8 @@ export default function LiveShopping({ channelId, onLike }) {
       {/* ─────────────────────────────────────────────────────────────────
            (1) SCROLLABLE BELT: only images are visible here
       ───────────────────────────────────────────────────────────────── */}
-      <div
-        id="absolute-container"
-        ref={scrollBoxRef}
-        style={{
-          WebkitOverflowScrolling: "touch",
-          position: "relative",
-          overflowX: "auto",
-          overflowY: "hidden",
-          padding: "10px",
-          borderRadius: "8px",
-          minHeight: "250px",
-        }}
-      >
-        <div
-          id="itemContent"
-          ref={beltRef}
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            padding: "12px 6px",
-            alignItems: "flex-start",
-            whiteSpace: "nowrap",
-            position: "absolute",
-          }}
-        >
+      <div id="absolute-container" ref={scrollBoxRef}>
+        <div id="itemContent" ref={beltRef}>
           {/* screenNoAnim.js will insert <div class="item-container product0">…</div> cards here */}
         </div>
       </div>
@@ -467,14 +443,13 @@ export default function LiveShopping({ channelId, onLike }) {
 
             {/* (d-1) FRAME IMAGE: only when toggled on */}
             {mountFrame && selectedCardData.frameImageUrl && (
-              <img
-                src={selectedCardData.frameImageUrl}
-                alt={`Frame for ${selectedCardData.name}`}
-                className="live-frame-image"
+              <div
+                className="live-frame-image-container"
                 style={{
                   overflow: "hidden",
-
-                  width: "100%",
+                  aspectRatio: "16/9",
+                  maxWidth: "calc(200px * 16 / 9)",
+                  width: "fit-content",
                   maxHeight: animateFrame ? "200px" : "0px",
                   objectFit: "cover",
                   borderRadius: "8px",
@@ -485,9 +460,14 @@ export default function LiveShopping({ channelId, onLike }) {
                   transition:
                     "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
                 }}
-              />
+              >
+                <img
+                  src={selectedCardData.frameImageUrl}
+                  alt={`Frame for ${selectedCardData.name}`}
+                  className="live-frame-image"
+                />
+              </div>
             )}
-
             {/* (g) PRICE */}
             {selectedCardData.price && (
               <p
@@ -496,8 +476,10 @@ export default function LiveShopping({ channelId, onLike }) {
                   fontSize: "1rem",
                   color: "#fff",
                   display: "flex",
-                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
                   lineHeight: "1.4rem",
+                  gap: "1rem",
                 }}
               >
                 <span
@@ -516,21 +498,7 @@ export default function LiveShopping({ channelId, onLike }) {
             )}
 
             {/* (h) CTA + SOCIAL BUTTONS */}
-            <div
-              style={{
-                display: "flex",
-                gap: "8px",
-                justifyContent: "space-between",
-                alignItems: "stretch",
-                marginTop: "auto",
-                position: "sticky",
-                bottom: "0px",
-                left: "0",
-                right: "0",
-                backdropFilter: " blur(10px)",
-                padding: "6px",
-              }}
-            >
+            <div className="product-buttons-container">
               {/* Shop Now */}
               {selectedCardData.productUrl && (
                 <a

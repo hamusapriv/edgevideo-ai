@@ -1,0 +1,113 @@
+/*──────────────────────────────────────────────────────────────────────────────
+  1) Theme Variables
+──────────────────────────────────────────────────────────────────────────────*/
+:root {
+  /* sizing */
+  --scrollbar-width: 12px; /* thickness of vertical scrollbar */
+  --scrollbar-height: 12px; /* height of horizontal scrollbar */
+  --scrollbar-track-inset: 2px; /* padding inside the track */
+
+  /* radii */
+  --scrollbar-track-radius: 6px;
+  --scrollbar-thumb-radius: 6px;
+
+  /* colors */
+  --scrollbar-track-bg: #f0f0f0; /* the “rail” background */
+  --scrollbar-thumb-bg: #c0c0c0; /* the draggable “thumb” */
+  --scrollbar-thumb-hover: #a0a0a0; /* thumb on hover */
+  --scrollbar-thumb-active: #808080; /* thumb while dragging */
+}
+
+/* Dark-mode override */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --scrollbar-track-bg: #2b2b2b;
+    --scrollbar-thumb-bg: #4b4b4b;
+    --scrollbar-thumb-hover: #5c5c5c;
+    --scrollbar-thumb-active: #6d6d6d;
+  }
+}
+
+/*──────────────────────────────────────────────────────────────────────────────
+  2) WebKit Browsers (Chrome, Safari, Edge Chromium)
+──────────────────────────────────────────────────────────────────────────────*/
+
+/* 2.1) Scrollbar container (both axes) */
+::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+  height: var(--scrollbar-height);
+}
+
+/* 2.2) The track (rail) */
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-bg);
+  border-radius: var(--scrollbar-track-radius);
+  margin: var(--scrollbar-track-inset);
+}
+
+/* 2.3) The draggable thumb */
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-bg);
+  border-radius: var(--scrollbar-thumb-radius);
+  border: 3px solid transparent; /* creates padding around thumb */
+  background-clip: content-box; /* so border “eats” into padding */
+  transition: background-color 0.2s;
+}
+
+/* 2.4) Thumb hover / active states */
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: var(--scrollbar-thumb-active);
+}
+
+/* 2.5) Corner where vertical & horizontal meet */
+::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track-bg);
+}
+
+/*──────────────────────────────────────────────────────────────────────────────
+  3) Firefox
+──────────────────────────────────────────────────────────────────────────────*/
+
+/* “thin” is typically ~8px; we use the same track & thumb colors */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
+}
+
+/*──────────────────────────────────────────────────────────────────────────────
+  4) Edge Legacy & IE Fallback
+──────────────────────────────────────────────────────────────────────────────*/
+
+/* Hide ugly default scrollbars in IE/Edge Legacy and fallback to native OS overlay
+   scrollbars (you’ll still get scroll, but no styled scrollbar). */
+@supports (-ms-overflow-style: none) {
+  * {
+    -ms-overflow-style: none;
+  }
+  /* If you want to _show_ them in IE rather than hide, remove the above */
+}
+
+/*──────────────────────────────────────────────────────────────────────────────
+  5) Tips & Notes
+──────────────────────────────────────────────────────────────────────────────
+
+• Adjust the variables in section 1 to suit your design system.  
+• The `background-clip: content-box` + transparent border trick in section 2.3
+  gives your thumb internal padding so it never touches the track edge.  
+• We use `margin` on the track to inset it slightly—tweak
+  `--scrollbar-track-inset` or remove it if you prefer flush rails.  
+• Firefox’s `scrollbar-width: thin` can’t map exactly to your width, but the
+  colors will match.  
+• Use the dark-mode override (prefers-color-scheme) or hook into your own
+  CSS-vars theme switcher for light/dark theming.  
+• If your app uses container-based scroll areas (e.g. `.modal .content`), this
+  CSS will style those scrollbars too, so every scrollable container is
+  consistent.  
+
+This setup gives you a fully themable, cross-browser scrollbar solution that
+you can maintain entirely with CSS variables. Enjoy!  
+*/
