@@ -40,7 +40,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
           }}
         />
 
-        <p
+        <div
           style={{
             display: "flex",
             flexDirection: "column",
@@ -108,7 +108,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
               />
             </span>
           </span>
-        </p>
+        </div>
         <div
           className="live-frame-image-container"
           data-role="frame-container"
