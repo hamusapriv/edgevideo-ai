@@ -231,6 +231,22 @@ export default function LiveShopping({ channelId, onLike }) {
         if (card && deviceCanHover) {
           card.addEventListener("mouseenter", () => applyFocus(card));
         }
+
+        const toggle = card.querySelector('[data-role="frame-toggle"]');
+        const container = card.querySelector('[data-role="frame-container"]');
+        const text = card.querySelector('[data-role="toggle-text"]');
+        if (toggle && container) {
+          let visible = false;
+          toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            visible = !visible;
+            container.style.maxHeight = visible ? '200px' : '0px';
+            container.style.opacity = visible ? '1' : '0';
+            container.style.transform = visible ? 'translateY(0)' : 'translateY(-20px)';
+            if (text) text.textContent = visible ? 'Hide Frame' : 'Show Frame';
+          });
+        }
+
         return card;
       }
 
