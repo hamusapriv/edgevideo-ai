@@ -143,7 +143,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
             justifyContent: "flex-start",
             alignItems: "center",
             lineHeight: "1.4rem",
-            gap: "1rem",
+            gap: ".5rem",
           }}
         >
           <span
@@ -151,7 +151,6 @@ export default function ProductCard({ isP0, showDetails = false }) {
               fontSize: "1rem",
               fontWeight: "600",
               color: "#aaf",
-              marginRight: "0.15rem",
             }}
           >
             Price:
@@ -160,7 +159,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
             data-role="product-price"
             style={{
               ...hidden,
-              padding: "4px 8px",
+              padding: "0",
               fontSize: "0.9rem",
               color: "#fff",
             }}

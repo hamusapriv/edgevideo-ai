@@ -43,9 +43,12 @@
     justify-content: center;
     align-items: center;
     gap: 30px;
+    transform: scale(1);
+    transform-origin: calc(100% - 125px) 50%;
   }
   .item-container.focused {
     box-shadow: none;
+    transform: scale(1.1);
   }
   .live-image-container {
     display: flex;
@@ -71,7 +74,7 @@
   #itemContent {
     inset: 12% 12% auto 12%;
     flex-direction: column;
-    gap: 30px;
+    gap: 20px;
   }
 
   .liveshopping-container {
