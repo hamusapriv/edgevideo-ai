@@ -1,5 +1,5 @@
 // src/components/LiveShopping.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { renderToStaticMarkup } from "react-dom/server.browser";
 import ChannelLogo from "./ChannelLogo";
 
@@ -8,6 +8,9 @@ import LikeButton from "./buttons/LikeButton";
 import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
 import ProductCard from "./ProductCard";
+import { useAuth } from "../contexts/AuthContext";
+import { useSidebar } from "../contexts/SidebarContext";
+import { upvoteProduct, downvoteProduct } from "../services/voteService";
 
 export default function LiveShopping({ channelId, onLike }) {
   // ───────── Refs ─────────
@@ -40,6 +43,61 @@ export default function LiveShopping({ channelId, onLike }) {
 
   // ───────── Detect hover (desktop vs mobile) ─────────
   const deviceCanHover = window.matchMedia("(any-hover:hover)").matches;
+
+  const { user } = useAuth();
+  const { openSidebar } = useSidebar();
+
+  function inferItemTypeName(target) {
+    const url =
+      target?.querySelector("[data-role='product-link']")?.href?.toLowerCase() ||
+      "";
+    if (target?.classList.contains("ticket-style")) {
+      return url.includes("viator") ? "Viator Ticket" : "DB Ticket";
+    }
+    if (target?.classList.contains("coupon-style")) {
+      return "Deal";
+    }
+    return "DB Product";
+  }
+
+  const handleLike = useCallback(async (e) => {
+    e.stopPropagation();
+    if (!user) return openSidebar();
+
+    const card = e.currentTarget.closest(".item-container");
+    const id = card?.getAttribute("data-product-id");
+    if (!id) return;
+
+    await upvoteProduct(id, inferItemTypeName(card));
+    onLike?.();
+  }, [user, openSidebar, onLike]);
+
+  const handleDislike = useCallback(async (e) => {
+    e.stopPropagation();
+    if (!user) return openSidebar();
+
+    const card = e.currentTarget.closest(".item-container");
+    const id = card?.getAttribute("data-product-id");
+    if (!id) return;
+
+    await downvoteProduct(id, inferItemTypeName(card));
+    onLike?.();
+  }, [user, openSidebar, onLike]);
+
+  const handleShare = useCallback((e) => {
+    e.stopPropagation();
+    const card = e.currentTarget.closest(".item-container");
+    const shareTitle =
+      card?.querySelector("[data-role='product-name']")?.innerText || "";
+    const shareUrl =
+      card?.querySelector("[data-role='product-link']")?.href || "";
+
+    if (navigator.share) {
+      navigator.share({ title: shareTitle, text: shareTitle, url: shareUrl });
+    } else {
+      navigator.clipboard.writeText(shareUrl).then(() => alert("Link copied!"));
+    }
+  }, []);
 
   useEffect(() => {
     let injectedScript = null;
@@ -247,6 +305,13 @@ export default function LiveShopping({ channelId, onLike }) {
           });
         }
 
+        const like = card.querySelector('[data-role="like"]');
+        if (like) like.addEventListener('click', handleLike);
+        const dislike = card.querySelector('[data-role="dislike"]');
+        if (dislike) dislike.addEventListener('click', handleDislike);
+        const share = card.querySelector('[data-role="share-link"]');
+        if (share) share.addEventListener('click', handleShare);
+
         return card;
       }
 
@@ -283,7 +348,7 @@ export default function LiveShopping({ channelId, onLike }) {
       if (injectedScript) document.head.removeChild(injectedScript);
       if (injectedStyle) document.head.removeChild(injectedStyle);
     };
-  }, [channelId, deviceCanHover]);
+  }, [channelId, deviceCanHover, handleLike, handleDislike, handleShare]);
 
 
   // ───────── Hide frame when user focuses a different product ─────────
