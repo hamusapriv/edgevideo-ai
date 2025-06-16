@@ -4,7 +4,7 @@ import HomeTab from "./HomeTab";
 import LiveShopping from "./LiveShopping";
 import FavouritesTab from "./FavoritesTab";
 
-export default function ShoppingTab({ channelId, openProfileSidebar }) {
+export default function ShoppingTab({ channelId }) {
   const nestedConfig = useMemo(
     () => [
       { key: "live", label: "Live", Component: LiveShopping },
@@ -96,7 +96,6 @@ export default function ShoppingTab({ channelId, openProfileSidebar }) {
                 <FavouritesTab
                   refreshKey={refreshFavouritesKey}
                   onNavigateToLive={() => setActive("live")}
-                  openProfileSidebar={openProfileSidebar}
                 />
               </div>
             );
