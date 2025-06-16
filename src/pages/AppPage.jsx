@@ -1,5 +1,5 @@
 // src/pages/AppPage.jsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import AppHeader from "../components/AppHeader";
 import Tabs from "../components/Tabs";
 import ProfileSidebar from "../components/ProfileSidebar";
@@ -16,11 +16,12 @@ export default function AppPage() {
   const channelId = useChannelId();
 
   // 1) Main tabs config
-  const tabConfig = [
-    {
-      key: "shopping",
-      label: (
-        <svg
+  const tabConfig = useMemo(
+    () => [
+      {
+        key: "shopping",
+        label: (
+          <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
           height="24"
@@ -30,14 +31,16 @@ export default function AppPage() {
           <path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM176,88a48,48,0,0,1-96,0,8,8,0,0,1,16,0,32,32,0,0,0,64,0,8,8,0,0,1,16,0Z" />
         </svg>
       ),
-      Component: ShoppingTab,
-    },
-    {
-      key: "games",
-      label: <GamesIcon />,
-      Component: GamesTab,
-    },
-  ];
+        Component: ShoppingTab,
+      },
+      {
+        key: "games",
+        label: <GamesIcon />,
+        Component: GamesTab,
+      },
+    ],
+    []
+  );
 
   // active tab & sidebar state
   const [activeTab, setActiveTab] = useState(tabConfig[0].key);
@@ -70,7 +73,7 @@ export default function AppPage() {
         transform: i === 0 ? "translateX(0)" : "translateX(100%)",
       });
     });
-  }, []);
+  }, [tabConfig]);
 
   // animate on tab change
   useEffect(() => {
@@ -101,7 +104,7 @@ export default function AppPage() {
     newEl.style.transform = "translateX(0)";
 
     prevIndexRef.current = newIndex;
-  }, [activeTab]);
+  }, [activeTab, tabConfig]);
 
   return (
     <>
