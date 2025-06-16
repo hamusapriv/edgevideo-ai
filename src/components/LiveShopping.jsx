@@ -1,7 +1,6 @@
 // src/components/LiveShopping.jsx
 import React, { useEffect, useRef, useState } from "react";
-import { createRoot } from "react-dom/client";
-import { flushSync } from "react-dom";
+import { renderToStaticMarkup } from "react-dom/server.browser";
 import ChannelLogo from "./ChannelLogo";
 
 import SvgFrame from "./svgs/SvgFrame";
@@ -224,12 +223,11 @@ export default function LiveShopping({ channelId, onLike }) {
     // ────────────────────────────────────────────────────────────────────────
       function makeCard(isP0 = false) {
         const wrapper = document.createElement("div");
-        const root = createRoot(wrapper);
-        flushSync(() => {
-          root.render(<ProductCard isP0={isP0} />);
-        });
+        wrapper.innerHTML = renderToStaticMarkup(
+          <ProductCard isP0={isP0} />
+        );
         const card = wrapper.firstElementChild;
-        if (deviceCanHover) {
+        if (card && deviceCanHover) {
           card.addEventListener("mouseenter", () => applyFocus(card));
         }
         return card;

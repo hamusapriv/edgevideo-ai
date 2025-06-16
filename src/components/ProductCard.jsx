@@ -5,17 +5,17 @@ import ShareButton from "./buttons/ShareButton";
 
 export default function ProductCard({ isP0 }) {
   return (
-    <div className={`item-container ${isP0 ? "product0" : ""}`}> 
-      <img data-role="product-image" src="" alt="Product Image" loading="lazy" />
-      <img className="frame-image" data-role="frame-image" src="" alt="" />
-      <a data-role="product-link" href="" style={{ display: "none" }} />
+<div className={`item-container ${isP0 ? "product0" : ""}`}>
+      <img data-role="product-image" src={null} alt="Product Image" loading="lazy" />
+      <img className="frame-image" data-role="frame-image" src={null} alt="" />
+      <a data-role="product-link" href="" style={{ display: "none" }}></a>
       <div
         data-role="matchText"
         style={{ display: "none", padding: "8px", fontSize: "1rem", fontWeight: "bold" }}
       />
       <img
         data-role="vendor-logo"
-        src=""
+        src={null}
         alt="Vendor Logo"
         style={{ display: "none" }}
       />
