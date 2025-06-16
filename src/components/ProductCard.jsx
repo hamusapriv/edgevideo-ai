@@ -59,10 +59,13 @@ export default function ProductCard({ isP0, showDetails = false }) {
           >
             <span
               style={{
-                display: "inline",
+                display: "inline-flex",
                 fontSize: "1rem",
                 fontWeight: "600",
                 color: "#fff",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "0.25rem",
               }}
             >
               AI{" "}
@@ -70,13 +73,11 @@ export default function ProductCard({ isP0, showDetails = false }) {
                 data-role="matchText"
                 style={{
                   ...hidden,
-                  padding: "8px",
-                  fontSize: "1rem",
-                  fontWeight: "bold",
                 }}
               />
               {/* Inline toggle */}
               <button
+                data-role="frame-toggle"
                 onClick={() => {
                   setAnimateFrame((prev) => !prev);
                 }}
@@ -92,67 +93,46 @@ export default function ProductCard({ isP0, showDetails = false }) {
                 }}
               >
                 <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
-                {animateFrame ? "Hide Frame" : "Show Frame"}
+                <span data-role="toggle-text">
+                  {animateFrame ? "Hide Frame" : "Show Frame"}
+                </span>
               </button>
               <div
                 data-role="ai-description"
                 className="ai-query"
                 style={{
                   ...hidden,
-                  padding: "8px",
                   fontSize: "0.85rem",
                   color: "#ddd",
                 }}
               />
             </span>
-            {/* Inline toggle */}
-            <button
-              data-role="frame-toggle"
-              onClick={() => {
-                setAnimateFrame((prev) => !prev);
-              }}
-              style={{
-                display: "inline-flex",
-                padding: 0,
-                marginLeft: "4px",
-                border: "none",
-                background: "transparent",
-                color: "#4fa",
-                cursor: "pointer",
-                fontSize: "0.9rem",
-              }}
-            >
-              <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
-              <span data-role="toggle-text">
-                {animateFrame ? "Hide Frame" : "Show Frame"}
-              </span>
-            </button>
           </span>
         </p>
         <div
-            className="live-frame-image-container"
-            data-role="frame-container"
-            style={{
-              overflow: "hidden",
-              aspectRatio: "16/9",
-              maxWidth: "calc(200px * 16 / 9)",
-              width: "fit-content",
-              maxHeight: animateFrame ? "200px" : "0px",
-              objectFit: "cover",
-              borderRadius: "8px",
-              opacity: animateFrame ? 1 : 0,
-              transform: animateFrame ? "translateY(0)" : "translateY(-20px)",
-              transition:
-                "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
-            }}
-          >
-            <img
-              className="live-frame-image"
-              data-role="frame-image"
-              src={null}
-              alt=""
-            />
-          </div>
+          className="live-frame-image-container"
+          data-role="frame-container"
+          style={{
+            overflow: "hidden",
+            aspectRatio: "16/9",
+            maxWidth: "calc(200px * 16 / 9)",
+            width: "fit-content",
+            maxHeight: animateFrame ? "200px" : "0px",
+            objectFit: "cover",
+            borderRadius: "8px",
+            opacity: animateFrame ? 1 : 0,
+            transform: animateFrame ? "translateY(0)" : "translateY(-20px)",
+            transition:
+              "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
+          }}
+        >
+          <img
+            className="live-frame-image"
+            data-role="frame-image"
+            src={null}
+            alt=""
+          />
+        </div>
 
         <p
           style={{
@@ -175,7 +155,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
           >
             Price:
           </span>
-          <div
+          <span
             data-role="product-price"
             style={{
               ...hidden,
