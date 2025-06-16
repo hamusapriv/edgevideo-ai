@@ -8,7 +8,7 @@ export default function ProductCard({ isP0 }) {
     <div className={`item-container ${isP0 ? "product0" : ""}`}> 
       <img data-role="product-image" src="" alt="Product Image" loading="lazy" />
       <img className="frame-image" data-role="frame-image" src="" alt="" />
-      <a data-role="product-link" href="" style={{ display: "none" }}></a>
+      <a data-role="product-link" href="" style={{ display: "none" }} />
       <div
         data-role="matchText"
         style={{ display: "none", padding: "8px", fontSize: "1rem", fontWeight: "bold" }}
