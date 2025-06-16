@@ -46,6 +46,10 @@ export default function LiveShopping({ channelId, onLike }) {
 
   const { user } = useAuth();
   const { openSidebar } = useSidebar();
+  const userRef = useRef(user);
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
 
   function inferItemTypeName(target) {
     const url =
@@ -62,7 +66,7 @@ export default function LiveShopping({ channelId, onLike }) {
 
   const handleLike = useCallback(async (e) => {
     e.stopPropagation();
-    if (!user) return openSidebar();
+    if (!userRef.current) return openSidebar();
 
     const card = e.currentTarget.closest(".item-container");
     const id = card?.getAttribute("data-product-id");
@@ -70,11 +74,11 @@ export default function LiveShopping({ channelId, onLike }) {
 
     await upvoteProduct(id, inferItemTypeName(card));
     onLike?.();
-  }, [user, openSidebar, onLike]);
+  }, [openSidebar, onLike]);
 
   const handleDislike = useCallback(async (e) => {
     e.stopPropagation();
-    if (!user) return openSidebar();
+    if (!userRef.current) return openSidebar();
 
     const card = e.currentTarget.closest(".item-container");
     const id = card?.getAttribute("data-product-id");
@@ -82,7 +86,7 @@ export default function LiveShopping({ channelId, onLike }) {
 
     await downvoteProduct(id, inferItemTypeName(card));
     onLike?.();
-  }, [user, openSidebar, onLike]);
+  }, [openSidebar, onLike]);
 
   const handleShare = useCallback((e) => {
     e.stopPropagation();
