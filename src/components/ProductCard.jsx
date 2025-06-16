@@ -75,6 +75,25 @@ export default function ProductCard({ isP0, showDetails = false }) {
                   fontWeight: "bold",
                 }}
               />
+              {/* Inline toggle */}
+              <button
+                onClick={() => {
+                  setAnimateFrame((prev) => !prev);
+                }}
+                style={{
+                  display: "inline-flex",
+                  padding: 0,
+                  marginLeft: "4px",
+                  border: "none",
+                  background: "transparent",
+                  color: "#4fa",
+                  cursor: "pointer",
+                  fontSize: "0.9rem",
+                }}
+              >
+                <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
+                {animateFrame ? "Hide Frame" : "Show Frame"}
+              </button>
               <div
                 data-role="ai-description"
                 className="ai-query"
@@ -86,50 +105,31 @@ export default function ProductCard({ isP0, showDetails = false }) {
                 }}
               />
             </span>
-            {/* Inline toggle */}
-            <button
-              onClick={() => {
-                setAnimateFrame((prev) => !prev);
-              }}
-              style={{
-                display: "inline-flex",
-                padding: 0,
-                marginLeft: "4px",
-                border: "none",
-                background: "transparent",
-                color: "#4fa",
-                cursor: "pointer",
-                fontSize: "0.9rem",
-              }}
-            >
-              <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
-              {animateFrame ? "Hide Frame" : "Show Frame"}
-            </button>
           </span>
         </p>
         <div
-            className="live-frame-image-container"
-            style={{
-              overflow: "hidden",
-              aspectRatio: "16/9",
-              maxWidth: "calc(200px * 16 / 9)",
-              width: "fit-content",
-              maxHeight: animateFrame ? "200px" : "0px",
-              objectFit: "cover",
-              borderRadius: "8px",
-              opacity: animateFrame ? 1 : 0,
-              transform: animateFrame ? "translateY(0)" : "translateY(-20px)",
-              transition:
-                "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
-            }}
-          >
-            <img
-              className="live-frame-image"
-              data-role="frame-image"
-              src={null}
-              alt=""
-            />
-          </div>
+          className="live-frame-image-container"
+          style={{
+            overflow: "hidden",
+            aspectRatio: "16/9",
+            maxWidth: "calc(200px * 16 / 9)",
+            width: "fit-content",
+            maxHeight: animateFrame ? "200px" : "0px",
+            objectFit: "cover",
+            borderRadius: "8px",
+            opacity: animateFrame ? 1 : 0,
+            transform: animateFrame ? "translateY(0)" : "translateY(-20px)",
+            transition:
+              "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
+          }}
+        >
+          <img
+            className="live-frame-image"
+            data-role="frame-image"
+            src={null}
+            alt=""
+          />
+        </div>
 
         <p
           style={{
