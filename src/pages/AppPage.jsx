@@ -1,7 +1,8 @@
 // src/pages/AppPage.jsx
-import React, { useRef, useEffect, useMemo, useState } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import AppHeader from "../components/AppHeader";
 import Tabs from "../components/Tabs";
+import ProfileSidebar from "../components/ProfileSidebar";
 
 // Tab‐pane components
 import ShoppingTab from "../components/ShoppingTab";
@@ -41,8 +42,12 @@ export default function AppPage() {
     []
   );
 
-  // active tab state
+  // active tab & sidebar state
   const [activeTab, setActiveTab] = useState(tabConfig[0].key);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const handleToggleSidebar = () => setIsSidebarOpen((o) => !o);
+  const handleCloseSidebar = () => setIsSidebarOpen(false);
 
   // refs for sliding panels
   const prevIndexRef = useRef(0);
@@ -103,7 +108,7 @@ export default function AppPage() {
 
   return (
     <>
-      <AppHeader />
+      <AppHeader onToggleSidebar={handleToggleSidebar} />
 
       <section
         style={{
@@ -117,7 +122,10 @@ export default function AppPage() {
           return (
             <div key={key} className="tab-content" ref={panelRefs.current[i]}>
               {key === "shopping" ? (
-                <TabComponent channelId={channelId} />
+                <TabComponent
+                  channelId={channelId}
+                  openProfileSidebar={handleToggleSidebar}
+                />
               ) : (
                 <TabComponent />
               )}
@@ -126,8 +134,14 @@ export default function AppPage() {
         })}
       </section>
 
-      <Tabs tabs={tabConfig} activeTab={activeTab} onChangeTab={setActiveTab} />
+      <Tabs
+        tabs={tabConfig}
+        activeTab={activeTab}
+        onChangeTab={setActiveTab}
+        onToggleSidebar={handleToggleSidebar}
+      />
 
+      <ProfileSidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
       <AppBg />
     </>
   );
