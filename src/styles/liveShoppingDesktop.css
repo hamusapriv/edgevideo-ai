@@ -26,21 +26,52 @@
     height: 160px;
   }
 
-  .item-container {
-    width: 250px;
-    height: 250px;
+  /* Product card details displayed on hover devices */
+  .item-container.show-details {
+    height: auto;
   }
 
+  .item-container.show-details .card-details {
+    display: flex;
+  }
+
+  .item-container {
+    width: 100%;
+    height: 250px;
+    display: flex;
+    background-color: transparent;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  .item-container.focused {
+    box-shadow: none;
+  }
+  .live-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    width: 250px;
+    height: 250px;
+    order: 99999;
+    border-radius: 10px;
+    overflow: hidden;
+  }
   #absolute-container {
     overflow-x: hidden;
     overflow-y: auto;
     min-height: 280px;
     min-width: 320px;
     order: 2;
+    width: 100%;
+    padding: 20px;
   }
 
   #itemContent {
+    inset: 12% 12% auto 12%;
     flex-direction: column;
+    gap: 30px;
   }
 
   .liveshopping-container {
@@ -65,11 +96,12 @@
   .live-details {
     justify-content: center;
     max-width: 600px;
-    max-height: 80%;
+    max-height: none;
+    height: 100%;
     padding: 20px;
-    margin: auto 20px;
+    margin: 0;
     background-color: var(--color-white-01);
     transition: all 0.5s ease;
-    gap: 20px;
+    gap: 10px;
   }
 }

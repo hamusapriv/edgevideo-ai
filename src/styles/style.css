@@ -425,17 +425,6 @@ section {
   padding: 3px;
 }
 
-/* Product card details displayed on hover devices */
-.item-container.show-details {
-  flex-direction: column;
-  align-items: stretch;
-  height: auto;
-}
-
-.item-container.show-details .card-details {
-  display: flex;
-}
-
 .card-details {
   display: none;
   border-radius: 8px;
