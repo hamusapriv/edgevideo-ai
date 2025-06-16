@@ -1,5 +1,6 @@
 // src/components/BuildInfo.jsx
 import React from "react";
+/* global __COMMIT_HASH__ */
 import pkg from "../../package.json";
 
 export default function BuildInfo() {

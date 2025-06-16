@@ -114,18 +114,21 @@ export default function AppPage() {
           overflow: "hidden",
         }}
       >
-        {tabConfig.map(({ key, Component }, i) => (
-          <div key={key} className="tab-content" ref={panelRefs.current[i]}>
-            {key === "shopping" ? (
-              <Component
-                channelId={channelId}
-                openProfileSidebar={handleToggleSidebar}
-              />
-            ) : (
-              <Component />
-            )}
-          </div>
-        ))}
+        {tabConfig.map(({ key, Component: TabComponent }, i) => {
+          void TabComponent;
+          return (
+            <div key={key} className="tab-content" ref={panelRefs.current[i]}>
+              {key === "shopping" ? (
+                <TabComponent
+                  channelId={channelId}
+                  openProfileSidebar={handleToggleSidebar}
+                />
+              ) : (
+                <TabComponent />
+              )}
+            </div>
+          );
+        })}
       </section>
 
       <Tabs

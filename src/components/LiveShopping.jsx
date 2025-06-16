@@ -48,26 +48,28 @@ export default function LiveShopping({ channelId, onLike }) {
 
     //
     // ────────────────────────────────────────────────────────────────────────
-    // (A) Inject a <style> that hides all non-image fields
+    // (A) Inject a <style> that hides all non-image fields on devices without hover
     // ────────────────────────────────────────────────────────────────────────
-    injectedStyle = document.createElement("style");
-    injectedStyle.innerHTML = `
-      /* Hide everything except the two images */
-      .item-container [data-role="product-name"],
-      .item-container [data-role="product-price"],
-      .item-container [data-role="ai-description"],
-      .item-container [data-role="frame-image"],
-      .item-container [data-role="matchText"],
-      .item-container [data-role="vendor-logo"],
-      .item-container .info-button,
-      .item-container [data-role="like"],
-      .item-container [data-role="dislike"],
-      .item-container [data-role="share-link"],
-      .item-container [data-role="product-link"] {
-        display: none !important;
-      }
-    `;
-    document.head.appendChild(injectedStyle);
+    if (!deviceCanHover) {
+      injectedStyle = document.createElement("style");
+      injectedStyle.innerHTML = `
+        /* Hide everything except the two images */
+        .item-container [data-role="product-name"],
+        .item-container [data-role="product-price"],
+        .item-container [data-role="ai-description"],
+        .item-container [data-role="frame-image"],
+        .item-container [data-role="matchText"],
+        .item-container [data-role="vendor-logo"],
+        .item-container .info-button,
+        .item-container [data-role="like"],
+        .item-container [data-role="dislike"],
+        .item-container [data-role="share-link"],
+        .item-container [data-role="product-link"] {
+          display: none !important;
+        }
+      `;
+      document.head.appendChild(injectedStyle);
+    }
 
     // ────────────────────────────────────────────────────────────────────────
     // (C) Grab DOM nodes & bail if missing
@@ -224,7 +226,7 @@ export default function LiveShopping({ channelId, onLike }) {
       function makeCard(isP0 = false) {
         const wrapper = document.createElement("div");
         wrapper.innerHTML = renderToStaticMarkup(
-          <ProductCard isP0={isP0} />
+          <ProductCard isP0={isP0} showDetails={deviceCanHover} />
         );
         const card = wrapper.firstElementChild;
         if (card && deviceCanHover) {
@@ -266,7 +268,7 @@ export default function LiveShopping({ channelId, onLike }) {
       if (injectedScript) document.head.removeChild(injectedScript);
       if (injectedStyle) document.head.removeChild(injectedStyle);
     };
-  }, [channelId]);
+  }, [channelId, deviceCanHover]);
 
   // when mountFrame flips on, start the entry animation next tick
   useEffect(() => {
@@ -307,7 +309,7 @@ export default function LiveShopping({ channelId, onLike }) {
       {/* ─────────────────────────────────────────────────────────────────
            (2) DETAILS PANEL: visible when a card is in focus
       ───────────────────────────────────────────────────────────────── */}
-      <div className="live-details">
+      <div className="live-details" style={{ display: deviceCanHover ? "none" : "flex" }}>
         {selectedCardData.name ? (
           <>
             {/* (e) NAME */}

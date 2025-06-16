@@ -81,7 +81,7 @@ export default function ShoppingTab({ channelId, openProfileSidebar }) {
         className="subtab-section"
         style={{ position: "relative", width: "100%", height: "100%" }}
       >
-        {nestedConfig.map(({ key, Component }, i) => {
+        {nestedConfig.map(({ key }, i) => {
           // pass props into FavouritesTab only
           if (key === "favourites") {
             return (

@@ -17,7 +17,7 @@ import BuildInfo from "./components/BuildInfo";
 import OAuthCallback from "./auth/OAuthCallback";
 
 export default function App() {
-  const { isOpen: sidebarOpen, openSidebar, closeSidebar } = useSidebar();
+  const { isOpen: sidebarOpen, closeSidebar } = useSidebar();
   const { pathname } = useLocation();
 
   // Only show the profile sidebar on /app routes

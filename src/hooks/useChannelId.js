@@ -12,7 +12,9 @@ export function useChannelId() {
     // always store the final value
     try {
       localStorage.setItem("channelId", id);
-    } catch {}
+    } catch {
+      // ignore write errors
+    }
 
     return id;
   }, []);
