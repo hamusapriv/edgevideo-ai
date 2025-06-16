@@ -95,7 +95,8 @@
 
   .live-details {
     justify-content: center;
-    max-width: 600px;
+    max-width: calc(100% - 300px);
+    width: calc(100% - 300px);
     max-height: none;
     height: 100%;
     padding: 20px;

@@ -26,7 +26,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
         style={showDetails ? {} : { display: "none" }}
       >
         <div
-          data-role="live-product-name"
+          data-role="product-name"
           style={{
             ...hidden,
           }}
@@ -65,6 +65,16 @@ export default function ProductCard({ isP0, showDetails = false }) {
                   padding: "8px",
                   fontSize: "1rem",
                   fontWeight: "bold",
+                }}
+              />
+              <div
+                data-role="ai-description"
+                className="ai-query"
+                style={{
+                  ...hidden,
+                  padding: "8px",
+                  fontSize: "0.85rem",
+                  color: "#ddd",
                 }}
               />
             </span>
@@ -204,17 +214,6 @@ export default function ProductCard({ isP0, showDetails = false }) {
         </div>
 
         {/*====== Below are to be implemented up */}
-
-        <div
-          data-role="ai-description"
-          className="ai-query"
-          style={{
-            ...hidden,
-            padding: "8px",
-            fontSize: "0.85rem",
-            color: "#ddd",
-          }}
-        />
       </div>
     </div>
   );
