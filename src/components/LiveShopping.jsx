@@ -238,7 +238,6 @@ export default function LiveShopping({ channelId, onLike }) {
       alt=""
     />
 
-    <!-- Hidden link element; screenNoAnim.js will populate its href -->
     <a data-role="product-link" href="" style="display: none;"></a>
 
     <!-- Hidden fields (name, price, description) -->
@@ -367,9 +366,7 @@ export default function LiveShopping({ channelId, onLike }) {
            (1) SCROLLABLE BELT: only images are visible here
       ───────────────────────────────────────────────────────────────── */}
       <div id="absolute-container" ref={scrollBoxRef}>
-        <div id="itemContent" ref={beltRef}>
-          {/* screenNoAnim.js will insert <div class="item-container product0">…</div> cards here */}
-        </div>
+        <div id="itemContent" ref={beltRef}></div>
       </div>
       {/* ─────────────────────────────────────────────────────────────────
            (2) DETAILS PANEL: visible when a card is in focus
@@ -386,7 +383,6 @@ export default function LiveShopping({ channelId, onLike }) {
                 display: "flex",
                 flexDirection: "column",
                 gap: "6px",
-                margin: "8px 0",
                 fontSize: "0.95rem",
                 lineHeight: "1.4",
                 color: "#ddd",
@@ -397,7 +393,6 @@ export default function LiveShopping({ channelId, onLike }) {
                   display: "flex",
                   alignItems: "center",
                   gap: "6px",
-                  marginRight: "8px",
                 }}
               >
                 {/* (c) MATCH TEXT */}
@@ -472,7 +467,6 @@ export default function LiveShopping({ channelId, onLike }) {
             {selectedCardData.price && (
               <p
                 style={{
-                  margin: "8px 0 12px",
                   fontSize: "1rem",
                   color: "#fff",
                   display: "flex",
@@ -484,7 +478,6 @@ export default function LiveShopping({ channelId, onLike }) {
               >
                 <span
                   style={{
-                    margin: "8px 0",
                     fontSize: "1rem",
                     fontWeight: "600",
                     color: "#aaf",

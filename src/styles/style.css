@@ -375,7 +375,6 @@ section {
 
 .live-product-name {
   /* replaces old “li h5” rules */
-  margin: 0.5rem 0;
   font-size: 0.9rem;
   line-height: 1.2rem;
   height: 3.6rem;
@@ -406,6 +405,7 @@ section {
   justify-content: flex-start;
   align-items: stretch;
   padding: 10px 20px 0;
+  gap: 10px;
 }
 
 .socials-ul {
