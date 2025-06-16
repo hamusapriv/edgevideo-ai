@@ -40,9 +40,9 @@
     height: 250px;
     display: flex;
     background-color: transparent;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    gap: 20px;
+    gap: 30px;
   }
   .item-container.focused {
     box-shadow: none;
