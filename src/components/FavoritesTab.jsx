@@ -2,14 +2,12 @@
 import React, { useEffect, useRef } from "react";
 import { useFavorites } from "../contexts/FavoritesContext";
 import { useAuth } from "../contexts/AuthContext";
+import { useSidebar } from "../contexts/SidebarContext";
 
-export default function FavouritesTab({
-  refreshKey,
-  onNavigateToLive,
-  openProfileSidebar,
-}) {
+export default function FavouritesTab({ refreshKey, onNavigateToLive }) {
   const { favorites, removeFavorite, fetchFavorites } = useFavorites();
   const { user } = useAuth();
+  const { openSidebar } = useSidebar();
   const containerRef = useRef(null);
   const pullStartY = useRef(null);
 
@@ -70,7 +68,7 @@ export default function FavouritesTab({
           <p style={{ marginBottom: "1rem", color: "#fff", lineHeight: "1.5" }}>
             Sign in to see your Favorite Products
           </p>
-          <button onClick={openProfileSidebar} className="favorites-cta">
+          <button onClick={openSidebar} className="favorites-cta">
             Sign In
           </button>
         </div>
