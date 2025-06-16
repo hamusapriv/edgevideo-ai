@@ -1,11 +1,13 @@
 // src/components/LiveShopping.jsx
 import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom/client";
 import ChannelLogo from "./ChannelLogo";
 
 import SvgFrame from "./svgs/SvgFrame";
 import LikeButton from "./buttons/LikeButton";
 import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
+import ProductCard from "./ProductCard";
 
 export default function LiveShopping({ channelId, onLike }) {
   // ───────── Refs ─────────
@@ -219,83 +221,15 @@ export default function LiveShopping({ channelId, onLike }) {
     // ────────────────────────────────────────────────────────────────────────
     // (F) CARD FACTORY: create a minimal `.item-container`
     // ────────────────────────────────────────────────────────────────────────
-    function makeCard(isP0 = false) {
-      const wrapper = document.createElement("div");
-      wrapper.innerHTML = `
-  <div class="item-container ${isP0 ? "product0" : ""}">
-    <!-- Visible product image -->
-    <img
-      data-role="product-image"
-      src=""
-      alt="Product Image"
-      loading="lazy" 
-    />
-    <!-- Newly added frame-image -->
-    <img
-      class="frame-image"
-      data-role="frame-image"
-      src=""
-      alt=""
-    />
-
-    <a data-role="product-link" href="" style="display: none;"></a>
-
-    <!-- Hidden fields (name, price, description) -->
-    <div
-      data-role="matchText"
-      style="display: none; padding: 8px; font-size: 1rem; font-weight: bold;"
-    ></div>
-
-    <img
-      data-role="vendor-logo"
-      src=""
-      alt="Vendor Logo"
-      style="display: none;"
-    />
-
-    <div
-      data-role="product-name"
-      style="display: none; padding: 8px; font-size: 1rem; font-weight: bold;"
-    ></div>
-    <div
-      data-role="product-price"
-      style="display: none; padding: 4px 8px; font-size: 0.9rem; color: #aaf;"
-    ></div>
-    <div
-      data-role="ai-description"
-      class="ai-query"
-      style="display: none; padding: 8px; font-size: 0.85rem; color: #ddd;"
-    ></div>
-
-    <!-- Info button (hidden) -->
-    <div
-      class="info-button"
-      style="display: none; position: absolute; top: 8px; right: 8px; color: #fff; font-size: 1.2rem;"
-    >
-      &#9432;
-    </div>
-
-    <!-- Like/Dislike/Share row (hidden) -->
-    <div style="display: none; flex: 1; justify-content: space-around; padding: 8px 0;">
-      <button data-role="like" style="background: #444; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
-        Like
-      </button>
-      <button data-role="dislike" style="background: #444; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
-        Dislike
-      </button>
-      <button data-role="share-link" style="background: #444; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
-        Share
-      </button>
-    </div>
-  </div>
-      `.trim();
-
-      const card = wrapper.firstElementChild;
-      if (deviceCanHover) {
-        card.addEventListener("mouseenter", () => applyFocus(card));
+      function makeCard(isP0 = false) {
+        const wrapper = document.createElement("div");
+        ReactDOM.createRoot(wrapper).render(<ProductCard isP0={isP0} />);
+        const card = wrapper.firstElementChild;
+        if (deviceCanHover) {
+          card.addEventListener("mouseenter", () => applyFocus(card));
+        }
+        return card;
       }
-      return card;
-    }
 
     //
     // ────────────────────────────────────────────────────────────────────────
