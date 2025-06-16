@@ -1,9 +1,12 @@
 // src/components/Tabs.jsx
 import React from "react";
-import { useSidebar } from "../contexts/SidebarContext";
 
-export default function Tabs({ tabs, activeTab, onChangeTab }) {
-  const { openSidebar } = useSidebar();
+export default function Tabs({
+  tabs,
+  activeTab,
+  onChangeTab,
+  onToggleSidebar,
+}) {
   return (
     <footer className="footer">
       {/* (j) AFFILIATE FOOTER */}
@@ -24,7 +27,7 @@ export default function Tabs({ tabs, activeTab, onChangeTab }) {
         {/* Sidebar‐toggle button inside the tabs row */}
         <button
           className="tab sidebar-toggle"
-          onClick={openSidebar}
+          onClick={onToggleSidebar}
           aria-label="Toggle profile sidebar"
         >
           <div className="avatar-wrapper small">
