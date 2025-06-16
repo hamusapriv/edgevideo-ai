@@ -135,10 +135,11 @@ export default function ProductCard({ isP0, showDetails = false }) {
         </div>
 
         <p
+          data-role="product-price-container"
           style={{
+            display: "none",
             fontSize: "1rem",
             color: "#fff",
-            display: "flex",
             justifyContent: "flex-start",
             alignItems: "center",
             lineHeight: "1.4rem",

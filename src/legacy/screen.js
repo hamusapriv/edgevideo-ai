@@ -490,6 +490,9 @@ function UpdateProductViaDataRole(i, time = null) {
     '[data-role="vendor-logo"]'
   );
   let prices = itemContainer.querySelectorAll('[data-role="product-price"]');
+  let priceContainers = itemContainer.querySelectorAll(
+    '[data-role="product-price-container"]'
+  );
   let matchTexts = itemContainer.querySelectorAll('[data-role="matchText"]');
 
   // Ensure the product exists at index i
@@ -719,10 +722,16 @@ function UpdateProductViaDataRole(i, time = null) {
         priceDisplay.innerText = formattedPrice;
         priceDisplay.style.display = "flex"; // Make sure it's visible
       });
+      priceContainers.forEach((container) => {
+        container.style.display = "flex";
+      });
     } else {
       // Hide price if not available
       prices.forEach((priceDisplay) => {
         priceDisplay.style.display = "none";
+      });
+      priceContainers.forEach((container) => {
+        container.style.display = "none";
       });
     }
 
