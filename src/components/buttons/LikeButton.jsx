@@ -9,15 +9,44 @@ export default function LikeButton({ itemId, itemTypeName, onSuccess }) {
   const { user } = useAuth();
   const { openSidebar } = useSidebar();
 
+  function inferItemTypeName(card) {
+    const url =
+      card?.querySelector("[data-role='product-link']")?.href?.toLowerCase() || "";
+    if (card?.classList.contains("ticket-style")) {
+      return url.includes("viator") ? "Viator Ticket" : "DB Ticket";
+    }
+    if (card?.classList.contains("coupon-style")) {
+      return "Deal";
+    }
+    return "DB Product";
+  }
+
   const handleClick = async (e) => {
     e.stopPropagation();
     if (!user) return openSidebar();
-    await upvoteProduct(itemId, itemTypeName);
+
+    let id = itemId;
+    let typeName = itemTypeName;
+
+    if (!id) {
+      const card = e.currentTarget.closest(".item-container");
+      id = card?.getAttribute("data-product-id");
+      typeName = inferItemTypeName(card);
+    }
+
+    if (!id) return;
+
+    await upvoteProduct(id, typeName);
     onSuccess?.();
   };
 
   return (
-    <button className="product-cta" data-role="like" onClick={handleClick}>
+    <button
+      className="product-cta like-button"
+      data-role="like"
+      data-product-id={itemId}
+      onClick={handleClick}
+    >
       <SvgLike />
     </button>
   );
