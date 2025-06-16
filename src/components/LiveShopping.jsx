@@ -36,7 +36,6 @@ export default function LiveShopping({ channelId, onLike }) {
   });
 
   // ───────── Mount & animate frame states ─────────
-  const [mountFrame, setMountFrame] = useState(false);
   const [animateFrame, setAnimateFrame] = useState(false);
 
   // ───────── Detect hover (desktop vs mobile) ─────────
@@ -232,6 +231,22 @@ export default function LiveShopping({ channelId, onLike }) {
         if (card && deviceCanHover) {
           card.addEventListener("mouseenter", () => applyFocus(card));
         }
+
+        const toggle = card.querySelector('[data-role="frame-toggle"]');
+        const container = card.querySelector('[data-role="frame-container"]');
+        const text = card.querySelector('[data-role="toggle-text"]');
+        if (toggle && container) {
+          let visible = false;
+          toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            visible = !visible;
+            container.style.maxHeight = visible ? '200px' : '0px';
+            container.style.opacity = visible ? '1' : '0';
+            container.style.transform = visible ? 'translateY(0)' : 'translateY(-20px)';
+            if (text) text.textContent = visible ? 'Hide Frame' : 'Show Frame';
+          });
+        }
+
         return card;
       }
 
@@ -270,28 +285,11 @@ export default function LiveShopping({ channelId, onLike }) {
     };
   }, [channelId, deviceCanHover]);
 
-  // when mountFrame flips on, start the entry animation next tick
-  useEffect(() => {
-    if (mountFrame) {
-      requestAnimationFrame(() => {
-        setAnimateFrame(true);
-      });
-    }
-  }, [mountFrame]);
-
-  // when animateFrame flips off, unmount after the transition finishes
-  useEffect(() => {
-    if (!animateFrame && mountFrame) {
-      const timer = setTimeout(() => setMountFrame(false), 400);
-      return () => clearTimeout(timer);
-    }
-  }, [animateFrame, mountFrame]);
 
   // ───────── Hide frame when user focuses a different product ─────────
   useEffect(() => {
-    // collapse and unmount immediately
+    // collapse immediately
     setAnimateFrame(false);
-    setMountFrame(false);
   }, [selectedCardData.id]);
 
   // ─────────────────────────────────────────────────────────────────
@@ -350,11 +348,7 @@ export default function LiveShopping({ channelId, onLike }) {
                 {/* Inline toggle */}
                 <button
                   onClick={() => {
-                    if (!mountFrame) {
-                      setMountFrame(true);
-                    } else {
-                      setAnimateFrame(false);
-                    }
+                    setAnimateFrame((prev) => !prev);
                   }}
                   style={{
                     display: "inline-flex",
@@ -375,7 +369,7 @@ export default function LiveShopping({ channelId, onLike }) {
             </p>
 
             {/* (d-1) FRAME IMAGE: only when toggled on */}
-            {mountFrame && selectedCardData.frameImageUrl && (
+            {selectedCardData.frameImageUrl && (
               <div
                 className="live-frame-image-container"
                 style={{

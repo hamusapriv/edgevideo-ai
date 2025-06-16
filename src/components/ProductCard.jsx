@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import LikeButton from "./buttons/LikeButton";
 import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
@@ -6,6 +6,14 @@ import SvgFrame from "./svgs/SvgFrame";
 
 export default function ProductCard({ isP0, showDetails = false }) {
   const hidden = showDetails ? {} : { display: "none" };
+  const [animateFrame, setAnimateFrame] = useState(false);
+
+  // collapse the frame when details hide
+  useEffect(() => {
+    if (!showDetails) {
+      setAnimateFrame(false);
+    }
+  }, [showDetails]);
 
   return (
     <div
@@ -79,13 +87,10 @@ export default function ProductCard({ isP0, showDetails = false }) {
               />
             </span>
             {/* Inline toggle */}
-            {/*  <button
+            <button
+              data-role="frame-toggle"
               onClick={() => {
-                if (!mountFrame) {
-                  setMountFrame(true);
-                } else {
-                  setAnimateFrame(false);
-                }
+                setAnimateFrame((prev) => !prev);
               }}
               style={{
                 display: "inline-flex",
@@ -99,34 +104,36 @@ export default function ProductCard({ isP0, showDetails = false }) {
               }}
             >
               <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
-              {animateFrame ? "Hide Frame" : "Show Frame"}
-            </button> */}
+              <span data-role="toggle-text">
+                {animateFrame ? "Hide Frame" : "Show Frame"}
+              </span>
+            </button>
           </span>
         </p>
-        {/* <div
-          className="live-frame-image-container"
-          style={{
-            overflow: "hidden",
-            aspectRatio: "16/9",
-            maxWidth: "calc(200px * 16 / 9)",
-            width: "fit-content",
-            //maxHeight: animateFrame ? "200px" : "0px",
-            objectFit: "cover",
-            borderRadius: "8px",
-            //opacity: animateFrame ? 1 : 0,
-            //transform: animateFrame ? "translateY(0)" : "translateY(-20px)",
-            transition:
-              "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
-          }}
-        >
-          {" "}
-          <img
-            className="live-frame-image"
-            data-role="frame-image"
-            src={null}
-            alt=""
-          />
-        </div> */}
+        <div
+            className="live-frame-image-container"
+            data-role="frame-container"
+            style={{
+              overflow: "hidden",
+              aspectRatio: "16/9",
+              maxWidth: "calc(200px * 16 / 9)",
+              width: "fit-content",
+              maxHeight: animateFrame ? "200px" : "0px",
+              objectFit: "cover",
+              borderRadius: "8px",
+              opacity: animateFrame ? 1 : 0,
+              transform: animateFrame ? "translateY(0)" : "translateY(-20px)",
+              transition:
+                "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
+            }}
+          >
+            <img
+              className="live-frame-image"
+              data-role="frame-image"
+              src={null}
+              alt=""
+            />
+          </div>
 
         <p
           style={{
