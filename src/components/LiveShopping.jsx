@@ -1,6 +1,11 @@
 // src/components/LiveShopping.jsx
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ChannelLogo from "./ChannelLogo";
+
+import SvgFrame from "./svgs/SvgFrame";
+import LikeButton from "./buttons/LikeButton";
+import DislikeButton from "./buttons/DislikeButton";
+import ShareButton from "./buttons/ShareButton";
 
 export default function LiveShopping({ channelId, onLike }) {
   // ───────── Refs ─────────
@@ -14,18 +19,53 @@ export default function LiveShopping({ channelId, onLike }) {
   // ───────── add at top of your useEffect ─────────
   const lastBestRef = useRef(null);
 
+  // ───────── Selected-card state ─────────
+  const [selectedCardData, setSelectedCardData] = useState({
+    id: null,
+    itemTypeName: "", // ← add this
+
+    name: "",
+    price: "",
+    description: "",
+    frameImageUrl: "",
+    matchText: "",
+    vendorLogoUrl: "",
+    productUrl: "",
+  });
+
+  // ───────── Mount & animate frame states ─────────
+  const [mountFrame, setMountFrame] = useState(false);
+  const [animateFrame, setAnimateFrame] = useState(false);
 
   // ───────── Detect hover (desktop vs mobile) ─────────
   const deviceCanHover = window.matchMedia("(any-hover:hover)").matches;
 
   useEffect(() => {
-    // placeholder for any dynamically inserted scripts
     let injectedScript = null;
+    let injectedStyle = null;
 
     //
     // ────────────────────────────────────────────────────────────────────────
-    // (A) No additional styles needed now that card details are always visible
+    // (A) Inject a <style> that hides all non-image fields
     // ────────────────────────────────────────────────────────────────────────
+    injectedStyle = document.createElement("style");
+    injectedStyle.innerHTML = `
+      /* Hide everything except the two images */
+      .item-container [data-role="product-name"],
+      .item-container [data-role="product-price"],
+      .item-container [data-role="ai-description"],
+      .item-container [data-role="frame-image"],
+      .item-container [data-role="matchText"],
+      .item-container [data-role="vendor-logo"],
+      .item-container .info-button,
+      .item-container [data-role="like"],
+      .item-container [data-role="dislike"],
+      .item-container [data-role="share-link"],
+      .item-container [data-role="product-link"] {
+        display: none !important;
+      }
+    `;
+    document.head.appendChild(injectedStyle);
 
     // ────────────────────────────────────────────────────────────────────────
     // (C) Grab DOM nodes & bail if missing
@@ -104,7 +144,40 @@ export default function LiveShopping({ channelId, onLike }) {
       card.classList.add("focused");
       lastBestRef.current = card;
 
-      // details are displayed directly within the focused card
+      const id = card.getAttribute("data-product-id");
+
+      function inferItemTypeName(target) {
+        const url =
+          target
+            .querySelector("[data-role='product-link']")
+            ?.href?.toLowerCase() || "";
+        if (target.classList.contains("ticket-style")) {
+          return url.includes("viator") ? "Viator Ticket" : "DB Ticket";
+        }
+        if (target.classList.contains("coupon-style")) {
+          return "Deal";
+        }
+        return "DB Product";
+      }
+
+      setSelectedCardData({
+        id,
+        itemTypeName: inferItemTypeName(card),
+
+        name: card.querySelector('[data-role="product-name"]')?.innerText || "",
+        price:
+          card.querySelector('[data-role="product-price"]')?.innerText || "",
+        description:
+          card.querySelector('[data-role="ai-description"]')?.innerText || "",
+        frameImageUrl:
+          card.querySelector('[data-role="frame-image"]')?.src || "",
+        matchText:
+          card.querySelector('[data-role="matchText"]')?.innerText || "",
+        vendorLogoUrl:
+          card.querySelector('[data-role="vendor-logo"]')?.src || "",
+        productUrl:
+          card.querySelector('[data-role="product-link"]')?.href || "",
+      });
     }
 
     // ───────── updateFocusDuringScroll: only run when focus really changes ─────────
@@ -166,45 +239,45 @@ export default function LiveShopping({ channelId, onLike }) {
     />
 
     <!-- Hidden link element; screenNoAnim.js will populate its href -->
-    <a data-role="product-link" href=""></a>
+    <a data-role="product-link" href="" style="display: none;"></a>
 
     <!-- Hidden fields (name, price, description) -->
     <div
       data-role="matchText"
-      style="padding: 8px; font-size: 1rem; font-weight: bold;"
+      style="display: none; padding: 8px; font-size: 1rem; font-weight: bold;"
     ></div>
 
     <img
       data-role="vendor-logo"
       src=""
       alt="Vendor Logo"
+      style="display: none;"
     />
 
     <div
       data-role="product-name"
-      class="live-product-name"
-      style="padding: 8px; font-size: 1rem; font-weight: bold;"
+      style="display: none; padding: 8px; font-size: 1rem; font-weight: bold;"
     ></div>
     <div
       data-role="product-price"
-      style="padding: 4px 8px; font-size: 0.9rem; color: #aaf;"
+      style="display: none; padding: 4px 8px; font-size: 0.9rem; color: #aaf;"
     ></div>
     <div
       data-role="ai-description"
       class="ai-query"
-      style="padding: 8px; font-size: 0.85rem; color: #ddd;"
+      style="display: none; padding: 8px; font-size: 0.85rem; color: #ddd;"
     ></div>
 
-    <!-- Info button -->
+    <!-- Info button (hidden) -->
     <div
       class="info-button"
-      style="position: absolute; top: 8px; right: 8px; color: #fff; font-size: 1.2rem;"
+      style="display: none; position: absolute; top: 8px; right: 8px; color: #fff; font-size: 1.2rem;"
     >
       &#9432;
     </div>
 
-    <!-- Like/Dislike/Share row -->
-    <div class="product-buttons-container" style="flex: 1; justify-content: space-around; padding: 8px 0;">
+    <!-- Like/Dislike/Share row (hidden) -->
+    <div style="display: none; flex: 1; justify-content: space-around; padding: 8px 0;">
       <button data-role="like" style="background: #444; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
         Like
       </button>
@@ -256,9 +329,33 @@ export default function LiveShopping({ channelId, onLike }) {
         scrollBox.removeEventListener("scroll", onScroll, { passive: true });
       }
       if (injectedScript) document.head.removeChild(injectedScript);
+      if (injectedStyle) document.head.removeChild(injectedStyle);
     };
   }, [channelId]);
 
+  // when mountFrame flips on, start the entry animation next tick
+  useEffect(() => {
+    if (mountFrame) {
+      requestAnimationFrame(() => {
+        setAnimateFrame(true);
+      });
+    }
+  }, [mountFrame]);
+
+  // when animateFrame flips off, unmount after the transition finishes
+  useEffect(() => {
+    if (!animateFrame && mountFrame) {
+      const timer = setTimeout(() => setMountFrame(false), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [animateFrame, mountFrame]);
+
+  // ───────── Hide frame when user focuses a different product ─────────
+  useEffect(() => {
+    // collapse and unmount immediately
+    setAnimateFrame(false);
+    setMountFrame(false);
+  }, [selectedCardData.id]);
 
   // ─────────────────────────────────────────────────────────────────
   // Render
@@ -273,6 +370,199 @@ export default function LiveShopping({ channelId, onLike }) {
         <div id="itemContent" ref={beltRef}>
           {/* screenNoAnim.js will insert <div class="item-container product0">…</div> cards here */}
         </div>
+      </div>
+      {/* ─────────────────────────────────────────────────────────────────
+           (2) DETAILS PANEL: visible when a card is in focus
+      ───────────────────────────────────────────────────────────────── */}
+      <div className="live-details">
+        {selectedCardData.name ? (
+          <>
+            {/* (e) NAME */}
+            <h2 className="live-product-name">{selectedCardData.name}</h2>
+
+            {/* (f) DESCRIPTION */}
+            <p
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "6px",
+                margin: "8px 0",
+                fontSize: "0.95rem",
+                lineHeight: "1.4",
+                color: "#ddd",
+              }}
+            >
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  marginRight: "8px",
+                }}
+              >
+                {/* (c) MATCH TEXT */}
+                {selectedCardData.matchText && (
+                  <span
+                    style={{
+                      display: "inline",
+                      fontSize: "1rem",
+                      fontWeight: "600",
+                      color: "#fff",
+                    }}
+                  >
+                    AI {selectedCardData.matchText}
+                  </span>
+                )}
+
+                {/* Inline toggle */}
+                <button
+                  onClick={() => {
+                    if (!mountFrame) {
+                      setMountFrame(true);
+                    } else {
+                      setAnimateFrame(false);
+                    }
+                  }}
+                  style={{
+                    display: "inline-flex",
+                    padding: 0,
+                    marginLeft: "4px",
+                    border: "none",
+                    background: "transparent",
+                    color: "#4fa",
+                    cursor: "pointer",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
+                  {animateFrame ? "Hide Frame" : "Show Frame"}
+                </button>
+              </span>
+              {selectedCardData.description}
+            </p>
+
+            {/* (d-1) FRAME IMAGE: only when toggled on */}
+            {mountFrame && selectedCardData.frameImageUrl && (
+              <div
+                className="live-frame-image-container"
+                style={{
+                  overflow: "hidden",
+                  aspectRatio: "16/9",
+                  maxWidth: "calc(200px * 16 / 9)",
+                  width: "fit-content",
+                  maxHeight: animateFrame ? "200px" : "0px",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                  opacity: animateFrame ? 1 : 0,
+                  transform: animateFrame
+                    ? "translateY(0)"
+                    : "translateY(-20px)",
+                  transition:
+                    "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
+                }}
+              >
+                <img
+                  src={selectedCardData.frameImageUrl}
+                  alt={`Frame for ${selectedCardData.name}`}
+                  className="live-frame-image"
+                />
+              </div>
+            )}
+            {/* (g) PRICE */}
+            {selectedCardData.price && (
+              <p
+                style={{
+                  margin: "8px 0 12px",
+                  fontSize: "1rem",
+                  color: "#fff",
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  lineHeight: "1.4rem",
+                  gap: "1rem",
+                }}
+              >
+                <span
+                  style={{
+                    margin: "8px 0",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    color: "#aaf",
+                    marginRight: "0.15rem",
+                  }}
+                >
+                  Price:
+                </span>
+                {selectedCardData.price}
+              </p>
+            )}
+
+            {/* (h) CTA + SOCIAL BUTTONS */}
+            <div className="product-buttons-container">
+              {/* Shop Now */}
+              {selectedCardData.productUrl && (
+                <a
+                  href={selectedCardData.productUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "1rem",
+                    background: "var(--color-primary)",
+                    color: "#fff",
+                    textAlign: "center",
+                    textDecoration: "none",
+                    padding: "6px 10px",
+                    borderRadius: "6px",
+                    fontSize: "0.95rem",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <p>Shop On</p>
+                  {/* (d) VENDOR LOGO (if present) */}
+                  {selectedCardData.vendorLogoUrl && (
+                    <img
+                      src={selectedCardData.vendorLogoUrl}
+                      alt="Vendor Logo"
+                      style={{
+                        width: "auto",
+                        height: "24px",
+                        borderRadius: "6px",
+                        backgroundColor: "white",
+                      }}
+                    />
+                  )}
+                </a>
+              )}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  justifyContent: "space-around",
+                }}
+              >
+                <LikeButton
+                  itemId={selectedCardData.id}
+                  itemTypeName={selectedCardData.itemTypeName}
+                  onSuccess={onLike}
+                />
+                <DislikeButton
+                  itemId={selectedCardData.id}
+                  itemTypeName={selectedCardData.itemTypeName}
+                  onSuccess={onLike}
+                />
+                <ShareButton
+                  title={selectedCardData.name}
+                  url={selectedCardData.productUrl}
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <p style={{ color: "#aaa" }}>Loading products…</p>
+        )}
       </div>
     </div>
   );
