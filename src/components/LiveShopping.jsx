@@ -48,24 +48,27 @@ export default function LiveShopping({ channelId, onLike }) {
     // ────────────────────────────────────────────────────────────────────────
     // (A) Inject a <style> that hides all non-image fields
     // ────────────────────────────────────────────────────────────────────────
-    injectedStyle = document.createElement("style");
-    injectedStyle.innerHTML = `
-      /* Hide everything except the two images */
-      .item-container [data-role="product-name"],
-      .item-container [data-role="product-price"],
-      .item-container [data-role="ai-description"],
-      .item-container [data-role="frame-image"],
-      .item-container [data-role="matchText"],
-      .item-container [data-role="vendor-logo"],
-      .item-container .info-button,
-      .item-container [data-role="like"],
-      .item-container [data-role="dislike"],
-      .item-container [data-role="share-link"],
-      .item-container [data-role="product-link"] {
-        display: none !important;
-      }
-    `;
-    document.head.appendChild(injectedStyle);
+    if (!deviceCanHover) {
+      injectedStyle = document.createElement("style");
+      injectedStyle.innerHTML = `
+        /* Hide everything except the two images */
+        .item-container [data-role="product-name"],
+        .item-container [data-role="product-price"],
+        .item-container [data-role="ai-description"],
+        .item-container [data-role="frame-image"],
+        .item-container [data-role="matchText"],
+        .item-container [data-role="vendor-logo"],
+        .item-container .info-button,
+        .item-container [data-role="like"],
+        .item-container [data-role="dislike"],
+        .item-container [data-role="share-link"],
+        .item-container [data-role="product-link"],
+        .item-container .live-details {
+          display: none !important;
+        }
+      `;
+      document.head.appendChild(injectedStyle);
+    }
 
     // ────────────────────────────────────────────────────────────────────────
     // (C) Grab DOM nodes & bail if missing
@@ -223,70 +226,24 @@ export default function LiveShopping({ channelId, onLike }) {
       const wrapper = document.createElement("div");
       wrapper.innerHTML = `
   <div class="item-container ${isP0 ? "product0" : ""}">
-    <!-- Visible product image -->
-    <img
-      data-role="product-image"
-      src=""
-      alt="Product Image"
-      loading="lazy" 
-    />
-    <!-- Newly added frame-image -->
-    <img
-      class="frame-image"
-      data-role="frame-image"
-      src=""
-      alt=""
-    />
-
-    <!-- Hidden link element; screenNoAnim.js will populate its href -->
-    <a data-role="product-link" href="" style="display: none;"></a>
-
-    <!-- Hidden fields (name, price, description) -->
-    <div
-      data-role="matchText"
-      style="display: none; padding: 8px; font-size: 1rem; font-weight: bold;"
-    ></div>
-
-    <img
-      data-role="vendor-logo"
-      src=""
-      alt="Vendor Logo"
-      style="display: none;"
-    />
-
-    <div
-      data-role="product-name"
-      style="display: none; padding: 8px; font-size: 1rem; font-weight: bold;"
-    ></div>
-    <div
-      data-role="product-price"
-      style="display: none; padding: 4px 8px; font-size: 0.9rem; color: #aaf;"
-    ></div>
-    <div
-      data-role="ai-description"
-      class="ai-query"
-      style="display: none; padding: 8px; font-size: 0.85rem; color: #ddd;"
-    ></div>
-
-    <!-- Info button (hidden) -->
-    <div
-      class="info-button"
-      style="display: none; position: absolute; top: 8px; right: 8px; color: #fff; font-size: 1.2rem;"
-    >
-      &#9432;
-    </div>
-
-    <!-- Like/Dislike/Share row (hidden) -->
-    <div style="display: none; flex: 1; justify-content: space-around; padding: 8px 0;">
-      <button data-role="like" style="background: #444; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
-        Like
-      </button>
-      <button data-role="dislike" style="background: #444; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
-        Dislike
-      </button>
-      <button data-role="share-link" style="background: #444; border: none; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
-        Share
-      </button>
+    <img data-role="product-image" src="" alt="Product Image" loading="lazy" />
+    <div class="live-details">
+      <h2 class="live-product-name" data-role="product-name"></h2>
+      <div data-role="matchText"></div>
+      <div data-role="ai-description" class="ai-query"></div>
+      <img class="frame-image" data-role="frame-image" src="" alt="" />
+      <div data-role="product-price"></div>
+      <div class="product-buttons-container">
+        <a data-role="product-link" href="" class="product-cta">
+          <p>Shop On</p>
+          <img data-role="vendor-logo" src="" alt="Vendor Logo" />
+        </a>
+        <div style="display: flex; gap: 8px; justify-content: space-around;">
+          <button data-role="like">Like</button>
+          <button data-role="dislike">Dislike</button>
+          <button data-role="share-link">Share</button>
+        </div>
+      </div>
     </div>
   </div>
       `.trim();
@@ -372,10 +329,11 @@ export default function LiveShopping({ channelId, onLike }) {
         </div>
       </div>
       {/* ─────────────────────────────────────────────────────────────────
-           (2) DETAILS PANEL: visible when a card is in focus
+           (2) DETAILS PANEL: visible when a card is in focus (mobile only)
       ───────────────────────────────────────────────────────────────── */}
-      <div className="live-details">
-        {selectedCardData.name ? (
+      {!deviceCanHover && (
+        <div className="live-details">
+          {selectedCardData.name ? (
           <>
             {/* (e) NAME */}
             <h2 className="live-product-name">{selectedCardData.name}</h2>
@@ -564,6 +522,7 @@ export default function LiveShopping({ channelId, onLike }) {
           <p style={{ color: "#aaa" }}>Loading products…</p>
         )}
       </div>
+      )}
     </div>
   );
 }
