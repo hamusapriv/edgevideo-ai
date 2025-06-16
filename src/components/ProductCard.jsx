@@ -162,7 +162,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
               ...hidden,
               padding: "4px 8px",
               fontSize: "0.9rem",
-              color: "#aaf",
+              color: "#fff",
             }}
           />{" "}
         </p>
