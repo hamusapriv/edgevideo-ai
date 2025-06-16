@@ -53,8 +53,9 @@ export default function LiveShopping({ channelId, onLike }) {
 
   function inferItemTypeName(target) {
     const url =
-      target?.querySelector("[data-role='product-link']")?.href?.toLowerCase() ||
-      "";
+      target
+        ?.querySelector("[data-role='product-link']")
+        ?.href?.toLowerCase() || "";
     if (target?.classList.contains("ticket-style")) {
       return url.includes("viator") ? "Viator Ticket" : "DB Ticket";
     }
@@ -64,29 +65,35 @@ export default function LiveShopping({ channelId, onLike }) {
     return "DB Product";
   }
 
-  const handleLike = useCallback(async (e) => {
-    e.stopPropagation();
-    if (!userRef.current) return openSidebar();
+  const handleLike = useCallback(
+    async (e) => {
+      e.stopPropagation();
+      if (!userRef.current) return openSidebar();
 
-    const card = e.currentTarget.closest(".item-container");
-    const id = card?.getAttribute("data-product-id");
-    if (!id) return;
+      const card = e.currentTarget.closest(".item-container");
+      const id = card?.getAttribute("data-product-id");
+      if (!id) return;
 
-    await upvoteProduct(id, inferItemTypeName(card));
-    onLike?.();
-  }, [openSidebar, onLike]);
+      await upvoteProduct(id, inferItemTypeName(card));
+      onLike?.();
+    },
+    [openSidebar, onLike]
+  );
 
-  const handleDislike = useCallback(async (e) => {
-    e.stopPropagation();
-    if (!userRef.current) return openSidebar();
+  const handleDislike = useCallback(
+    async (e) => {
+      e.stopPropagation();
+      if (!userRef.current) return openSidebar();
 
-    const card = e.currentTarget.closest(".item-container");
-    const id = card?.getAttribute("data-product-id");
-    if (!id) return;
+      const card = e.currentTarget.closest(".item-container");
+      const id = card?.getAttribute("data-product-id");
+      if (!id) return;
 
-    await downvoteProduct(id, inferItemTypeName(card));
-    onLike?.();
-  }, [openSidebar, onLike]);
+      await downvoteProduct(id, inferItemTypeName(card));
+      onLike?.();
+    },
+    [openSidebar, onLike]
+  );
 
   const handleShare = useCallback((e) => {
     e.stopPropagation();
@@ -284,40 +291,42 @@ export default function LiveShopping({ channelId, onLike }) {
     // ────────────────────────────────────────────────────────────────────────
     // (F) CARD FACTORY: create a minimal `.item-container`
     // ────────────────────────────────────────────────────────────────────────
-      function makeCard(isP0 = false) {
-        const wrapper = document.createElement("div");
-        wrapper.innerHTML = renderToStaticMarkup(
-          <ProductCard isP0={isP0} showDetails={deviceCanHover} />
-        );
-        const card = wrapper.firstElementChild;
-        if (card && deviceCanHover) {
-          card.addEventListener("mouseenter", () => applyFocus(card));
-        }
-
-        const toggle = card.querySelector('[data-role="frame-toggle"]');
-        const container = card.querySelector('[data-role="frame-container"]');
-        const text = card.querySelector('[data-role="toggle-text"]');
-        if (toggle && container) {
-          let visible = false;
-          toggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            visible = !visible;
-            container.style.maxHeight = visible ? '200px' : '0px';
-            container.style.opacity = visible ? '1' : '0';
-            container.style.transform = visible ? 'translateY(0)' : 'translateY(-20px)';
-            if (text) text.textContent = visible ? 'Hide Frame' : 'Show Frame';
-          });
-        }
-
-        const like = card.querySelector('[data-role="like"]');
-        if (like) like.addEventListener('click', handleLike);
-        const dislike = card.querySelector('[data-role="dislike"]');
-        if (dislike) dislike.addEventListener('click', handleDislike);
-        const share = card.querySelector('[data-role="share-link"]');
-        if (share) share.addEventListener('click', handleShare);
-
-        return card;
+    function makeCard(isP0 = false) {
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = renderToStaticMarkup(
+        <ProductCard isP0={isP0} showDetails={deviceCanHover} />
+      );
+      const card = wrapper.firstElementChild;
+      if (card && deviceCanHover) {
+        card.addEventListener("mouseenter", () => applyFocus(card));
       }
+
+      const toggle = card.querySelector('[data-role="frame-toggle"]');
+      const container = card.querySelector('[data-role="frame-container"]');
+      const text = card.querySelector('[data-role="toggle-text"]');
+      if (toggle && container) {
+        let visible = false;
+        toggle.addEventListener("click", (e) => {
+          e.stopPropagation();
+          visible = !visible;
+          container.style.maxHeight = visible ? "200px" : "0px";
+          container.style.opacity = visible ? "1" : "0";
+          container.style.transform = visible
+            ? "translateY(0)"
+            : "translateY(-20px)";
+          if (text) text.textContent = visible ? "Hide Frame" : "Show Frame";
+        });
+      }
+
+      const like = card.querySelector('[data-role="like"]');
+      if (like) like.addEventListener("click", handleLike);
+      const dislike = card.querySelector('[data-role="dislike"]');
+      if (dislike) dislike.addEventListener("click", handleDislike);
+      const share = card.querySelector('[data-role="share-link"]');
+      if (share) share.addEventListener("click", handleShare);
+
+      return card;
+    }
 
     //
     // ────────────────────────────────────────────────────────────────────────
@@ -354,7 +363,6 @@ export default function LiveShopping({ channelId, onLike }) {
     };
   }, [channelId, deviceCanHover, handleLike, handleDislike, handleShare]);
 
-
   // ───────── Hide frame when user focuses a different product ─────────
   useEffect(() => {
     // collapse immediately
@@ -376,7 +384,10 @@ export default function LiveShopping({ channelId, onLike }) {
       {/* ─────────────────────────────────────────────────────────────────
            (2) DETAILS PANEL: visible when a card is in focus
       ───────────────────────────────────────────────────────────────── */}
-      <div className="live-details" style={{ display: deviceCanHover ? "none" : "flex" }}>
+      <div
+        className="live-details"
+        style={{ display: deviceCanHover ? "none" : "flex" }}
+      >
         {selectedCardData.name ? (
           <>
             {/* (e) NAME */}
@@ -533,7 +544,7 @@ export default function LiveShopping({ channelId, onLike }) {
               <div
                 style={{
                   display: "flex",
-                  gap: 8,
+                  gap: 16,
                   justifyContent: "space-around",
                 }}
               >

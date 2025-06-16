@@ -21,25 +21,29 @@ export default function ProductCard({ isP0, showDetails = false }) {
         showDetails ? "show-details" : ""
       }`}
     >
-      <div className="live-image-container">
-        <img
-          data-role="product-image"
-          src={null}
-          alt="Product Image"
-          loading="lazy"
-        />
-      </div>
+      <img
+        data-role="product-image"
+        src={null}
+        alt="Product Image"
+        loading="lazy"
+      />
       <div
         className="card-details live-details"
         style={showDetails ? {} : { display: "none" }}
       >
-        <div
-          data-role="product-name"
-          style={{
-            ...hidden,
-          }}
-        />
-
+        <a
+          data-role="product-link"
+          href=""
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div
+            data-role="product-name"
+            style={{
+              ...hidden,
+            }}
+          />
+        </a>
         <p
           style={{
             display: "flex",
@@ -209,7 +213,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
             style={{
               ...hidden,
               display: "flex",
-              gap: 8,
+              gap: 16,
               justifyContent: "space-around",
             }}
           >

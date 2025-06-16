@@ -26,6 +26,10 @@
     height: 160px;
   }
 
+  .product-cta:hover {
+    transform: scale(1.1);
+  }
+
   /* Product card details displayed on hover devices */
   .item-container.show-details {
     height: auto;
@@ -36,7 +40,7 @@
   }
 
   .item-container {
-    width: 100%;
+    width: fit-content;
     height: 250px;
     display: flex;
     background-color: transparent;
@@ -60,6 +64,11 @@
     order: 99999;
     border-radius: 10px;
     overflow: hidden;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+  }
+  .live-image-container:hover {
+    transform: scale(1);
   }
   #absolute-container {
     overflow-x: hidden;
@@ -75,6 +84,7 @@
     inset: 12% 12% auto 12%;
     flex-direction: column;
     gap: 20px;
+    align-items: center;
   }
 
   .liveshopping-container {
@@ -89,6 +99,14 @@
     right: auto;
     backdrop-filter: none;
     padding: 0;
+    align-items: center;
+    height: 50px;
+  }
+  .product-buttons-container a {
+    transition: transform 0.3s ease;
+  }
+  .product-buttons-container a:hover {
+    transform: scale(1.05);
   }
 
   .channel-logo {
@@ -99,7 +117,7 @@
   .live-details {
     justify-content: center;
     max-height: none;
-    max-width: 600px;
+    width: 400px;
     height: 100%;
     padding: 20px;
     margin: 0;
