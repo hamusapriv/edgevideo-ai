@@ -424,3 +424,38 @@ section {
   align-items: center;
   padding: 3px;
 }
+
+/* Product card details displayed on hover devices */
+.item-container.show-details {
+  flex-direction: column;
+  align-items: stretch;
+  height: auto;
+}
+
+.item-container.show-details .card-details {
+  display: flex;
+}
+
+.card-details {
+  display: none;
+  border-radius: 8px;
+  color: #fff;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 10px;
+  gap: 10px;
+}
+
+.card-details [data-role="product-name"] {
+  font-size: 0.9rem;
+  line-height: 1.2rem;
+  min-height: 3.6rem;
+  font-weight: 600;
+  color: var(--color-light);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
