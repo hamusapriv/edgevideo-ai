@@ -1,6 +1,6 @@
 /* Live Shopping Desktop CSS */
 
-@media (min-width: 768px) {
+@media (any-hover: hover) {
   #clicked-list .product-card {
     flex: 0 0 200px;
   }
