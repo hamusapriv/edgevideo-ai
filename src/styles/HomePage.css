@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #fff;
   padding: 1rem;
+  color: var(--color-white);
 }
 
 .site-header {
@@ -14,37 +14,85 @@
   margin-bottom: 2rem;
 }
 
-.site-nav .nav-link {
-  color: #fff;
+.site-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-link {
+  color: var(--color-white);
   text-decoration: none;
   font-weight: 500;
 }
 
 .hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   text-align: center;
-  gap: 1rem;
   max-width: 800px;
+  margin-bottom: 3rem;
 }
 
-.hero-img {
-  max-width: 100%;
-  height: auto;
+.tagline {
+  color: var(--color-grey);
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 200px;
+  background: var(--color-secondary);
+  border-radius: 4px;
+}
+
+.how-it-works,
+.benefits,
+.features-list,
+.cta,
+.newsletter {
+  max-width: 800px;
+  margin-top: 2rem;
+}
+
+.how-it-works ol {
+  text-align: left;
+  padding-left: 1.25rem;
+}
+
+.features-list ul {
+  padding-left: 1.25rem;
 }
 
 .cta-button {
   display: inline-block;
   padding: 0.75rem 1.5rem;
-  background: var(--color-primary, #d91e70);
+  background: var(--color-primary);
   color: #fff;
   text-decoration: none;
   border-radius: 4px;
 }
 
-.features {
+.newsletter form {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.newsletter input {
+  padding: 0.5rem;
+  border: 1px solid var(--color-grey);
+  border-radius: 4px;
+}
+
+.newsletter button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.footer {
+  width: 100%;
+  text-align: center;
   margin-top: 3rem;
-  max-width: 800px;
-  text-align: left;
 }
