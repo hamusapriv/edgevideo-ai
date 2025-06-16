@@ -351,9 +351,11 @@ export default function LiveShopping({ channelId, onLike }) {
                 <button
                   onClick={() => {
                     if (!mountFrame) {
+                      // mount the frame and start animation
                       setMountFrame(true);
                     } else {
-                      setAnimateFrame(false);
+                      // toggle visibility when already mounted
+                      setAnimateFrame((prev) => !prev);
                     }
                   }}
                   style={{
