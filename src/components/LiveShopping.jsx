@@ -42,7 +42,7 @@ export default function LiveShopping({ channelId, onLike }) {
   const [animateFrame, setAnimateFrame] = useState(false);
 
   // ───────── Detect hover (desktop vs mobile) ─────────
-  const deviceCanHover = window.matchMedia("(any-hover:hover)").matches;
+  const deviceCanHover = window.matchMedia("(hover: hover)").matches;
 
   const { user } = useAuth();
   const { openSidebar } = useSidebar();
