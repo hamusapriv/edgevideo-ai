@@ -99,13 +99,14 @@ export default function ProductCard({ isP0, showDetails = false }) {
               </span>
             </button>
           </div>
-          <div
+          <p
             data-role="ai-description"
             className="ai-query"
             style={{
               ...hidden,
               fontSize: "0.85rem",
               color: "#ddd",
+              whiteSpace: "normal",
             }}
           />
         </div>
