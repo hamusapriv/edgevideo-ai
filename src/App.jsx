@@ -34,6 +34,7 @@ export default function App() {
       <Routes>
         {/* 1) OAuth callback */}
         <Route path="/oauth2callback" element={<OAuthCallback />} />
+        <Route path="/app/oauth2callback" element={<OAuthCallback />} />
 
         {/* 2) Default landing */}
         <Route index element={<Navigate to="/home" replace />} />
