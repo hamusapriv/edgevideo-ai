@@ -1,104 +1,100 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/HomePage.css";
 
 export default function HomePage() {
+  const [navOpen, setNavOpen] = useState(false);
+
+  const toggleNav = () => setNavOpen((v) => !v);
+
   return (
-    <div className="home-container">
-      <header className="site-header">
-        <Link to="/home" className="logo-link">
-          EdgeVideo
-        </Link>
-        <nav className="site-nav">
-          <Link to="/for-channels" className="nav-link">
-            For Channels
+    <div className="home">
+      <header className="header">
+        <div className="header__inner container">
+          <Link to="/home" className="logo">
+            EdgeVideo
           </Link>
-          <Link to="/for-brands" className="nav-link">
-            For Brands
-          </Link>
-          <Link to="/for-viewers" className="nav-link">
-            For Viewers
-          </Link>
-          <Link to="/app" className="nav-link">
-            Open App
-          </Link>
-          <a href="mailto:info@edgevideo.ai" className="nav-link">
-            Contact Us
-          </a>
-        </nav>
+          <button className="nav-toggle" onClick={toggleNav}>
+            ☰
+          </button>
+          <nav className={`nav ${navOpen ? "nav--open" : ""}`}>
+            <ul className="nav__list">
+              <li>
+                <Link to="/for-channels">For Channels</Link>
+              </li>
+              <li>
+                <Link to="/for-brands">For Brands</Link>
+              </li>
+              <li>
+                <Link to="/for-viewers">For Viewers</Link>
+              </li>
+              <li>
+                <Link to="/app">Open App</Link>
+              </li>
+              <li>
+                <a href="mailto:info@edgevideo.ai">Contact</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </header>
 
-      <section className="hero">
-        <p className="tagline">Shoppable TV is NOW LIVE!</p>
-        <h1>Join the Shoppable Video Revolution</h1>
-        <p>
-          Our AI-powered shoppable broadcasting solution adds a new dimension to
-          any video stream and allows viewers to purchase items in real-time from
-          their favorite shows—without leaving the screen.
-        </p>
-        <a href="mailto:info@edgevideo.ai" className="cta-button">
-          Contact Us
-        </a>
-        <div className="image-placeholder hero-img" />
-      </section>
+      <main className="main">
+        <section className="hero container">
+          <p className="hero__subtitle">Shoppable TV is NOW LIVE!</p>
+          <h1 className="hero__title">Join the Shoppable Video Revolution</h1>
+          <p className="hero__lead">
+            EdgeVideo adds real-time shopping to any video stream.
+          </p>
+          <div className="hero__actions">
+            <a href="mailto:info@edgevideo.ai" className="btn btn--primary">
+              Contact Us
+            </a>
+          </div>
+          <div className="image-placeholder hero__image" />
+        </section>
 
-      <section className="how-it-works">
-        <h2>It&apos;s Really That Simple</h2>
-        <ol>
-          <li>Watch Any Video Stream</li>
-          <li>Scan QR Code</li>
-          <li>Product Matched</li>
-          <li>Shop and Enjoy</li>
-        </ol>
-      </section>
+        <section className="features container">
+          <h2>What Edge Video AI Delivers</h2>
+          <div className="features__grid">
+            <div className="feature-card">
+              <h3>No Cost Setup</h3>
+              <p>Provide your feed and start streaming with shopping.</p>
+            </div>
+            <div className="feature-card">
+              <h3>Gamification</h3>
+              <p>Engage viewers and keep them coming back.</p>
+            </div>
+            <div className="feature-card">
+              <h3>Viewer Rewards</h3>
+              <p>Reward interactions with Web3 tokens.</p>
+            </div>
+            <div className="feature-card">
+              <h3>Insightful Data</h3>
+              <p>Learn about your audience and boost ad spend.</p>
+            </div>
+          </div>
+        </section>
 
-      <section className="benefits">
-        <h2>AI-Driven Shopping</h2>
-        <p>
-          Edge&apos;s AI delivers personalised shopping recommendations based on
-          view activity, building outsized revenues for your streaming operations.
-        </p>
-        <h2>Be the Gateway to Web3</h2>
-        <p>
-          Introduce your viewers to the joy of Web3 reward systems. Help them take
-          the next step with the $FAST token.
-        </p>
-        <h2>Touch Every Edge</h2>
-        <p>
-          Join our growing community of 167,201 users across Kick, Twitch, Dingo,
-          and TV channels.
-        </p>
-      </section>
-
-      <section className="features-list">
-        <h2>What Edge Video AI delivers.</h2>
-        <ul>
-          <li>Fast, easy set-up at no cost. We just require your feed.</li>
-          <li>Gamification adds additional “stickiness” to your content.</li>
-          <li>Reward your viewers for interacting with your content.</li>
-          <li>We provide data insights of your viewers to help your ad spend.</li>
-        </ul>
-      </section>
-
-      <section className="cta">
-        <h2>Transform Your Stream Now</h2>
-        <p>Engage, Interact, and Shop with EdgeVideo</p>
-        <a href="mailto:info@edgevideo.ai" className="cta-button">
-          Contact Us
-        </a>
-      </section>
-
-      <section className="newsletter">
-        <h2>Stay Updated with Edge Video News</h2>
-        <p>Subscribe to our newsletter for the latest updates, news, and features.</p>
-        <form>
-          <input type="email" placeholder="Email address" />
-          <button type="submit">Sign Up</button>
-        </form>
-      </section>
-
+        <section className="social container">
+          <h2>Follow Us</h2>
+          <ul className="social__list">
+            <li className="social__item">
+              <span className="image-placeholder social__icon" />
+            </li>
+            <li className="social__item">
+              <span className="image-placeholder social__icon" />
+            </li>
+            <li className="social__item">
+              <span className="image-placeholder social__icon" />
+            </li>
+          </ul>
+        </section>
+      </main>
       <footer className="footer">
-        <p>© 2025 Edge Video B.V.</p>
+        <div className="footer__inner container">
+          <p>© 2025 Edge Video B.V.</p>
+        </div>
       </footer>
     </div>
   );

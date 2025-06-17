@@ -1,98 +1,53 @@
-.home-container {
+.home {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 1rem;
-  color: var(--color-white);
-}
-
-.site-header {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.site-nav {
-  display: flex;
-  gap: 1rem;
-}
-
-.nav-link {
-  color: var(--color-white);
-  text-decoration: none;
-  font-weight: 500;
+  min-height: 100vh;
 }
 
 .hero {
   text-align: center;
-  max-width: 800px;
-  margin-bottom: 3rem;
+  padding-top: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
 }
 
-.tagline {
+.hero__subtitle {
   color: var(--color-grey);
 }
 
-.image-placeholder {
+.hero__image {
   width: 100%;
-  height: 200px;
+  height: 300px;
   background: var(--color-secondary);
-  border-radius: 4px;
+  border-radius: 8px;
+  margin-top: var(--spacing-md);
 }
 
-.how-it-works,
-.benefits,
-.features-list,
-.cta,
-.newsletter {
-  max-width: 800px;
-  margin-top: 2rem;
+.features {
+  padding-top: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
 }
 
-.how-it-works ol {
-  text-align: left;
-  padding-left: 1.25rem;
+.social {
+  padding-top: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
+  text-align: center;
 }
 
-.features-list ul {
-  padding-left: 1.25rem;
-}
-
-.cta-button {
-  display: inline-block;
-  padding: 0.75rem 1.5rem;
-  background: var(--color-primary);
-  color: #fff;
-  text-decoration: none;
-  border-radius: 4px;
-}
-
-.newsletter form {
+.social__list {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: var(--spacing);
+  margin-top: var(--spacing);
 }
 
-.newsletter input {
-  padding: 0.5rem;
-  border: 1px solid var(--color-grey);
-  border-radius: 4px;
+.social__icon {
+  width: 40px;
+  height: 40px;
+  background: var(--color-secondary);
+  border-radius: 50%;
 }
 
-.newsletter button {
-  padding: 0.5rem 1rem;
-  border: none;
-  background: var(--color-primary);
-  color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
-}
+.image-placeholder {
+  background: var(--color-secondary);
 
-.footer {
-  width: 100%;
-  text-align: center;
-  margin-top: 3rem;
 }
