@@ -1,6 +1,6 @@
 /* Live Shopping Desktop CSS */
 
-@media (any-hover: hover) and (max-width: 860px) {
+@media (hover: hover) and (max-width: 860px) {
   #itemContent {
     gap: 10px;
   }
