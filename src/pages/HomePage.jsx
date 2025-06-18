@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/HomePage.css";
 import HeroImg from "/assets/hero-image.png";
+import HeroImg2 from "/assets/hero-image-2.png";
 
 export default function HomePage() {
   const [navOpen, setNavOpen] = useState(false);
@@ -53,10 +54,7 @@ export default function HomePage() {
               Contact Us
             </a>
           </div>
-          <img
-            src={HeroImg}
-            className="hero__image"
-          />
+          <img src={HeroImg2} className="hero__image" />
         </section>
 
         <section className="features container">
