@@ -12,18 +12,6 @@ import AppBg from "../components/AppBg";
 import FAQ from "../components/FAQ";
 import { useChannelId } from "../hooks/useChannelId";
 
-import "../styles/reset.css";
-import "../styles/variables.css";
-import "../styles/base.css";
-import "../styles/layout.css";
-import "../styles/components.css";
-import "../styles/style.css";
-import "../styles/google.css";
-import "../styles/favorites.css";
-import "../styles/FAQ.css";
-import "../styles/liveShoppingDesktop.css";
-import "../styles/liveShoppingTablet.css";
-import "../styles/scrollBar.css";
 
 export default function AppPage() {
   const channelId = useChannelId();
