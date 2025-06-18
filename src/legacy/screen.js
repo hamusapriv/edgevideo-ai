@@ -11,8 +11,16 @@ import {
   processProductDataQueue,
   FormatTicketDateTime,
   FormatPrice,
+  AddClassToAll,
+  RemoveClassFromAll,
 } from "./modules/products";
 import { setupLoginHandling, showLoggedOutState } from "./modules/googleAuth";
+import {
+  downvoteProduct as apiDownvoteProduct,
+  getItemTypeNameFromId,
+  VOTED_PRODUCTS_URL,
+  VOTED_VIATOR_URL,
+} from "../services/voteService";
 // Inject channelId into window for any non-React scripts
 (function() {
   const DEFAULT_CHANNEL_ID =
@@ -28,12 +36,7 @@ import { setupLoginHandling, showLoggedOutState } from "./modules/googleAuth";
 const wsUrl = "wss://slave-ws-service-342233178764.us-west1.run.app"; // WebSocket server URL
 
 // Add these near other configuration variables
-const VOTE_TRACKING_BASE_URL = "https://fastapi.edgevideo.ai/tracking";
-const UPVOTE_URL = `${VOTE_TRACKING_BASE_URL}/vote/up`;
-const DOWNVOTE_URL = `${VOTE_TRACKING_BASE_URL}/vote/down`;
-const VOTED_PRODUCTS_URL = `${VOTE_TRACKING_BASE_URL}/votes/products`;
-const VOTED_VIATOR_URL = `${VOTE_TRACKING_BASE_URL}/votes/viator`;
-const REMOVE_VOTE_URL = `${VOTE_TRACKING_BASE_URL}/vote`;
+// URLs imported from voteService
 
 let votedProducts = []; // Stores products fetched from /votes/products
 
@@ -203,6 +206,8 @@ function hideConsoleMessages() {
 
 let downvotedIds = [];
 
+const elementCache = {};
+
 function SetShoppingAIStatus(messageText) {
   let elm = document.getElementById("aiStatusTextShopping");
 
@@ -348,19 +353,6 @@ function extractDomain(url) {
   }
 }
 
-function AddClassToAll(element, className) {
-  element.classList.add(className);
-  element.querySelectorAll("*").forEach((child) => {
-    child.classList.add(className);
-  });
-}
-
-function RemoveClassFromAll(element, className) {
-  element.classList.remove(className);
-  element.querySelectorAll("*").forEach((child) => {
-    child.classList.remove(className);
-  });
-}
 
 /**
  * Sends click tracking data to the backend endpoint.
@@ -487,23 +479,32 @@ function UpdateProductViaDataRole(i, time = null) {
     return;
   }
 
-  // Select all elements within the item container using data-role attributes
-  let images = itemContainer.querySelectorAll('[data-role="product-image"]');
-  let backImages = itemContainer.querySelectorAll('[data-role="frame-image"]');
-  let links = itemContainer.querySelectorAll('[data-role="product-link"]');
-  let names = itemContainer.querySelectorAll('[data-role="product-name"]');
-  let moreButtons = itemContainer.querySelectorAll('[data-role="more-link"]');
-  let explanations = itemContainer.querySelectorAll(
-    '[data-role="ai-description"]'
-  );
-  let vendorImages = itemContainer.querySelectorAll(
-    '[data-role="vendor-logo"]'
-  );
-  let prices = itemContainer.querySelectorAll('[data-role="product-price"]');
-  let priceContainers = itemContainer.querySelectorAll(
-    '[data-role="product-price-container"]'
-  );
-  let matchTexts = itemContainer.querySelectorAll('[data-role="matchText"]');
+  // Cache queried elements for subsequent calls
+  if (!elementCache.initialized) {
+    elementCache.images = itemContainer.querySelectorAll('[data-role="product-image"]');
+    elementCache.backImages = itemContainer.querySelectorAll('[data-role="frame-image"]');
+    elementCache.links = itemContainer.querySelectorAll('[data-role="product-link"]');
+    elementCache.names = itemContainer.querySelectorAll('[data-role="product-name"]');
+    elementCache.moreButtons = itemContainer.querySelectorAll('[data-role="more-link"]');
+    elementCache.explanations = itemContainer.querySelectorAll('[data-role="ai-description"]');
+    elementCache.vendorImages = itemContainer.querySelectorAll('[data-role="vendor-logo"]');
+    elementCache.prices = itemContainer.querySelectorAll('[data-role="product-price"]');
+    elementCache.priceContainers = itemContainer.querySelectorAll('[data-role="product-price-container"]');
+    elementCache.matchTexts = itemContainer.querySelectorAll('[data-role="matchText"]');
+    elementCache.initialized = true;
+  }
+  const {
+    images,
+    backImages,
+    links,
+    names,
+    moreButtons,
+    explanations,
+    vendorImages,
+    prices,
+    priceContainers,
+    matchTexts,
+  } = elementCache;
 
   // Ensure the product exists at index i
   if (!products || i >= products.length || i < 0) {
@@ -960,62 +961,35 @@ async function DownvoteProduct(productId, itemTypeNameParam = null) {
   // Trigger UI update for vote buttons globally
   updateVoteButtonStyles(productId, "downvote"); // Pass numeric vote type
 
-  // 4. Prepare API Request Payload (using determinedItemTypeName)
-  const payload = {
-    itemId: productId,
-    itemTypeName: determinedItemTypeName, // Use the determined type
-  };
-
-  // 5. Send Fetch Request (remains the same)
+  // 4. Send Fetch Request via shared service
   try {
-    const response = await fetch(DOWNVOTE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+    await apiDownvoteProduct(productId, determinedItemTypeName);
 
-    // 6. Handle Response (Update local list and styles)
-    if (response.ok) {
+    // Update local list and styles on success
+    edgeConsole.log(
+      `Successfully downvoted product ${productId} (Type: ${determinedItemTypeName})`
+    );
+
+    const productIdStr = String(productId);
+    const existingVoteIndex = votedProducts.findIndex(
+      (vp) => String(vp.item_id) === productIdStr
+    );
+    const now = new Date().toISOString();
+
+    if (existingVoteIndex !== -1) {
+      votedProducts[existingVoteIndex].vote_type = -1;
+      votedProducts[existingVoteIndex].voted_at = now;
       edgeConsole.log(
-        `Successfully downvoted product ${productId} (Type: ${determinedItemTypeName})`
+        `Updated local vote status for ${productId} to downvote (-1).`
       );
-
-      // Update local votedProducts list (convert ID to string for reliable findIndex)
-      const productIdStr = String(productId);
-      const existingVoteIndex = votedProducts.findIndex(
-        (vp) => String(vp.item_id) === productIdStr
-      );
-      const now = new Date().toISOString();
-
-      if (existingVoteIndex !== -1) {
-        // If it was in the list (as upvote or downvote), update/remove it
-        // Since this is Downvote, we mark it or potentially remove if UX dictates
-        votedProducts[existingVoteIndex].vote_type = -1; // Assuming -1 for downvote now
-        votedProducts[existingVoteIndex].voted_at = now;
-        edgeConsole.log(
-          `Updated local vote status for ${productId} to downvote (-1).`
-        );
-      } else {
-        // If it wasn't in the list, maybe add it as downvoted?
-        // This depends on whether 'votedProducts' should track downvotes too.
-        // Let's assume for now we only update existing ones or remove them on downvote.
-        edgeConsole.log(
-          `Product ${productId} not found in local voted list to update after downvote.`
-        );
-      }
     } else {
-      const errorData = await response.json().catch(() => response.text()); // Handle non-JSON errors too
-      edgeConsole.error(
-        `Downvote API call failed for ${productId}: ${response.status}`,
-        errorData
+      edgeConsole.log(
+        `Product ${productId} not found in local voted list to update after downvote.`
       );
     }
   } catch (error) {
     edgeConsole.error(
-      `Network or other error sending downvote for ${productId}:`,
+      `Downvote API call failed for ${productId}:`,
       error
     );
   }
@@ -1032,26 +1006,6 @@ async function DownvoteProduct(productId, itemTypeNameParam = null) {
  * @param {number | string} typeId - The numeric ID (e.g., 1, 4).
  * @returns {string | null} The corresponding name ('DB Product', 'Viator Ticket', etc.) or null.
  */
-function getItemTypeNameFromId(typeId) {
-  // Ensure these IDs and names match your backend configuration and getItemTypeName function
-  // Convert typeId to number for reliable comparison
-  switch (Number(typeId)) {
-    case 1:
-      return "DB Product";
-    case 4:
-      return "Viator Ticket"; // IMPORTANT: Verify '4' is the correct ID for Viator Tickets
-    // Add cases for 'DB Ticket', 'Deal', etc. if they can be favorited via other means
-    // case 2: return 'DB Ticket';
-    // case 3: return 'Deal';
-    default:
-      edgeConsole.warn(
-        `Cannot determine item type name from unknown item_type_id: ${typeId}`
-      );
-      // Fallback carefully - maybe return null and handle it in DownvoteProduct?
-      // Or return a default if appropriate? Returning null is safer.
-      return null;
-  }
-}
 
 /**
  * Populates the Favorites tab UI based on the 'votedProducts' array.

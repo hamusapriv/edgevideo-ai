@@ -126,3 +126,17 @@ export function FormatPrice(price, currency = "USD") {
   }
   return position === "prefix" ? `${symbol}${formattedPrice}` : `${formattedPrice}${symbol}`;
 }
+
+export function AddClassToAll(element, className) {
+  element.classList.add(className);
+  element.querySelectorAll("*").forEach((child) => {
+    child.classList.add(className);
+  });
+}
+
+export function RemoveClassFromAll(element, className) {
+  element.classList.remove(className);
+  element.querySelectorAll("*").forEach((child) => {
+    child.classList.remove(className);
+  });
+}

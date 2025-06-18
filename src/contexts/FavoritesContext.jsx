@@ -6,11 +6,12 @@ import React, {
   useCallback,
 } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { getItemTypeNameFromId } from "../services/voteService";
-
-const VOTES_PRODUCTS = "https://fastapi.edgevideo.ai/tracking/votes/products";
-const VOTES_VIATOR = "https://fastapi.edgevideo.ai/tracking/votes/viator";
-const DOWNVOTE_URL = "https://fastapi.edgevideo.ai/tracking/vote/down";
+import {
+  getItemTypeNameFromId,
+  VOTED_PRODUCTS_URL,
+  VOTED_VIATOR_URL,
+  DOWNVOTE_URL,
+} from "../services/voteService";
 
 const FavoritesContext = createContext({
   favorites: [],
@@ -32,8 +33,8 @@ export function FavoritesProvider({ children }) {
       const token = localStorage.getItem("authToken");
       const opts = { headers: { Authorization: `Bearer ${token}` } };
       const [r1, r2] = await Promise.all([
-        fetch(VOTES_PRODUCTS, opts),
-        fetch(VOTES_VIATOR, opts),
+        fetch(VOTED_PRODUCTS_URL, opts),
+        fetch(VOTED_VIATOR_URL, opts),
       ]);
       if (!r1.ok || !r2.ok) throw new Error("Failed to fetch votes");
       const [a1, a2] = await Promise.all([r1.json(), r2.json()]);
