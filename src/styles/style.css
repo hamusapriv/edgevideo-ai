@@ -400,6 +400,16 @@ section {
 .product-cta svg path {
   transition: all 0.3s ease;
 }
+.like-button.clicked svg,
+.like-button.clicked svg path {
+  fill: var(--color-green-light);
+  stroke: var(--color-green-light);
+}
+.dislike-button.clicked svg,
+.dislike-button.clicked svg path {
+  fill: var(--color-blue-light);
+  stroke: var(--color-blue-light);
+}
 
 .live-details {
   border-radius: 8px;
