@@ -796,6 +796,9 @@ window.UpdateProductViaDataRole = UpdateProductViaDataRole;
  * @param {'upvote' | 'downvote' | 'none'} voteType The type of vote to reflect.
  */
 function updateVoteButtonStyles(productId, voteType) {
+  // Normalize voteType to handle numeric values
+  if (voteType === 1 || voteType === "1") voteType = "upvote";
+  else if (voteType === -1 || voteType === "-1") voteType = "downvote";
   // Find ALL like and dislike buttons matching the productId across the document
   const likeButtons = document.querySelectorAll(
     `.like-button[data-product-id="${productId}"]`
@@ -883,7 +886,13 @@ function applyInitialVoteStyles() {
       (vp) => String(vp.item_id) === String(productId)
     );
     if (currentVote) {
-      updateVoteButtonStyles(productId, currentVote.vote_type);
+      const vt =
+        currentVote.vote_type === 1
+          ? "upvote"
+          : currentVote.vote_type === -1
+          ? "downvote"
+          : "none";
+      updateVoteButtonStyles(productId, vt);
     } else {
       updateVoteButtonStyles(productId, "none"); // Ensure no style if not voted
     }
