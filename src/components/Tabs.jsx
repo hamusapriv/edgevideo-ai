@@ -1,5 +1,6 @@
 // src/components/Tabs.jsx
 import React from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Tabs({
   tabs,
@@ -7,6 +8,9 @@ export default function Tabs({
   onChangeTab,
   onToggleSidebar,
 }) {
+  const { user } = useAuth();
+  const avatarSeed = user ? user.avatarSeed : "guest";
+  const avatarUrl = `https://api.dicebear.com/9.x/bottts/svg?seed=${avatarSeed}`;
   return (
     <footer className="footer">
       {/* (j) AFFILIATE FOOTER */}
@@ -33,8 +37,8 @@ export default function Tabs({
           <div className="avatar-wrapper small">
             <img
               loading="lazy"
-              src="https://api.dicebear.com/9.x/bottts/svg?seed=guest"
-              alt="User avatar"
+              src={avatarUrl}
+              alt={user ? `${user.name} avatar` : "Guest avatar"}
               className="avatar"
             />
           </div>
