@@ -394,21 +394,21 @@ section {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 .product-cta svg,
 .product-cta svg path {
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
-.like-button.clicked svg,
-.like-button.clicked svg path {
-  fill: var(--color-green-light);
-  stroke: var(--color-green-light);
+.product-cta.like-button.clicked svg,
+.product-cta.like-button.clicked svg path {
+  fill: var(--color-red);
+  stroke: var(--color-red);
 }
-.dislike-button.clicked svg,
-.dislike-button.clicked svg path {
-  fill: var(--color-blue-light);
-  stroke: var(--color-blue-light);
+.product-cta.dislike-button.clicked svg,
+.product-cta.dislike-button.clicked svg path {
+  fill: var(--color-black);
+  stroke: var(--color-black);
 }
 
 .live-details {

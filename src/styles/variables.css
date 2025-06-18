@@ -30,6 +30,7 @@
   --color-blue-dark: rgb(0, 13, 85);
   --color-purple-light: rgb(137, 0, 201);
   --color-purple-dark: rgb(44, 0, 85);
+  --color-red: rgba(255, 0, 0);
 
   /* Typography */
   --font-sans: "Inter", system-ui, sans-serif;

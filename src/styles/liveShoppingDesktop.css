@@ -86,7 +86,7 @@
   }
 
   #itemContent {
-    inset: 12% 12% auto 12%;
+    inset: 50px 12% auto 12%;
     flex-direction: column;
     gap: 20px;
     align-items: center;

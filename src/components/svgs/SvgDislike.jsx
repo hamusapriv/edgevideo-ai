@@ -22,8 +22,8 @@ export default function SvgDislike() {
         21.8963 4.41543 21.3841 3.86417Z"
       />
       <path
+        style={{ stroke: "var(--color-purple-text)" }}
         d="M21.9526 20.1155L1.00025 1"
-        stroke="grey"
         strokeWidth="2"
         strokeLinecap="round"
       />
