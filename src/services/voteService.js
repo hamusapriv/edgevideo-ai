@@ -1,9 +1,7 @@
 // src/services/voteService.js
-export const BASE = "https://fastapi.edgevideo.ai/tracking";
-export const UPVOTE_URL = `${BASE}/vote/up`;
-export const DOWNVOTE_URL = `${BASE}/vote/down`;
-export const VOTED_PRODUCTS_URL = `${BASE}/votes/products`;
-export const VOTED_VIATOR_URL = `${BASE}/votes/viator`;
+const BASE = "https://fastapi.edgevideo.ai/tracking";
+const UPVOTE_URL = `${BASE}/vote/up`;
+const DOWNVOTE_URL = `${BASE}/vote/down`;
 
 function normalizeItemTypeName(name) {
   if (!name) return "DB Product";
