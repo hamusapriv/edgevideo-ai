@@ -1,6 +1,5 @@
 // src/components/AppBg.jsx
 import React from "react";
-import "../styles/AppBg.css";
 
 const AppBg = () => (
   <div className="app-bg">
