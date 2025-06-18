@@ -17,10 +17,6 @@
   .item-container.focused {
     transform: scale(1);
   }
-  .card-details [data-role="product-name"] {
-    -webkit-line-clamp: 2;
-    min-height: 2.4rem;
-  }
   .live-details {
     padding: 12px;
     width: 300px;

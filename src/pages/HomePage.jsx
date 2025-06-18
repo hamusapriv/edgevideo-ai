@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/HomePage.css";
+import HeroImg from "/assets/hero-image.png";
 
 export default function HomePage() {
   const [navOpen, setNavOpen] = useState(false);
@@ -9,6 +10,7 @@ export default function HomePage() {
 
   return (
     <div className="home">
+      <div className="home-bg"></div>
       <header className="header">
         <div className="header__inner container">
           <Link to="/home" className="logo">
@@ -51,7 +53,10 @@ export default function HomePage() {
               Contact Us
             </a>
           </div>
-          <div className="image-placeholder hero__image" />
+          <img
+            src={HeroImg}
+            className="hero__image"
+          />
         </section>
 
         <section className="features container">

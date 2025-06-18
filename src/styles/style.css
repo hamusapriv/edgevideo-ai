@@ -377,8 +377,8 @@ section {
   /* replaces old “li h5” rules */
   font-size: 0.9rem;
   line-height: 1.2rem;
-  height: 3.6rem;
-  min-height: 3.6rem;
+  height: 2.4rem;
+  min-height: 2.4rem;
   font-weight: 600;
   color: var(--color-light);
 
@@ -387,7 +387,7 @@ section {
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
 }
 
 .product-cta {
@@ -440,13 +440,13 @@ section {
 .card-details [data-role="product-name"] {
   font-size: 0.9rem;
   line-height: 1.2rem;
-  min-height: 3.6rem;
+  min-height: 2.4rem;
   font-weight: 600;
   color: var(--color-light);
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   white-space: normal;
 }
