@@ -14,10 +14,6 @@
     padding: 10px 30px;
   }
 
-  .product-img-title {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-
   .product-image-container.clicked {
     height: 200px;
   }
