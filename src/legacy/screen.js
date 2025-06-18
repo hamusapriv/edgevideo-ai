@@ -476,7 +476,14 @@ async function trackClick(productData) {
 }
 
 function UpdateProductViaDataRole(i, time = null) {
-  let itemContainer = document.querySelector(".product0"); // Assuming this targets the correct container
+  let itemContainer = document.querySelector(".product0");
+
+  if (!itemContainer) {
+    edgeConsole.warn(
+      "UpdateProductViaDataRole: .product0 container not found"
+    );
+    return;
+  }
 
   // Select all elements within the item container using data-role attributes
   let images = itemContainer.querySelectorAll('[data-role="product-image"]');
