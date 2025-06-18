@@ -1,16 +1,16 @@
 // src/App.jsx
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import ScreenInitializer from "./screen/ScreenInitializer";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import ProfileSidebar from "./components/ProfileSidebar";
 import { useSidebar } from "./contexts/SidebarContext";
 
 // Page components
-import AppPage from "./pages/AppPage";
-import InTravelLivestorePage from "./pages/InTravelLivestorePage";
-import PrivacyPage from "./pages/PrivacyPage";
-import TermsPage from "./pages/TermsPage";
-import HomePage from "./pages/HomePage";
+const AppPage = lazy(() => import("./pages/AppPage"));
+const InTravelLivestorePage = lazy(() => import("./pages/InTravelLivestorePage"));
+const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
+const TermsPage = lazy(() => import("./pages/TermsPage"));
+const HomePage = lazy(() => import("./pages/HomePage"));
 import BuildInfo from "./components/BuildInfo";
 
 // OAuth callback
@@ -31,7 +31,8 @@ export default function App() {
 
       <ScreenInitializer />
 
-      <Routes>
+      <Suspense fallback={<div />}>
+        <Routes>
         {/* 1) OAuth callback */}
         <Route path="/oauth2callback" element={<OAuthCallback />} />
         <Route path="/app/oauth2callback" element={<OAuthCallback />} />
@@ -49,6 +50,7 @@ export default function App() {
         {/* 4) Fallback */}
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
+      </Suspense>
       <BuildInfo />
     </>
   );

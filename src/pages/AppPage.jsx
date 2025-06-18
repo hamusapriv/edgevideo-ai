@@ -24,7 +24,6 @@ import "../styles/FAQ.css";
 import "../styles/liveShoppingDesktop.css";
 import "../styles/liveShoppingTablet.css";
 import "../styles/scrollBar.css";
-import "../styles/HomePage.css";
 
 export default function AppPage() {
   const channelId = useChannelId();
