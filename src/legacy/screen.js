@@ -13,7 +13,6 @@ import {
   FormatPrice,
 } from "./modules/products";
 import { setupLoginHandling, showLoggedOutState } from "./modules/googleAuth";
-import { updateVoteButtonStyles } from "../services/voteService";
 // Inject channelId into window for any non-React scripts
 (function() {
   const DEFAULT_CHANNEL_ID =
@@ -787,6 +786,76 @@ function UpdateProductViaDataRole(i, time = null) {
 
 // Expose for other modules that rely on a global function
 window.UpdateProductViaDataRole = UpdateProductViaDataRole;
+
+/**
+ * Updates the visual style of ALL like/dislike buttons on the page
+ * matching a specific product ID.
+ * Assumes buttons have 'like-button' or 'dislike-button' class
+ * and a 'data-product-id' attribute matching the productId.
+ * @param {string} productId The ID of the product whose buttons to update.
+ * @param {'upvote' | 'downvote' | 'none'} voteType The type of vote to reflect.
+ */
+function updateVoteButtonStyles(productId, voteType) {
+  // Find ALL like and dislike buttons matching the productId across the document
+  const likeButtons = document.querySelectorAll(
+    `.like-button[data-product-id="${productId}"]`
+  );
+  const dislikeButtons = document.querySelectorAll(
+    `.dislike-button[data-product-id="${productId}"]`
+  );
+
+  // Check if any buttons were found for this product ID
+  if (likeButtons.length === 0 && dislikeButtons.length === 0) {
+    // Optional: Log if no buttons are found, might indicate an issue elsewhere
+    edgeConsole.log(
+      `No vote buttons found anywhere on the page for product ID ${productId}.`
+    );
+    return; // No buttons found for this ID, nothing to update
+  }
+
+  let actionTaken = false; // Flag to help with logging
+
+  // Update all found like buttons
+  likeButtons.forEach((button) => {
+    // Always remove the class first to handle state changes (e.g., upvote -> none)
+    button.classList.remove("clicked");
+    if (voteType === "upvote") {
+      button.classList.add("clicked");
+      actionTaken = true;
+    }
+  });
+
+  // Update all found dislike buttons
+  dislikeButtons.forEach((button) => {
+    // Always remove the class first
+    button.classList.remove("clicked");
+    if (voteType === "downvote") {
+      button.classList.add("clicked");
+      actionTaken = true;
+    }
+  });
+
+  // Log the action (consider logging only once if buttons were found)
+  if (actionTaken) {
+    if (voteType === "upvote") {
+      edgeConsole.log(
+        `Applied 'clicked' style to like button(s) for ${productId}`
+      );
+    } else if (voteType === "downvote") {
+      edgeConsole.log(
+        `Applied 'clicked' style to dislike button(s) for ${productId}`
+      );
+    }
+  } else if (
+    voteType === "none" &&
+    (likeButtons.length > 0 || dislikeButtons.length > 0)
+  ) {
+    // Log if we explicitly removed styles because voteType is 'none'
+    edgeConsole.log(
+      `Removed 'clicked' style from vote buttons for ${productId}`
+    );
+  }
+}
 
 /**
  * Applies the initial vote button styles based on the fetched votedProducts list.
