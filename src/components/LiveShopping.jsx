@@ -78,6 +78,10 @@ export default function LiveShopping({ channelId, onLike }) {
     if (!id) return;
 
     await upvoteProduct(id, inferItemTypeName(card));
+    const likeBtn = card.querySelector('[data-role="like"]');
+    const dislikeBtn = card.querySelector('[data-role="dislike"]');
+    likeBtn?.classList.add("clicked");
+    dislikeBtn?.classList.remove("clicked");
     onLikeRef.current?.();
   }, []);
 
@@ -90,6 +94,10 @@ export default function LiveShopping({ channelId, onLike }) {
     if (!id) return;
 
     await downvoteProduct(id, inferItemTypeName(card));
+    const likeBtn = card.querySelector('[data-role="like"]');
+    const dislikeBtn = card.querySelector('[data-role="dislike"]');
+    likeBtn?.classList.remove("clicked");
+    dislikeBtn?.classList.add("clicked");
     onLikeRef.current?.();
   }, []);
 
