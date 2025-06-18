@@ -799,12 +799,13 @@ function updateVoteButtonStyles(productId, voteType) {
   // Normalize voteType to handle numeric values
   if (voteType === 1 || voteType === "1") voteType = "upvote";
   else if (voteType === -1 || voteType === "-1") voteType = "downvote";
+
   // Find ALL like and dislike buttons matching the productId across the document
   const likeButtons = document.querySelectorAll(
-    `.like-button[data-product-id="${productId}"]`
+    `[data-role="like"][data-product-id="${productId}"] , .like-button[data-product-id="${productId}"]`
   );
   const dislikeButtons = document.querySelectorAll(
-    `.dislike-button[data-product-id="${productId}"]`
+    `[data-role="dislike"][data-product-id="${productId}"] , .dislike-button[data-product-id="${productId}"]`
   );
 
   // Check if any buttons were found for this product ID
@@ -859,6 +860,9 @@ function updateVoteButtonStyles(productId, voteType) {
     );
   }
 }
+
+// Expose for other modules
+window.updateVoteButtonStyles = updateVoteButtonStyles;
 
 /**
  * Applies the initial vote button styles based on the fetched votedProducts list.
