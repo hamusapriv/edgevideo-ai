@@ -40,12 +40,15 @@ let votedProducts = []; // Stores products fetched from /votes/products
 // Basic wrapper around the standard console so legacy code can log
 // without relying on a global provided elsewhere. This mirrors the
 // definition used in the standalone public script.
-let edgeConsole = {
-  log: (...args) => window.console.log(...args),
-  info: (...args) => window.console.info(...args),
-  error: (...args) => window.console.error(...args),
-  // add warn, debug, etc. as needed
-};
+let edgeConsole =
+  window.edgeConsole || {
+    log: (...args) => window.console.log(...args),
+    info: (...args) => window.console.info(...args),
+    warn: (...args) => window.console.warn(...args),
+    error: (...args) => window.console.error(...args),
+    debug: (...args) => window.console.debug(...args),
+  };
+window.edgeConsole = edgeConsole;
 
 /**
  * Fetches the list of ALL voted items (Products, Viator Tickets, etc.)
