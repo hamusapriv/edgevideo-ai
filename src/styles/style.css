@@ -394,7 +394,11 @@ section {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
+}
+.product-cta svg,
+.product-cta svg path {
+  transition: all 0.3s ease;
 }
 
 .live-details {

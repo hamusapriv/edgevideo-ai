@@ -26,8 +26,17 @@
     height: 160px;
   }
 
-  .product-cta:hover {
-    transform: scale(1.1);
+  .product-cta svg path {
+    stroke: var(--color-purple-text);
+  }
+  .product-cta svg {
+    fill: var(--color-purple-text);
+  }
+  .product-cta svg:hover path {
+    stroke: white;
+  }
+  .product-cta svg:hover {
+    fill: white;
   }
 
   /* Product card details displayed on hover devices */
