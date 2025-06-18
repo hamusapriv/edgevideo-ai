@@ -217,6 +217,17 @@ export default function LiveShopping({ channelId, onLike }) {
 
       if (lastBestRef.current) {
         lastBestRef.current.classList.remove("focused");
+        const prevContainer =
+          lastBestRef.current.querySelector('[data-role="frame-container"]');
+        const prevText =
+          lastBestRef.current.querySelector('[data-role="toggle-text"]');
+        if (prevContainer) {
+          prevContainer.dataset.visible = "false";
+          prevContainer.style.maxHeight = "0px";
+          prevContainer.style.opacity = "0";
+          prevContainer.style.transform = "translateY(-20px)";
+        }
+        if (prevText) prevText.textContent = "Show Frame";
       }
 
       card.classList.add("focused");
@@ -311,16 +322,18 @@ export default function LiveShopping({ channelId, onLike }) {
       const container = card.querySelector('[data-role="frame-container"]');
       const text = card.querySelector('[data-role="toggle-text"]');
       if (toggle && container) {
-        let visible = false;
+        container.dataset.visible = "false";
         toggle.addEventListener("click", (e) => {
           e.stopPropagation();
-          visible = !visible;
-          container.style.maxHeight = visible ? "200px" : "0px";
-          container.style.opacity = visible ? "1" : "0";
-          container.style.transform = visible
+          const visible = container.dataset.visible === "true";
+          const next = !visible;
+          container.dataset.visible = next ? "true" : "false";
+          container.style.maxHeight = next ? "200px" : "0px";
+          container.style.opacity = next ? "1" : "0";
+          container.style.transform = next
             ? "translateY(0)"
             : "translateY(-20px)";
-          if (text) text.textContent = visible ? "Hide Frame" : "Show Frame";
+          if (text) text.textContent = next ? "Hide Frame" : "Show Frame";
         });
       }
 
