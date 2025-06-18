@@ -47,9 +47,13 @@ export default function LiveShopping({ channelId, onLike }) {
   const { user } = useAuth();
   const { openSidebar } = useSidebar();
   const userRef = useRef(user);
+  const onLikeRef = useRef(onLike);
+  const sidebarRef = useRef(openSidebar);
   useEffect(() => {
     userRef.current = user;
-  }, [user]);
+    onLikeRef.current = onLike;
+    sidebarRef.current = openSidebar;
+  }, [user, onLike, openSidebar]);
 
   function inferItemTypeName(target) {
     const url =
@@ -65,35 +69,29 @@ export default function LiveShopping({ channelId, onLike }) {
     return "DB Product";
   }
 
-  const handleLike = useCallback(
-    async (e) => {
-      e.stopPropagation();
-      if (!userRef.current) return openSidebar();
+  const handleLike = useCallback(async (e) => {
+    e.stopPropagation();
+    if (!userRef.current) return sidebarRef.current();
 
-      const card = e.currentTarget.closest(".item-container");
-      const id = card?.getAttribute("data-product-id");
-      if (!id) return;
+    const card = e.currentTarget.closest(".item-container");
+    const id = card?.getAttribute("data-product-id");
+    if (!id) return;
 
-      await upvoteProduct(id, inferItemTypeName(card));
-      onLike?.();
-    },
-    [openSidebar, onLike]
-  );
+    await upvoteProduct(id, inferItemTypeName(card));
+    onLikeRef.current?.();
+  }, []);
 
-  const handleDislike = useCallback(
-    async (e) => {
-      e.stopPropagation();
-      if (!userRef.current) return openSidebar();
+  const handleDislike = useCallback(async (e) => {
+    e.stopPropagation();
+    if (!userRef.current) return sidebarRef.current();
 
-      const card = e.currentTarget.closest(".item-container");
-      const id = card?.getAttribute("data-product-id");
-      if (!id) return;
+    const card = e.currentTarget.closest(".item-container");
+    const id = card?.getAttribute("data-product-id");
+    if (!id) return;
 
-      await downvoteProduct(id, inferItemTypeName(card));
-      onLike?.();
-    },
-    [openSidebar, onLike]
-  );
+    await downvoteProduct(id, inferItemTypeName(card));
+    onLikeRef.current?.();
+  }, []);
 
   const handleShare = useCallback((e) => {
     e.stopPropagation();
