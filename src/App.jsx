@@ -3,6 +3,7 @@ import React, { Suspense, lazy } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import ProfileSidebar from "./components/ProfileSidebar";
 import { useSidebar } from "./contexts/SidebarContext";
+import LoadingOverlay from "./components/LoadingOverlay";
 
 // Page components
 const AppPage = lazy(() => import("./pages/AppPage"));
@@ -28,7 +29,7 @@ export default function App() {
         <ProfileSidebar isOpen={sidebarOpen} onClose={closeSidebar} />
       )}
 
-      <Suspense fallback={<div />}>
+      <Suspense fallback={<LoadingOverlay />}>
         <Routes>
         {/* 1) OAuth callback */}
         <Route path="/oauth2callback" element={<OAuthCallback />} />
