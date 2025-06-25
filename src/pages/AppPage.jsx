@@ -9,6 +9,7 @@ import ScreenInitializer from "../screen/ScreenInitializer";
 import ShoppingTab from "../components/ShoppingTab";
 import GamesTab from "../components/GamesTab";
 import GamesIcon from "../components/svgs/GamesIcon";
+import QuickAccessTab from "../components/QuickAccessTab";
 import AppBg from "../components/AppBg";
 import FAQ from "../components/FAQ";
 import { useChannelId } from "../hooks/useChannelId";
@@ -40,6 +41,11 @@ export default function AppPage() {
         key: "games",
         label: <GamesIcon />,
         Component: GamesTab,
+      },
+      {
+        key: "quick",
+        label: "Quick Access",
+        Component: QuickAccessTab,
       },
     ],
     []

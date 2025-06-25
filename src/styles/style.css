@@ -464,3 +464,17 @@ section {
   -webkit-line-clamp: 2;
   white-space: normal;
 }
+
+/* Quick Access Tab */
+.quick-access-list {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quick-access-btn {
+  width: 100%;
+}
