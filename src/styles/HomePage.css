@@ -24,7 +24,13 @@
 }
 
 .hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
+  padding: var(--spacing-lg) var(--spacing);
 }
 
 .hero__subtitle {
@@ -38,6 +44,11 @@
   max-height: 100%;
   object-fit: contain;
   border-radius: 8px;
+  margin-top: var(--spacing-md);
+}
+.hero-video-container {
+  width: 100%;
+  max-width: 800px;
   margin-top: var(--spacing-md);
 }
 .hero-video {
