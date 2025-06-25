@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { getItemTypeNameFromId } from "../services/voteService";
+import { getItemTypeNameFromId } from "../legacy/modules/voteModule";
 
 const VOTES_PRODUCTS = "https://fastapi.edgevideo.ai/tracking/votes/products";
 const VOTES_VIATOR = "https://fastapi.edgevideo.ai/tracking/votes/viator";

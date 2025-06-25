@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { UpdateFaces, addToFaceDataQueue } from "./modules/faces";
+import { UpdateFaces, addToFaceDataQueue } from "./modules/facesModule";
 import {
   products,
   productDataQueue,
@@ -11,19 +11,10 @@ import {
   processProductDataQueue,
   FormatTicketDateTime,
   FormatPrice,
-} from "./modules/products";
-import { setupLoginHandling, showLoggedOutState } from "./modules/googleAuth";
-// Inject channelId into window for any non-React scripts
-(function() {
-  const DEFAULT_CHANNEL_ID =
-    window.DEFAULT_CHANNEL_ID || "3d8c4c38-2d6e-483c-bdc5-e1eeeadd155e";
-  const params = new URLSearchParams(window.location.search);
-  let channelId = params.get("channelId") || DEFAULT_CHANNEL_ID;
-  try {
-    localStorage.setItem("channelId", channelId);
-  } catch {}
-  window.channelId = channelId;
-})();
+} from "./modules/productsModule";
+import { setupLoginHandling, showLoggedOutState } from "./modules/googleAuthModule";
+import { getChannelId } from "./modules/useChannelModule";
+const channelId = getChannelId();
 
 const wsUrl = "wss://slave-ws-service-342233178764.us-west1.run.app"; // WebSocket server URL
 
