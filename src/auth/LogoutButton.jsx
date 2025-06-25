@@ -5,11 +5,10 @@ import { useAuth } from "../contexts/AuthContext";
 
 export default function LogoutButton() {
   const { logout } = useAuth();
-  const navigate = useNavigate();
 
   function handleClick() {
     logout();
-    navigate("/app");
+    window.location.assign("/app");
   }
 
   return (
