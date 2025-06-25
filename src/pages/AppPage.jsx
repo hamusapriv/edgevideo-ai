@@ -12,6 +12,7 @@ import GamesIcon from "../components/svgs/GamesIcon";
 import AppBg from "../components/AppBg";
 import FAQ from "../components/FAQ";
 import { useChannelId } from "../hooks/useChannelId";
+import "../styles/app.css";
 
 
 export default function AppPage() {
