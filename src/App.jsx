@@ -1,5 +1,6 @@
 // src/App.jsx
 import React, { Suspense, lazy } from "react";
+import ScreenInitializer from "./screen/ScreenInitializer";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import ProfileSidebar from "./components/ProfileSidebar";
 import { useSidebar } from "./contexts/SidebarContext";
@@ -27,6 +28,8 @@ export default function App() {
       {showSidebar && (
         <ProfileSidebar isOpen={sidebarOpen} onClose={closeSidebar} />
       )}
+
+      <ScreenInitializer />
 
       <Suspense fallback={<div />}>
         <Routes>

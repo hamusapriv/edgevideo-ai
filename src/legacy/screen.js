@@ -1160,26 +1160,23 @@ function populateFavoritesTab() {
 
 // --- NEW: Main Initialization Function ---
 function initializeApp() {
-  edgeConsole.log("DOM ready, initializing application...");
+  edgeConsole.log("DOM ready, initializing application..."); // Log initialization start
 
-  initProductsFeature();
-  initFacesFeature();
-  initAuthFeature();
-
-  hideConsoleMessages();
-}
-
-export function initProductsFeature() {
+  // Start WebSocket connection
   initializeWebSocket();
+
+  // Fetch initial product data
   getCachedProducts();
-}
 
-export function initFacesFeature() {
+  // Start the interval timer for updating faces
+  // Ensure UpdateFaces itself handles null elements gracefully if called before elements exist
   setInterval(UpdateFaces, 1000);
-}
 
-export function initAuthFeature() {
+  // Set up the login/auth related UI and logic
   setupLoginHandling(fetchVotedProducts, populateFavoritesTab);
+
+  // Any other initialization code that depends on the DOM should go here
+  hideConsoleMessages(); // Call this after DOM ready if it depends on anything
 }
 
 export function startScreen() {

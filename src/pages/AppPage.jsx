@@ -3,7 +3,6 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import AppHeader from "../components/AppHeader";
 import Tabs from "../components/Tabs";
 import ProfileSidebar from "../components/ProfileSidebar";
-import ScreenInitializer from "../screen/ScreenInitializer";
 
 // Tab‐pane components
 import ShoppingTab from "../components/ShoppingTab";
@@ -111,7 +110,6 @@ export default function AppPage() {
 
   return (
     <>
-      <ScreenInitializer features={["products", "faces", "auth"]} />
       <AppHeader onToggleSidebar={handleToggleSidebar} />
 
       <section
