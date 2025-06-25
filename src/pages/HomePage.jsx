@@ -5,6 +5,7 @@ import HeroImg from "/assets/hero-image.png";
 import HeroImg2 from "/assets/hero-image-2.png";
 import HeroVideoMp4 from "/assets/hero-video.mp4";
 import HeroVideoWebm from "/assets/hero-video.webm";
+import Logo from "/assets/logo.png"; // Assuming you have a logo image
 
 export default function HomePage() {
   const [navOpen, setNavOpen] = useState(false);
@@ -14,16 +15,43 @@ export default function HomePage() {
   return (
     <div className="home">
       <div className="home-bg"></div>
-      <header className="header">
-        <div className="header__inner container">
-          <Link to="/home" className="logo">
-            EdgeVideo
+      <header className="home-header">
+        <div className="home-header__inner">
+          <Link
+            to="/home"
+            className="logo"
+            style={{ display: "flex", alignItems: "center", gap: "10px" }}
+          >
+            {" "}
+            <img
+              src={Logo}
+              alt="Edge Video AI Logo"
+              style={{ height: "40px" }}
+            />{" "}
+            <div style={{}}>
+              <p style={{ position: "relative", margin: 0, lineHeight: "1.2" }}>
+                Edge
+                <br /> &nbsp;Video
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "3px",
+                    right: "-15px",
+                    fontSize: "1rem",
+                    fontWeight: "400",
+                    opacity: "0.8",
+                  }}
+                >
+                  AI
+                </span>
+              </p>
+            </div>
           </Link>
           <button className="nav-toggle" onClick={toggleNav}>
             ☰
           </button>
           <nav className={`nav ${navOpen ? "nav--open" : ""}`}>
-            <ul className="nav__list">
+            <ul className="home-nav__list">
               <li>
                 <Link to="/for-channels">For Channels</Link>
               </li>
@@ -44,18 +72,39 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="main">
+      <main className="home-main">
         <section className="hero">
-          <div className="container">
-            <p className="hero__subtitle">Shoppable TV is NOW LIVE!</p>
-            <h1 className="hero__title">Join the Shoppable Video Revolution</h1>
-            <p className="hero__lead">
-              EdgeVideo adds real-time shopping to any video stream.
-            </p>
-            <div className="hero__actions">
-              <a href="mailto:info@edgevideo.ai" className="btn btn--primary">
-                Contact Us
-              </a>
+          <div className="hero-container">
+            <div
+              style={{
+                flex: 1,
+                padding: "20px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignContent: "center",
+                gap: "20px",
+              }}
+            >
+              <h1 style={{ fontSize: "3rem", lineHeight: "1.2" }}>
+                Join the <br />
+                <span style={{ color: "#524fd9", whiteSpace: "nowrap" }}>
+                  Shoppable Video
+                </span>{" "}
+                <br />
+                Revolution
+              </h1>
+              <div className="hero__actions">
+                <a href="mailto:info@edgevideo.ai" className="btn btn--primary">
+                  Contact Us
+                </a>
+              </div>
+              <p style={{ fontSize: "1.5rem", lineHeight: "1.5" }}>
+                Our AI-powered shoppable broadcasting solution adds a new
+                dimension to any video stream and allows viewers to purchase
+                items in real-time from their favorite shows - without leaving
+                the screen.{" "}
+              </p>
             </div>
             {/*           <img src={HeroImg2} className="hero__image" /> */}
             <div className="hero-video-container">
