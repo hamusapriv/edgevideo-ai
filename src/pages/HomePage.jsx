@@ -46,26 +46,25 @@ export default function HomePage() {
 
       <main className="main">
         <section className="hero">
-          <p className="hero__subtitle">Shoppable TV is NOW LIVE!</p>
-          <h1 className="hero__title">Join the Shoppable Video Revolution</h1>
-          <p className="hero__lead">
-            EdgeVideo adds real-time shopping to any video stream.
-          </p>
-          <div className="hero__actions">
-            <a href="mailto:info@edgevideo.ai" className="btn btn--primary">
-              Contact Us
-            </a>
-          </div>
-          {/*           <img src={HeroImg2} className="hero__image" />
-           */}{" "}
-          <div className="hero-video-container">
-            <video
-              src={HeroVideoWebm}
-              className="hero-video"
-              autoPlay
-              muted
-              loop
-            ></video>
+          <div className="container">
+            <p className="hero__subtitle">Shoppable TV is NOW LIVE!</p>
+            <h1 className="hero__title">Join the Shoppable Video Revolution</h1>
+            <p className="hero__lead">
+              EdgeVideo adds real-time shopping to any video stream.
+            </p>
+            <div className="hero__actions">
+              <a href="mailto:info@edgevideo.ai" className="btn btn--primary">
+                Contact Us
+              </a>
+            </div>
+            {/*           <img src={HeroImg2} className="hero__image" /> */}
+            <div className="hero-video-container">
+              <video className="hero-video" autoPlay muted loop playsInline>
+                <source src={HeroVideoWebm} type="video/webm" />
+                <source src={HeroVideoMp4} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
           </div>
         </section>
 
