@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import SvgDislike from "../svgs/SvgDislike";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSidebar } from "../../contexts/SidebarContext";
-import { downvoteProduct } from "../../legacy/modules/voteModule";
+import { downvoteProduct } from "../../services/voteService";
 import { useFavorites } from "../../contexts/FavoritesContext";
 
 export default function DislikeButton({ itemId, itemTypeName, onSuccess }) {
