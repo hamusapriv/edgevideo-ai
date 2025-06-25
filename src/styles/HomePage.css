@@ -11,7 +11,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing) var(--spacing-lg);
+  padding: 6px 12px;
   position: fixed;
   top: 0;
   left: 0;
@@ -26,8 +26,8 @@
   background-size: 105vw 105vh;
   height: 100vh;
   width: 100vw;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
+  z-index: -1;
 }
 
 .home-bg::before {
@@ -121,13 +121,14 @@
 
 .home-nav__list {
   display: flex;
-  gap: var(--spacing-lg);
+  gap: 6px;
 }
 .home-nav__list a {
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: 4px;
   padding: 6px 12px;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 .home-nav__list a:hover,
 .home-nav__list a.active {

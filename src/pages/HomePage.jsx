@@ -31,15 +31,15 @@ export default function HomePage() {
             <div style={{}}>
               <p style={{ position: "relative", margin: 0, lineHeight: "1.2" }}>
                 Edge
-                <br /> &nbsp;Video
+                <br /> &nbsp; {/* &nbsp; */} Video
                 <span
                   style={{
                     position: "absolute",
                     top: "3px",
-                    right: "-15px",
-                    fontSize: "1rem",
+                    right: "-10px",
+                    fontSize: ".8rem",
                     fontWeight: "400",
-                    opacity: "0.8",
+                    opacity: "0.5",
                   }}
                 >
                   AI
