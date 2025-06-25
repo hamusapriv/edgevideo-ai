@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from "react";
+import fallbackLogo from "../assets/edgevideoai-logo.png";
+
+const API_BASE =
+  import.meta.env.VITE_STUDIO_API_URL ||
+  "https://studio-api.edgevideo.com";
 
 /**
  * ChannelLogo
@@ -26,7 +31,7 @@ export default function ChannelLogo({
     async function fetchLogo() {
       try {
         const res = await fetch(
-          `https://studio-api.edgevideo.com/channel/loadChannelLogo/${channel}`
+          `${API_BASE}/channel/loadChannelLogo/${channel}`
         );
         if (!res.ok) throw new Error(`Status ${res.status}`);
         const json = await res.json();
@@ -35,7 +40,11 @@ export default function ChannelLogo({
         if (!cancelled) setLogoUrl(logo);
       } catch (err) {
         console.error("ChannelLogo fetch error:", err);
-        if (!cancelled) setError("Failed to load channel logo");
+        if (!cancelled) {
+          // fall back to bundled logo
+          setLogoUrl(fallbackLogo);
+          setError(null);
+        }
       }
     }
 
