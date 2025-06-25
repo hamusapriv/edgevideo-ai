@@ -1,11 +1,19 @@
 // src/auth/LogoutButton.jsx
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function LogoutButton() {
   const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  function handleClick() {
+    logout();
+    navigate("/app");
+  }
+
   return (
-    <button onClick={logout} className="logout-btn btn--secondary">
+    <button onClick={handleClick} className="logout-btn btn--secondary">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="icon icon-logout"
