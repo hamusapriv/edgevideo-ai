@@ -10,7 +10,7 @@ import ShareButton from "./buttons/ShareButton";
 import ProductCard from "./ProductCard";
 import { useAuth } from "../contexts/AuthContext";
 import { useSidebar } from "../contexts/SidebarContext";
-import { upvoteProduct, downvoteProduct } from "../legacy/modules/voteModule";
+import { upvoteProduct, downvoteProduct } from "../services/voteService";
 
 export default function LiveShopping({ channelId, onLike }) {
   // ───────── Refs ─────────

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import SvgLike from "../svgs/SvgLike";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSidebar } from "../../contexts/SidebarContext";
-import { upvoteProduct } from "../../legacy/modules/voteModule";
+import { upvoteProduct } from "../../services/voteService";
 import { useFavorites } from "../../contexts/FavoritesContext";
 
 export default function LikeButton({ itemId, itemTypeName, onSuccess }) {
