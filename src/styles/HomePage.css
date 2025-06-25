@@ -1,7 +1,3 @@
-@import "./reset.css";
-@import "./variables.css";
-@import "./base.css";
-
 .home {
   display: flex;
   flex-direction: column;
