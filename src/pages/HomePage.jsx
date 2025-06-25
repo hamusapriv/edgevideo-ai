@@ -75,17 +75,7 @@ export default function HomePage() {
       <main className="home-main">
         <section className="hero">
           <div className="hero-container">
-            <div
-              style={{
-                flex: 1,
-                padding: "20px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignContent: "center",
-                gap: "20px",
-              }}
-            >
+            <div className="hero-content">
               <h1 style={{ fontSize: "3rem", lineHeight: "1.2" }}>
                 Join the <br />
                 <span style={{ color: "#524fd9", whiteSpace: "nowrap" }}>
