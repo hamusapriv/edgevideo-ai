@@ -1,20 +1,9 @@
 import { useEffect } from "react";
-import {
-  initProductsFeature,
-  initFacesFeature,
-  initAuthFeature,
-} from "../legacy/screen";
-export default function ScreenInitializer({ features = [] }) {
+import { startScreen } from "../legacy/screen";
+
+export default function ScreenInitializer() {
   useEffect(() => {
-    if (features.includes("products")) {
-      initProductsFeature();
-    }
-    if (features.includes("faces")) {
-      initFacesFeature();
-    }
-    if (features.includes("auth")) {
-      initAuthFeature();
-    }
-  }, [features]);
+    startScreen();
+  }, []);
   return null;
 }
