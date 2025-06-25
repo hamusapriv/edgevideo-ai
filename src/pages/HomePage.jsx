@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import "../styles/HomePage.css";
 import HeroImg from "/assets/hero-image.png";
 import HeroImg2 from "/assets/hero-image-2.png";
+import HeroVideoMp4 from "/assets/hero-video.mp4";
+import HeroVideoWebm from "/assets/hero-video.webm";
 
 export default function HomePage() {
   const [navOpen, setNavOpen] = useState(false);
@@ -43,7 +45,7 @@ export default function HomePage() {
       </header>
 
       <main className="main">
-        <section className="hero container">
+        <section className="hero">
           <p className="hero__subtitle">Shoppable TV is NOW LIVE!</p>
           <h1 className="hero__title">Join the Shoppable Video Revolution</h1>
           <p className="hero__lead">
@@ -54,7 +56,17 @@ export default function HomePage() {
               Contact Us
             </a>
           </div>
-          <img src={HeroImg2} className="hero__image" />
+          {/*           <img src={HeroImg2} className="hero__image" />
+           */}{" "}
+          <div className="hero-video-container">
+            <video
+              src={HeroVideoWebm}
+              className="hero-video"
+              autoPlay
+              muted
+              loop
+            ></video>
+          </div>
         </section>
 
         <section className="features container">
