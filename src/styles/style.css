@@ -468,7 +468,7 @@ section {
 /* Quick Access Tab */
 .quick-access-list {
   list-style: none;
-  margin: 0;
+  margin: auto;
   padding: 10px;
   display: flex;
   flex-direction: column;

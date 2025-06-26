@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import LoadingOverlay from "./LoadingOverlay";
 
 /**
  * ChannelLogo
@@ -49,7 +50,11 @@ export default function ChannelLogo({
     return <div className="channel-logo-error">{error}</div>;
   }
   if (!logoUrl) {
-    return <div className="channel-logo-loading">Loading logo…</div>;
+    return (
+      <div className="channel-logo-loading">
+        <LoadingOverlay />
+      </div>
+    );
   }
 
   return (
