@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import LoadingOverlay from "../components/LoadingOverlay";
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
@@ -26,5 +27,9 @@ export default function OAuthCallback() {
     }
   }, [fetchUser, navigate]);
 
-  return <p style={{ padding: 20, color: "#fff" }}>Logging you in…</p>;
+  return (
+    <p style={{ padding: 20, color: "#fff" }}>
+      <LoadingOverlay message="Signing In..." />
+    </p>
+  );
 }
