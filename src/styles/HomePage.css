@@ -21,7 +21,7 @@
 
 .home-bg {
   position: fixed;
-  background-image: url("/assets/bg.png");
+  background-image: url("/assets/bg-min.png");
   background-repeat: no-repeat;
   background-size: 105vw 105vh;
   height: 100vh;
