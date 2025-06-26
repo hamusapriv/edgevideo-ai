@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "../styles/HomePage.css";
 import HeroImg from "/assets/hero-image.png";
 import HeroImg2 from "/assets/hero-image-2.png";
-import HeroVideoMp4 from "/assets/hero-video.mp4";
+import HeroVideoMp4 from "/assets/hero-video-min.mp4";
 import HeroVideoWebm from "/assets/hero-video.webm";
 import Logo from "/assets/logo.png"; // Assuming you have a logo image
 
