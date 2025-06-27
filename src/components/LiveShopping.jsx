@@ -217,10 +217,12 @@ export default function LiveShopping({ channelId, onLike }) {
 
       if (lastBestRef.current) {
         lastBestRef.current.classList.remove("focused");
-        const prevContainer =
-          lastBestRef.current.querySelector('[data-role="frame-container"]');
-        const prevText =
-          lastBestRef.current.querySelector('[data-role="toggle-text"]');
+        const prevContainer = lastBestRef.current.querySelector(
+          '[data-role="frame-container"]'
+        );
+        const prevText = lastBestRef.current.querySelector(
+          '[data-role="toggle-text"]'
+        );
         if (prevContainer) {
           prevContainer.dataset.visible = "false";
           prevContainer.style.maxHeight = "0px";
@@ -276,8 +278,8 @@ export default function LiveShopping({ channelId, onLike }) {
       const scrollLeft = scrollBox.scrollLeft;
       const maxScroll = belt.scrollWidth - containerWidth;
 
-      const START = 150;
-      const END = containerWidth - 150;
+      const START = 190;
+      const END = containerWidth - 190;
       const t = maxScroll > 0 ? scrollLeft / maxScroll : 0;
       const focusX = containerRect.left + (START + t * (END - START));
 

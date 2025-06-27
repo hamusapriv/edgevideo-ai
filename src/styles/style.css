@@ -284,6 +284,7 @@ section {
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
+  margin: 0 6px;
 }
 
 .item-container img {
@@ -329,6 +330,7 @@ section {
   align-items: flex-start;
   white-space: nowrap;
   position: absolute;
+  min-width: 110vw;
 }
 
 .liveshopping-container {

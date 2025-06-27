@@ -86,6 +86,7 @@
     flex-direction: column;
     gap: 20px;
     align-items: center;
+    min-width: 0;
   }
 
   .liveshopping-container {
