@@ -1,6 +1,6 @@
 /* Live Shopping Desktop CSS */
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   #itemContent {
     gap: 10px;
   }
