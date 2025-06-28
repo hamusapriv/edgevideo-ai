@@ -11,6 +11,143 @@ import { useAuth } from "../contexts/AuthContext";
 import { useSidebar } from "../contexts/SidebarContext";
 import { upvoteProduct, downvoteProduct } from "../legacy/modules/voteModule";
 
+function DetailsPanel({ data, onLike }) {
+  if (!data?.name) return null;
+  return (
+    <div className="live-details" style={{ display: "flex" }}>
+      <h2 className="live-product-name">{data.name}</h2>
+      <p
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+          fontSize: "0.95rem",
+          lineHeight: "1.4",
+          color: "#ddd",
+        }}
+      >
+        <span
+          style={{ display: "flex", alignItems: "center", gap: "6px" }}
+        >
+          {data.matchText && (
+            <span
+              style={{
+                display: "inline",
+                fontSize: "1rem",
+                fontWeight: "600",
+                color: "#fff",
+              }}
+            >
+              AI {data.matchText}
+            </span>
+          )}
+        </span>
+        {data.description}
+      </p>
+      {data.frameImageUrl && (
+        <div
+          className="live-frame-image-container"
+          style={{
+            overflow: "hidden",
+            aspectRatio: "16/9",
+            maxWidth: "calc(200px * 16 / 9)",
+            width: "fit-content",
+            maxHeight: "200px",
+            objectFit: "cover",
+            borderRadius: "8px",
+            opacity: 1,
+            transform: "translateY(0)",
+            transition: "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
+          }}
+        >
+          <img
+            src={data.frameImageUrl}
+            alt={`Frame for ${data.name}`}
+            className="live-frame-image"
+          />
+        </div>
+      )}
+      {data.price && (
+        <p
+          style={{
+            fontSize: "1rem",
+            color: "#fff",
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            lineHeight: "1.4rem",
+            gap: "1rem",
+          }}
+        >
+          <span
+            style={{
+              fontSize: "1rem",
+              fontWeight: "600",
+              color: "#aaf",
+              marginRight: "0.15rem",
+            }}
+          >
+            Price:
+          </span>
+          {data.price}
+        </p>
+      )}
+      <div className="product-buttons-container">
+        {data.productUrl && (
+          <a
+            href={data.productUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "1rem",
+              background: "var(--color-primary)",
+              color: "#fff",
+              textAlign: "center",
+              textDecoration: "none",
+              padding: "6px 10px",
+              borderRadius: "6px",
+              fontSize: "0.95rem",
+              fontWeight: "bold",
+            }}
+          >
+            <p>Shop On</p>
+            {data.vendorLogoUrl && (
+              <img
+                src={data.vendorLogoUrl}
+                alt="Vendor Logo"
+                style={{
+                  width: "auto",
+                  height: "24px",
+                  borderRadius: "6px",
+                  backgroundColor: "white",
+                }}
+              />
+            )}
+          </a>
+        )}
+        <div
+          style={{ display: "flex", gap: 16, justifyContent: "space-around" }}
+        >
+          <LikeButton
+            itemId={data.id}
+            itemTypeName={data.itemTypeName}
+            onSuccess={onLike}
+          />
+          <DislikeButton
+            itemId={data.id}
+            itemTypeName={data.itemTypeName}
+            onSuccess={onLike}
+          />
+          <ShareButton title={data.name} url={data.productUrl} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function LiveShopping({ channelId, onLike }) {
   // ───────── Refs ─────────
   const scrollBoxRef = useRef(null);
@@ -23,19 +160,7 @@ export default function LiveShopping({ channelId, onLike }) {
   // ───────── add at top of your useEffect ─────────
   const lastBestRef = useRef(null);
 
-  // ───────── Selected-card state ─────────
-  const [selectedCardData, setSelectedCardData] = useState({
-    id: null,
-    itemTypeName: "", // ← add this
-
-    name: "",
-    price: "",
-    description: "",
-    frameImageUrl: "",
-    matchText: "",
-    vendorLogoUrl: "",
-    productUrl: "",
-  });
+  const [allCardData, setAllCardData] = useState([]);
 
   // ───────── Detect hover (desktop vs mobile) ─────────
   const deviceCanHover = window.matchMedia(
@@ -66,6 +191,28 @@ export default function LiveShopping({ channelId, onLike }) {
     }
     return "DB Product";
   }
+
+  const collectCardData = useCallback((card) => {
+    if (!card) return null;
+    return {
+      id: card.getAttribute("data-product-id"),
+      itemTypeName: inferItemTypeName(card),
+      name:
+        card.querySelector('[data-role="product-name"]')?.innerText || "",
+      price:
+        card.querySelector('[data-role="product-price"]')?.innerText || "",
+      description:
+        card.querySelector('[data-role="ai-description"]')?.innerText || "",
+      frameImageUrl:
+        card.querySelector('[data-role="frame-image"]')?.src || "",
+      matchText:
+        card.querySelector('[data-role="matchText"]')?.innerText || "",
+      vendorLogoUrl:
+        card.querySelector('[data-role="vendor-logo"]')?.src || "",
+      productUrl:
+        card.querySelector('[data-role="product-link"]')?.href || "",
+    };
+  }, []);
 
   const handleLike = useCallback(async (e) => {
     e.stopPropagation();
@@ -191,6 +338,11 @@ export default function LiveShopping({ channelId, onLike }) {
 
       const shouldScroll = isNearEnd();
 
+      const data = collectCardData(liveCard);
+      if (data) {
+        setAllCardData((prev) => [...prev, data]);
+      }
+
       // Remove “product0” from the old card so it becomes a “static” card
       liveCard.classList.remove("product0");
 
@@ -254,24 +406,6 @@ export default function LiveShopping({ channelId, onLike }) {
       card.classList.add("focused");
       lastBestRef.current = card;
 
-      const id = card.getAttribute("data-product-id");
-      setSelectedCardData({
-        id,
-        itemTypeName: inferItemTypeName(card),
-        name: card.querySelector('[data-role="product-name"]')?.innerText || "",
-        price:
-          card.querySelector('[data-role="product-price"]')?.innerText || "",
-        description:
-          card.querySelector('[data-role="ai-description"]')?.innerText || "",
-        frameImageUrl:
-          card.querySelector('[data-role="frame-image"]')?.src || "",
-        matchText:
-          card.querySelector('[data-role="matchText"]')?.innerText || "",
-        vendorLogoUrl:
-          card.querySelector('[data-role="vendor-logo"]')?.src || "",
-        productUrl:
-          card.querySelector('[data-role="product-link"]')?.href || "",
-      });
     }
 
     // ───────── updateFocusDuringScroll: only run when focus really changes ─────────
@@ -368,7 +502,7 @@ export default function LiveShopping({ channelId, onLike }) {
       if (injectedScript) document.head.removeChild(injectedScript);
       if (injectedStyle) document.head.removeChild(injectedStyle);
     };
-  }, [channelId, deviceCanHover, handleLike, handleDislike, handleShare]);
+  }, [channelId, deviceCanHover, handleLike, handleDislike, handleShare, collectCardData]);
 
   // ─────────────────────────────────────────────────────────────────
   // Render
@@ -383,173 +517,12 @@ export default function LiveShopping({ channelId, onLike }) {
         <div id="itemContent" ref={beltRef}></div>
       </div>
       {/* ─────────────────────────────────────────────────────────────────
-           (2) DETAILS PANEL: visible when a card is in focus
+           (2) DETAILS PANEL: list of all cards
       ───────────────────────────────────────────────────────────────── */}
-      <div
-        className="live-details"
-        style={{ display: /* deviceCanHover ? "none" : */ "flex" }}
-      >
-        {selectedCardData.name ? (
-          <>
-            {/* (e) NAME */}
-            <h2 className="live-product-name">{selectedCardData.name}</h2>
-
-            {/* (f) DESCRIPTION */}
-            <p
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "6px",
-                fontSize: "0.95rem",
-                lineHeight: "1.4",
-                color: "#ddd",
-              }}
-            >
-              <span
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                {/* (c) MATCH TEXT */}
-                {selectedCardData.matchText && (
-                  <span
-                    style={{
-                      display: "inline",
-                      fontSize: "1rem",
-                      fontWeight: "600",
-                      color: "#fff",
-                    }}
-                  >
-                    AI {selectedCardData.matchText}
-                  </span>
-                )}
-
-                {/* Inline toggle */}
-                {/* Frame always visible; toggle removed */}
-              </span>
-              {selectedCardData.description}
-            </p>
-
-            {/* (d-1) FRAME IMAGE: only when toggled on */}
-            {selectedCardData.frameImageUrl && (
-              <div
-                className="live-frame-image-container"
-                style={{
-                  overflow: "hidden",
-                  aspectRatio: "16/9",
-                  maxWidth: "calc(200px * 16 / 9)",
-                  width: "fit-content",
-                  maxHeight: "200px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                  opacity: 1,
-                  transform: "translateY(0)",
-                  transition:
-                    "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
-                }}
-              >
-                <img
-                  src={selectedCardData.frameImageUrl}
-                  alt={`Frame for ${selectedCardData.name}`}
-                  className="live-frame-image"
-                />
-              </div>
-            )}
-            {/* (g) PRICE */}
-            {selectedCardData.price && (
-              <p
-                style={{
-                  fontSize: "1rem",
-                  color: "#fff",
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                  lineHeight: "1.4rem",
-                  gap: "1rem",
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "1rem",
-                    fontWeight: "600",
-                    color: "#aaf",
-                    marginRight: "0.15rem",
-                  }}
-                >
-                  Price:
-                </span>
-                {selectedCardData.price}
-              </p>
-            )}
-
-            {/* (h) CTA + SOCIAL BUTTONS */}
-            <div className="product-buttons-container">
-              {/* Shop Now */}
-              {selectedCardData.productUrl && (
-                <a
-                  href={selectedCardData.productUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "1rem",
-                    background: "var(--color-primary)",
-                    color: "#fff",
-                    textAlign: "center",
-                    textDecoration: "none",
-                    padding: "6px 10px",
-                    borderRadius: "6px",
-                    fontSize: "0.95rem",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <p>Shop On</p>
-                  {/* (d) VENDOR LOGO (if present) */}
-                  {selectedCardData.vendorLogoUrl && (
-                    <img
-                      src={selectedCardData.vendorLogoUrl}
-                      alt="Vendor Logo"
-                      style={{
-                        width: "auto",
-                        height: "24px",
-                        borderRadius: "6px",
-                        backgroundColor: "white",
-                      }}
-                    />
-                  )}
-                </a>
-              )}
-              <div
-                style={{
-                  display: "flex",
-                  gap: 16,
-                  justifyContent: "space-around",
-                }}
-              >
-                <LikeButton
-                  itemId={selectedCardData.id}
-                  itemTypeName={selectedCardData.itemTypeName}
-                  onSuccess={onLike}
-                />
-                <DislikeButton
-                  itemId={selectedCardData.id}
-                  itemTypeName={selectedCardData.itemTypeName}
-                  onSuccess={onLike}
-                />
-                <ShareButton
-                  title={selectedCardData.name}
-                  url={selectedCardData.productUrl}
-                />
-              </div>
-            </div>
-          </>
-        ) : (
-          <p style={{ color: "#aaa" }}>Loading products…</p>
-        )}
+      <div className="all-live-details">
+        {allCardData.map((d, i) => (
+          <DetailsPanel key={i} data={d} onLike={onLike} />
+        ))}
       </div>
     </div>
   );
