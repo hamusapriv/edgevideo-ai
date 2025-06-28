@@ -162,6 +162,8 @@ export default function LiveShopping({ channelId, onLike }) {
 
   const [allCardData, setAllCardData] = useState([]);
 
+  const [allCardData, setAllCardData] = useState([]);
+
   // ───────── Detect hover (desktop vs mobile) ─────────
   const deviceCanHover = window.matchMedia(
     "(hover: hover) and (pointer: fine)"
@@ -405,7 +407,6 @@ export default function LiveShopping({ channelId, onLike }) {
 
       card.classList.add("focused");
       lastBestRef.current = card;
-
     }
 
     // ───────── updateFocusDuringScroll: only run when focus really changes ─────────
@@ -519,6 +520,11 @@ export default function LiveShopping({ channelId, onLike }) {
       {/* ─────────────────────────────────────────────────────────────────
            (2) DETAILS PANEL: list of all cards
       ───────────────────────────────────────────────────────────────── */}
+      <div className="all-live-details">
+        {allCardData.map((d, i) => (
+          <DetailsPanel key={i} data={d} onLike={onLike} />
+        ))}
+      </div>
       <div className="all-live-details">
         {allCardData.map((d, i) => (
           <DetailsPanel key={i} data={d} onLike={onLike} />
