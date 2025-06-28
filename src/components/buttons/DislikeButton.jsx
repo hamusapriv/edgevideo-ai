@@ -1,5 +1,5 @@
 // src/components/buttons/DislikeButton.jsx
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import SvgDislike from "../svgs/SvgDislike";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSidebar } from "../../contexts/SidebarContext";
@@ -11,15 +11,9 @@ export default function DislikeButton({ itemId, itemTypeName, onSuccess }) {
   const { openSidebar } = useSidebar();
   const { fetchFavorites } = useFavorites();
   const [active, setActive] = useState(false);
-  const btnRef = useRef(null);
 
   useEffect(() => {
-    const btn = btnRef.current;
-    if (!btn) return setActive(false);
-    const card = btn.closest(".item-container");
-    const id = itemId || card?.getAttribute("data-product-id");
-    if (!id) return setActive(false);
-    setActive(btn.classList.contains("clicked"));
+    setActive(false);
   }, [itemId]);
 
   function inferItemTypeName(card) {
@@ -57,7 +51,6 @@ export default function DislikeButton({ itemId, itemTypeName, onSuccess }) {
 
   return (
     <button
-      ref={btnRef}
       className={`product-cta dislike-button${active ? " clicked" : ""}`}
       data-role="dislike"
       data-product-id={itemId}
