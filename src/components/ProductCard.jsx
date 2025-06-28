@@ -16,11 +16,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
   }, [showDetails]);
 
   return (
-    <div
-      className={`item-container ${isP0 ? "product0" : ""} ${
-        showDetails ? "show-details" : ""
-      }`}
-    >
+    <div className={`item-container ${isP0 ? "product0" : ""}`}>
       <div className="live-image-container">
         <img
           data-role="product-image"

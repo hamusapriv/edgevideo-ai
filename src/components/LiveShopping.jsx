@@ -477,7 +477,7 @@ export default function LiveShopping({ channelId, onLike }) {
       ───────────────────────────────────────────────────────────────── */}
       <div
         className="live-details"
-        style={{ display: deviceCanHover ? "none" : "flex" }}
+        style={{ display: /* deviceCanHover ? "none" : */ "flex" }}
       >
         {selectedCardData.name ? (
           <>
