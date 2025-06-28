@@ -1,9 +1,8 @@
 // src/components/LiveShopping.jsx
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { renderToStaticMarkup } from "react-dom/server.browser";
 import ChannelLogo from "./ChannelLogo";
 
-import SvgFrame from "./svgs/SvgFrame";
 import LikeButton from "./buttons/LikeButton";
 import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
@@ -38,8 +37,6 @@ export default function LiveShopping({ channelId, onLike }) {
     productUrl: "",
   });
 
-  // ───────── Mount & animate frame states ─────────
-  const [animateFrame, setAnimateFrame] = useState(false);
 
   // ───────── Detect hover (desktop vs mobile) ─────────
   const deviceCanHover = window.matchMedia(
@@ -248,71 +245,16 @@ export default function LiveShopping({ channelId, onLike }) {
       });
     }
 
-    let frameOpenTimer = null;
-    let frameCloseTimer = null;
-
     function applyFocus(card) {
       if (!card || card === lastBestRef.current) return;
 
-      // 1) clear any pending open/close timers
-      clearTimeout(frameOpenTimer);
-      clearTimeout(frameCloseTimer);
-
-      // 2) tear down the previously-focused card
       if (lastBestRef.current) {
         lastBestRef.current.classList.remove("focused");
-        const prevContainer = lastBestRef.current.querySelector(
-          '[data-role="frame-container"]'
-        );
-
-        const prevText = lastBestRef.current.querySelector(
-          '[data-role="toggle-text"]'
-        );
-        if (prevContainer) {
-          prevContainer.dataset.visible = "false";
-          prevContainer.style.maxHeight = "0px";
-          prevContainer.style.opacity = "0";
-          prevContainer.style.transform = "translateY(-20px)";
-        }
-        if (prevText) prevText.textContent = "Show Frame";
       }
 
-      // 3) focus this new card
       card.classList.add("focused");
       lastBestRef.current = card;
 
-      // pull out the elements we'll animate
-      const frameContainer = card.querySelector(
-        '[data-role="frame-container"]'
-      );
-      const toggleText = card.querySelector('[data-role="toggle-text"]');
-
-      // 4) immediately collapse it
-      frameContainer.dataset.visible = "false";
-      frameContainer.style.maxHeight = "0px";
-      frameContainer.style.opacity = "0";
-      frameContainer.style.transform = "translateY(-20px)";
-      if (toggleText) toggleText.textContent = "Show Frame";
-
-      // 5) open after 0.5s…
-      frameOpenTimer = setTimeout(() => {
-        frameContainer.dataset.visible = "true";
-        frameContainer.style.maxHeight = "200px";
-        frameContainer.style.opacity = "1";
-        frameContainer.style.transform = "translateY(0)";
-        if (toggleText) toggleText.textContent = "Hide Frame";
-
-        // 6) …then auto-close after 2s
-        frameCloseTimer = setTimeout(() => {
-          frameContainer.dataset.visible = "false";
-          frameContainer.style.maxHeight = "0px";
-          frameContainer.style.opacity = "0";
-          frameContainer.style.transform = "translateY(-20px)";
-          if (toggleText) toggleText.textContent = "Show Frame";
-        }, 2000);
-      }, 500);
-
-      // 7) finally, update your details panel as before
       const id = card.getAttribute("data-product-id");
       setSelectedCardData({
         id,
@@ -382,24 +324,7 @@ export default function LiveShopping({ channelId, onLike }) {
         card.addEventListener("mouseenter", () => applyFocus(card));
       }
 
-      const toggle = card.querySelector('[data-role="frame-toggle"]');
-      const container = card.querySelector('[data-role="frame-container"]');
-      const text = card.querySelector('[data-role="toggle-text"]');
-      if (toggle && container) {
-        container.dataset.visible = "false";
-        toggle.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const visible = container.dataset.visible === "true";
-          const next = !visible;
-          container.dataset.visible = next ? "true" : "false";
-          container.style.maxHeight = next ? "200px" : "0px";
-          container.style.opacity = next ? "1" : "0";
-          container.style.transform = next
-            ? "translateY(0)"
-            : "translateY(-20px)";
-          if (text) text.textContent = next ? "Hide Frame" : "Show Frame";
-        });
-      }
+      // Frame is always visible; manual toggle removed
 
       const like = card.querySelector('[data-role="like"]');
       if (like) like.addEventListener("click", handleLike);
@@ -446,19 +371,6 @@ export default function LiveShopping({ channelId, onLike }) {
     };
   }, [channelId, deviceCanHover, handleLike, handleDislike, handleShare]);
 
-  // ───────── Hide frame when user focuses a different product ─────────
-  useEffect(() => {
-    // collapse any existing frame
-    setAnimateFrame(false);
-
-    // open after 0.5 seconds
-    const timer = setTimeout(() => {
-      setAnimateFrame(true);
-    }, 1000);
-
-    // clear timeout if we switch focus again
-    return () => clearTimeout(timer);
-  }, [selectedCardData.id]);
 
   // ─────────────────────────────────────────────────────────────────
   // Render
@@ -517,24 +429,7 @@ export default function LiveShopping({ channelId, onLike }) {
                 )}
 
                 {/* Inline toggle */}
-                <button
-                  onClick={() => {
-                    setAnimateFrame((prev) => !prev);
-                  }}
-                  style={{
-                    display: "inline-flex",
-                    padding: 0,
-                    marginLeft: "4px",
-                    border: "none",
-                    background: "transparent",
-                    color: "#4fa",
-                    cursor: "pointer",
-                    fontSize: "0.9rem",
-                  }}
-                >
-                  <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
-                  {animateFrame ? "Hide Frame" : "Show Frame"}
-                </button>
+                {/* Frame always visible; toggle removed */}
               </span>
               {selectedCardData.description}
             </p>
@@ -548,13 +443,11 @@ export default function LiveShopping({ channelId, onLike }) {
                   aspectRatio: "16/9",
                   maxWidth: "calc(200px * 16 / 9)",
                   width: "fit-content",
-                  maxHeight: animateFrame ? "200px" : "0px",
+                  maxHeight: "200px",
                   objectFit: "cover",
                   borderRadius: "8px",
-                  opacity: animateFrame ? 1 : 0,
-                  transform: animateFrame
-                    ? "translateY(0)"
-                    : "translateY(-20px)",
+                  opacity: 1,
+                  transform: "translateY(0)",
                   transition:
                     "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
                 }}
