@@ -1,5 +1,5 @@
 // src/components/buttons/LikeButton.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import SvgLike from "../svgs/SvgLike";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSidebar } from "../../contexts/SidebarContext";
@@ -11,10 +11,16 @@ export default function LikeButton({ itemId, itemTypeName, onSuccess }) {
   const { openSidebar } = useSidebar();
   const { favorites, fetchFavorites } = useFavorites();
   const [active, setActive] = useState(false);
+  const btnRef = useRef(null);
 
   useEffect(() => {
-    if (!itemId) return setActive(false);
-    setActive(favorites.some((f) => String(f.item_id) === String(itemId)));
+    let id = itemId;
+    if (!id) {
+      const card = btnRef.current?.closest(".item-container");
+      id = card?.getAttribute("data-product-id");
+    }
+    if (!id) return setActive(false);
+    setActive(favorites.some((f) => String(f.item_id) === String(id)));
   }, [favorites, itemId]);
 
   function inferItemTypeName(card) {
@@ -52,6 +58,7 @@ export default function LikeButton({ itemId, itemTypeName, onSuccess }) {
 
   return (
     <button
+      ref={btnRef}
       className={`product-cta like-button${active ? " clicked" : ""}`}
       data-role="like"
       data-product-id={itemId}
