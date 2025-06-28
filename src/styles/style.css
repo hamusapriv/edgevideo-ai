@@ -467,6 +467,13 @@ section {
   white-space: normal;
 }
 
+.all-live-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 10px;
+}
+
 /* Quick Access Tab */
 .quick-access-list {
   list-style: none;
