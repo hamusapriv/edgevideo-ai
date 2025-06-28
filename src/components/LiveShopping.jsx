@@ -158,6 +158,32 @@ export default function LiveShopping({ channelId, onLike }) {
       return;
     }
 
+    // helper: detect if user is near the end of the scroll container
+    const SCROLL_THRESHOLD = 100;
+    function isNearEnd() {
+      const maxX = belt.scrollWidth - scrollBox.clientWidth;
+      const maxY = belt.scrollHeight - scrollBox.clientHeight;
+      if (maxX > 0) {
+        return scrollBox.scrollLeft >= maxX - SCROLL_THRESHOLD;
+      }
+      if (maxY > 0) {
+        return scrollBox.scrollTop >= maxY - SCROLL_THRESHOLD;
+      }
+      return false;
+    }
+
+    function scrollToEnd() {
+      requestAnimationFrame(() => {
+        const maxX = belt.scrollWidth - scrollBox.clientWidth;
+        const maxY = belt.scrollHeight - scrollBox.clientHeight;
+        if (maxX > 0) {
+          scrollBox.scrollTo({ left: maxX, behavior: "smooth" });
+        } else if (maxY > 0) {
+          scrollBox.scrollTo({ top: maxY, behavior: "smooth" });
+        }
+      });
+    }
+
     //
     // ────────────────────────────────────────────────────────────────────────
     // (D) Helper to append a fresh “product0” placeholder whenever the current one’s <img> changes
@@ -166,12 +192,18 @@ export default function LiveShopping({ channelId, onLike }) {
       const liveCard = belt.querySelector(".product0");
       if (!liveCard) return;
 
+      const shouldScroll = isNearEnd();
+
       // Remove “product0” from the old card so it becomes a “static” card
       liveCard.classList.remove("product0");
 
       // Create a brand-new placeholder, with class="product0"
       const fresh = makeCard(true);
       belt.append(fresh);
+
+      if (shouldScroll) {
+        scrollToEnd();
+      }
 
       // Start observing the new product0’s <img> for the next update
       watchProduct0();
