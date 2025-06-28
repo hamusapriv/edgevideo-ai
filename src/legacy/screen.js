@@ -20,8 +20,11 @@ const wsUrl = "wss://slave-ws-service-342233178764.us-west1.run.app"; // WebSock
 
 // Add these near other configuration variables
 const VOTE_TRACKING_BASE_URL = "https://fastapi.edgevideo.ai/tracking";
+const UPVOTE_URL = `${VOTE_TRACKING_BASE_URL}/vote/up`;
+const DOWNVOTE_URL = `${VOTE_TRACKING_BASE_URL}/vote/down`;
 const VOTED_PRODUCTS_URL = `${VOTE_TRACKING_BASE_URL}/votes/products`;
 const VOTED_VIATOR_URL = `${VOTE_TRACKING_BASE_URL}/votes/viator`;
+const REMOVE_VOTE_URL = `${VOTE_TRACKING_BASE_URL}/vote`;
 
 let votedProducts = []; // Stores products fetched from /votes/products
 
@@ -123,7 +126,8 @@ async function fetchVotedProducts() {
     votedProducts = combinedVotes;
     edgeConsole.log(`Total voted items fetched: ${votedProducts.length}.`);
 
-    applyInitialVoteStyles();
+    // **Recommendation:** Remove this call, rely on UpdateProductViaDataRole for styling
+    // applyInitialVoteStyles();
 
     if (encounteredError) {
       edgeConsole.warn(
@@ -777,44 +781,6 @@ function UpdateProductViaDataRole(i, time = null) {
 // Expose for other modules that rely on a global function
 window.UpdateProductViaDataRole = UpdateProductViaDataRole;
 
-// Restore simple helpers for reflecting vote state on desktop
-function updateVoteButtonStyles(productId, voteType) {
-  if (voteType === 1 || voteType === "1") voteType = "upvote";
-  else if (voteType === -1 || voteType === "-1") voteType = "downvote";
-
-  const likeButtons = document.querySelectorAll(
-    `[data-role="like"][data-product-id="${productId}"] , .like-button[data-product-id="${productId}"]`
-  );
-  const dislikeButtons = document.querySelectorAll(
-    `[data-role="dislike"][data-product-id="${productId}"] , .dislike-button[data-product-id="${productId}"]`
-  );
-
-  likeButtons.forEach((btn) => {
-    btn.classList.toggle("clicked", voteType === "upvote");
-  });
-  dislikeButtons.forEach((btn) => {
-    btn.classList.toggle("clicked", voteType === "downvote");
-  });
-}
-window.updateVoteButtonStyles = updateVoteButtonStyles;
-
-function applyInitialVoteStyles() {
-  if (!votedProducts.length) return;
-  const container = document.querySelector(".product0");
-  const btn = container?.querySelector(".like-button[data-product-id]");
-  if (!btn) return;
-  const id = btn.getAttribute("data-product-id");
-  const vote = votedProducts.find((v) => String(v.item_id) === String(id));
-  const vt = vote
-    ? vote.vote_type === 1
-      ? "upvote"
-      : vote.vote_type === -1
-      ? "downvote"
-      : "none"
-    : "none";
-  updateVoteButtonStyles(id, vt);
-}
-
 /**
  * Updates the visual style of ALL like/dislike buttons on the page
  * matching a specific product ID.
@@ -823,6 +789,374 @@ function applyInitialVoteStyles() {
  * @param {string} productId The ID of the product whose buttons to update.
  * @param {'upvote' | 'downvote' | 'none'} voteType The type of vote to reflect.
  */
+function updateVoteButtonStyles(productId, voteType) {
+  // Normalize voteType to handle numeric values
+  if (voteType === 1 || voteType === "1") voteType = "upvote";
+  else if (voteType === -1 || voteType === "-1") voteType = "downvote";
+
+  // Find ALL like and dislike buttons matching the productId across the document
+  const likeButtons = document.querySelectorAll(
+    `[data-role="like"][data-product-id="${productId}"] , .like-button[data-product-id="${productId}"]`
+  );
+  const dislikeButtons = document.querySelectorAll(
+    `[data-role="dislike"][data-product-id="${productId}"] , .dislike-button[data-product-id="${productId}"]`
+  );
+
+  // Check if any buttons were found for this product ID
+  if (likeButtons.length === 0 && dislikeButtons.length === 0) {
+    // Optional: Log if no buttons are found, might indicate an issue elsewhere
+    edgeConsole.log(
+      `No vote buttons found anywhere on the page for product ID ${productId}.`
+    );
+    return; // No buttons found for this ID, nothing to update
+  }
+
+  let actionTaken = false; // Flag to help with logging
+
+  // Update all found like buttons
+  likeButtons.forEach((button) => {
+    // Always remove the class first to handle state changes (e.g., upvote -> none)
+    button.classList.remove("clicked");
+    if (voteType === "upvote") {
+      button.classList.add("clicked");
+      actionTaken = true;
+    }
+  });
+
+  // Update all found dislike buttons
+  dislikeButtons.forEach((button) => {
+    // Always remove the class first
+    button.classList.remove("clicked");
+    if (voteType === "downvote") {
+      button.classList.add("clicked");
+      actionTaken = true;
+    }
+  });
+
+  // Log the action (consider logging only once if buttons were found)
+  if (actionTaken) {
+    if (voteType === "upvote") {
+      edgeConsole.log(
+        `Applied 'clicked' style to like button(s) for ${productId}`
+      );
+    } else if (voteType === "downvote") {
+      edgeConsole.log(
+        `Applied 'clicked' style to dislike button(s) for ${productId}`
+      );
+    }
+  } else if (
+    voteType === "none" &&
+    (likeButtons.length > 0 || dislikeButtons.length > 0)
+  ) {
+    // Log if we explicitly removed styles because voteType is 'none'
+    edgeConsole.log(
+      `Removed 'clicked' style from vote buttons for ${productId}`
+    );
+  }
+}
+
+// Expose for other modules
+window.updateVoteButtonStyles = updateVoteButtonStyles;
+
+/**
+ * Applies the initial vote button styles based on the fetched votedProducts list.
+ * Call this after votedProducts is populated.
+ */
+function applyInitialVoteStyles() {
+  if (!votedProducts || votedProducts.length === 0) return;
+
+  edgeConsole.log("Applying initial vote styles based on fetched data...");
+
+  // Assuming the currently displayed product in .product0 is the relevant one
+  const productContainer = document.querySelector(".product0");
+  if (!productContainer) return;
+
+  const likeButton = productContainer.querySelector(
+    ".like-button[data-product-id]"
+  );
+  const dislikeButton = productContainer.querySelector(
+    ".dislike-button[data-product-id]"
+  );
+
+  if (likeButton) {
+    const productId = likeButton.getAttribute("data-product-id");
+    const currentVote = votedProducts.find(
+      (vp) => String(vp.item_id) === String(productId)
+    );
+    if (currentVote) {
+      const vt =
+        currentVote.vote_type === 1
+          ? "upvote"
+          : currentVote.vote_type === -1
+          ? "downvote"
+          : "none";
+      updateVoteButtonStyles(productId, vt);
+    } else {
+      updateVoteButtonStyles(productId, "none"); // Ensure no style if not voted
+    }
+  }
+  // No need to check dislike button separately, updateVoteButtonStyles handles both
+}
+
+/**
+ * Sends a downvote request to the backend for a given product ID.
+ * Can optionally accept the item type name directly to avoid lookup.
+ * @param {string} productId - The ID of the item to downvote.
+ * @param {string|null} [itemTypeNameParam=null] - Optional: The type name ('DB Product', etc.) if known.
+ */
+async function DownvoteProduct(productId, itemTypeNameParam = null) {
+  edgeConsole.log(
+    `Attempting to downvote product ${productId}${
+      itemTypeNameParam ? ` (Type provided: ${itemTypeNameParam})` : ""
+    }`
+  );
+
+  // 1. Get Auth Token (remains the same)
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    edgeConsole.error(
+      "Downvote failed: User not logged in (no auth token found)."
+    );
+    console.error("Please log in to vote.");
+    document.getElementById("profileBtn")?.click(); // Use optional chaining for safety
+    return;
+  }
+
+  let determinedItemTypeName = itemTypeNameParam; // Use provided type name if available
+
+  // 2. Determine Item Type Name IF NOT PROVIDED
+  if (!determinedItemTypeName) {
+    // Fallback to looking in the main 'products' list
+    const product = products.find((p) => String(p.id) === String(productId)); // Compare as strings
+    if (!product) {
+      // This can still happen if called without type from somewhere else
+      // and the product isn't in the main list.
+      edgeConsole.error(
+        `Downvote failed: Product data not found in 'products' array for ID ${productId} and type was not provided.`
+      );
+      // Consider if we should check 'votedProducts' as a fallback? Maybe not needed.
+      return;
+    }
+    determinedItemTypeName = getItemTypeName(product); // Get type from product data
+  }
+
+  // 3. Check if Type Name is Valid
+  if (!determinedItemTypeName) {
+    edgeConsole.error(
+      `Downvote failed: Could not determine item type name for product ${productId}.`
+    );
+    return;
+  }
+
+  // Trigger UI update for vote buttons globally
+  updateVoteButtonStyles(productId, "downvote"); // Pass numeric vote type
+
+  // 4. Prepare API Request Payload (using determinedItemTypeName)
+  const payload = {
+    itemId: productId,
+    itemTypeName: determinedItemTypeName, // Use the determined type
+  };
+
+  // 5. Send Fetch Request (remains the same)
+  try {
+    const response = await fetch(DOWNVOTE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    // 6. Handle Response (Update local list and styles)
+    if (response.ok) {
+      edgeConsole.log(
+        `Successfully downvoted product ${productId} (Type: ${determinedItemTypeName})`
+      );
+
+      // Update local votedProducts list (convert ID to string for reliable findIndex)
+      const productIdStr = String(productId);
+      const existingVoteIndex = votedProducts.findIndex(
+        (vp) => String(vp.item_id) === productIdStr
+      );
+      const now = new Date().toISOString();
+
+      if (existingVoteIndex !== -1) {
+        // If it was in the list (as upvote or downvote), update/remove it
+        // Since this is Downvote, we mark it or potentially remove if UX dictates
+        votedProducts[existingVoteIndex].vote_type = -1; // Assuming -1 for downvote now
+        votedProducts[existingVoteIndex].voted_at = now;
+        edgeConsole.log(
+          `Updated local vote status for ${productId} to downvote (-1).`
+        );
+      } else {
+        // If it wasn't in the list, maybe add it as downvoted?
+        // This depends on whether 'votedProducts' should track downvotes too.
+        // Let's assume for now we only update existing ones or remove them on downvote.
+        edgeConsole.log(
+          `Product ${productId} not found in local voted list to update after downvote.`
+        );
+      }
+    } else {
+      const errorData = await response.json().catch(() => response.text()); // Handle non-JSON errors too
+      edgeConsole.error(
+        `Downvote API call failed for ${productId}: ${response.status}`,
+        errorData
+      );
+    }
+  } catch (error) {
+    edgeConsole.error(
+      `Network or other error sending downvote for ${productId}:`,
+      error
+    );
+  }
+}
+
+// initializeWebSocket();
+// getCachedProducts();
+
+// setInterval(UpdateFaces, 1000);
+
+/**
+ * Gets the item type name string based on the numeric item_type_id.
+ * Used for providing the correct type name when removing favorites.
+ * @param {number | string} typeId - The numeric ID (e.g., 1, 4).
+ * @returns {string | null} The corresponding name ('DB Product', 'Viator Ticket', etc.) or null.
+ */
+function getItemTypeNameFromId(typeId) {
+  // Ensure these IDs and names match your backend configuration and getItemTypeName function
+  // Convert typeId to number for reliable comparison
+  switch (Number(typeId)) {
+    case 1:
+      return "DB Product";
+    case 4:
+      return "Viator Ticket"; // IMPORTANT: Verify '4' is the correct ID for Viator Tickets
+    // Add cases for 'DB Ticket', 'Deal', etc. if they can be favorited via other means
+    // case 2: return 'DB Ticket';
+    // case 3: return 'Deal';
+    default:
+      edgeConsole.warn(
+        `Cannot determine item type name from unknown item_type_id: ${typeId}`
+      );
+      // Fallback carefully - maybe return null and handle it in DownvoteProduct?
+      // Or return a default if appropriate? Returning null is safer.
+      return null;
+  }
+}
+
+/**
+ * Populates the Favorites tab UI based on the 'votedProducts' array.
+ * Clears existing items and clones a template for each upvoted product.
+ */
+function populateFavoritesTab() {
+  const favsContainer = document.getElementById("favs");
+  const template = favsContainer?.querySelector(".fav-item.none"); // Use optional chaining
+
+  if (!favsContainer || !template) {
+    console.error(
+      "Favorites container (#favs) or template (.fav-item.none) not found."
+    );
+    return;
+  }
+
+  console.log("Populating favorites tab...");
+
+  // Clear existing *visible* favorite items (leave the template)
+  favsContainer
+    .querySelectorAll(".fav-item:not(.none)")
+    .forEach((item) => item.remove());
+
+  // Filter for upvoted items and sort by vote time descending (most recent first)
+  const upvotedItems = votedProducts
+    .filter((item) => item.vote_type === 1)
+    .sort((a, b) => new Date(b.voted_at) - new Date(a.voted_at));
+
+  if (upvotedItems.length === 0) {
+    console.log("No favorited items to display.");
+    // Optional: Display a message like "You haven't favorited any items yet."
+    // You could clone the template, change text, and display it.
+    return;
+  }
+
+  upvotedItems.forEach((votedProduct) => {
+    const newItem = template.cloneNode(true); // Deep clone the template
+    newItem.classList.remove("none"); // Make it potentially visible
+    newItem.style.display = "flex"; // Set display style specifically to flex
+
+    // Store item ID for potential removal
+    newItem.setAttribute("data-item-id", votedProduct.item_id);
+
+    // Populate content
+    const link = newItem.querySelector(".fav-item-link");
+    const img = newItem.querySelector(".fav-img");
+    const heading = newItem.querySelector(".fav-h");
+    const removeButtonDiv = newItem.querySelector(".fav-remove"); // Target the div containing the SVG
+
+    if (link) {
+      link.href = votedProduct.affiliate_link || "#"; // Use link, fallback to #
+      // Add click tracking if desired for favorites list clicks
+      link.addEventListener("click", () => {
+        // Find the corresponding product data if needed for trackClick
+        // This might require looking up the full product details again
+        // based on votedProduct.item_id if trackClick needs more than the favorite entry has.
+        // For now, we'll skip detailed tracking here unless required.
+        console.log(`Clicked favorite item link: ${votedProduct.item_id}`);
+      });
+    }
+    if (img) {
+      img.src =
+        votedProduct.image_link ||
+        "https://cdn.prod.website-files.com/plugins/Basic/assets/placeholder.60f9b1840c.svg"; // Use image, fallback placeholder
+      img.alt = votedProduct.name || "Favorited item"; // Use name for alt text
+      img.loading = "lazy"; // Good practice
+    }
+    if (heading) {
+      heading.textContent = votedProduct.name || "Unnamed Item"; // Use name
+    }
+
+    // Add remove functionality
+    if (removeButtonDiv) {
+      removeButtonDiv.style.cursor = "pointer"; // Indicate it's clickable
+      removeButtonDiv.setAttribute("title", "Remove from favorites"); // Tooltip
+      removeButtonDiv.onclick = (event) => {
+        event.preventDefault(); // Prevent link navigation if the remove button is inside the <a>
+        event.stopPropagation(); // Stop click from bubbling further
+        const itemIdToRemove = newItem.getAttribute("data-item-id");
+        console.log(`Attempting to remove favorite: ${itemIdToRemove}`);
+
+        const itemTypeName = getItemTypeNameFromId(votedProduct.item_type_id); // Use the helper
+
+        // Call DownvoteProduct to update backend and local list
+        // DownvoteProduct already handles the local votedProducts array update
+        DownvoteProduct(itemIdToRemove, itemTypeName)
+          .then(() => {
+            // Remove the item from the DOM immediately after initiating downvote
+            // Or wait for success if preferred, but immediate removal feels better UX
+            newItem.remove();
+            console.log(`Removed favorite item ${itemIdToRemove} from UI.`);
+            // Optionally, re-check if the list is now empty and show a message
+            if (
+              favsContainer.querySelectorAll(".fav-item:not(.none)").length ===
+              0
+            ) {
+              console.log("Favorites list is now empty.");
+              // Display empty message if needed
+            }
+          })
+          .catch((err) => {
+            console.error(`Failed to remove favorite ${itemIdToRemove}:`, err);
+            // Optionally inform the user about the failure
+          });
+      };
+    }
+
+    // Append the new populated item to the container
+    favsContainer.appendChild(newItem);
+  });
+
+  console.log(`Added ${upvotedItems.length} items to the favorites tab.`);
+}
+
 
 // --- NEW: Main Initialization Function ---
 function initializeApp() {
@@ -845,7 +1179,7 @@ export function initFacesFeature() {
 }
 
 export function initAuthFeature() {
-  setupLoginHandling(fetchVotedProducts);
+  setupLoginHandling(fetchVotedProducts, populateFavoritesTab);
 }
 
 export function startScreen() {
