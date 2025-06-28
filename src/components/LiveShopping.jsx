@@ -42,8 +42,9 @@ export default function LiveShopping({ channelId, onLike }) {
   const [animateFrame, setAnimateFrame] = useState(false);
 
   // ───────── Detect hover (desktop vs mobile) ─────────
-  const deviceCanHover =
-    window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const deviceCanHover = window.matchMedia(
+    "(hover: hover) and (pointer: fine)"
+  ).matches;
 
   const { user } = useAuth();
   const { openSidebar } = useSidebar();
@@ -202,7 +203,9 @@ export default function LiveShopping({ channelId, onLike }) {
       belt.append(fresh);
 
       if (shouldScroll) {
-        scrollToEnd();
+        setTimeout(() => {
+          scrollToEnd();
+        }, 500);
       }
 
       // Start observing the new product0’s <img> for the next update
