@@ -159,10 +159,10 @@ export default function LiveShopping({ channelId, onLike }) {
     }
 
     // helper: detect if user is near the end of the scroll container
-    const SCROLL_THRESHOLD = 50;
+    const SCROLL_THRESHOLD = 100;
     function isNearEnd() {
-      const maxX = scrollBox.scrollWidth - scrollBox.clientWidth;
-      const maxY = scrollBox.scrollHeight - scrollBox.clientHeight;
+      const maxX = belt.scrollWidth - scrollBox.clientWidth;
+      const maxY = belt.scrollHeight - scrollBox.clientHeight;
       if (maxX > 0) {
         return scrollBox.scrollLeft >= maxX - SCROLL_THRESHOLD;
       }
@@ -173,13 +173,15 @@ export default function LiveShopping({ channelId, onLike }) {
     }
 
     function scrollToEnd() {
-      const maxX = scrollBox.scrollWidth - scrollBox.clientWidth;
-      const maxY = scrollBox.scrollHeight - scrollBox.clientHeight;
-      if (maxX > 0) {
-        scrollBox.scrollTo({ left: maxX, behavior: "smooth" });
-      } else if (maxY > 0) {
-        scrollBox.scrollTo({ top: maxY, behavior: "smooth" });
-      }
+      requestAnimationFrame(() => {
+        const maxX = belt.scrollWidth - scrollBox.clientWidth;
+        const maxY = belt.scrollHeight - scrollBox.clientHeight;
+        if (maxX > 0) {
+          scrollBox.scrollTo({ left: maxX, behavior: "smooth" });
+        } else if (maxY > 0) {
+          scrollBox.scrollTo({ top: maxY, behavior: "smooth" });
+        }
+      });
     }
 
     //
