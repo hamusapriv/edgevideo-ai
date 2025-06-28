@@ -1,5 +1,5 @@
 // src/components/LiveShopping.jsx
-import React, { useEffect, useRef, useCallback, useState } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { renderToStaticMarkup } from "react-dom/server.browser";
 import ChannelLogo from "./ChannelLogo";
 
@@ -22,20 +22,6 @@ export default function LiveShopping({ channelId, onLike }) {
 
   // ───────── add at top of your useEffect ─────────
   const lastBestRef = useRef(null);
-
-  // ───────── Selected-card state ─────────
-  const [selectedCardData, setSelectedCardData] = useState({
-    id: null,
-    itemTypeName: "", // ← add this
-
-    name: "",
-    price: "",
-    description: "",
-    frameImageUrl: "",
-    matchText: "",
-    vendorLogoUrl: "",
-    productUrl: "",
-  });
 
   // ───────── Detect hover (desktop vs mobile) ─────────
   const deviceCanHover = window.matchMedia(
@@ -116,32 +102,12 @@ export default function LiveShopping({ channelId, onLike }) {
 
   useEffect(() => {
     let injectedScript = null;
-    let injectedStyle = null;
 
     //
     // ────────────────────────────────────────────────────────────────────────
-    // (A) Inject a <style> that hides all non-image fields on devices without hover
+    // (A) Previously, details were hidden on non-hover devices. This style
+    //     injection is removed so each product always displays its details.
     // ────────────────────────────────────────────────────────────────────────
-    if (!deviceCanHover) {
-      injectedStyle = document.createElement("style");
-      injectedStyle.innerHTML = `
-        /* Hide everything except the two images */
-        .item-container [data-role="product-name"],
-        .item-container [data-role="product-price"],
-        .item-container [data-role="ai-description"],
-        .item-container [data-role="frame-image"],
-        .item-container [data-role="matchText"],
-        .item-container [data-role="vendor-logo"],
-        .item-container .info-button,
-        .item-container [data-role="like"],
-        .item-container [data-role="dislike"],
-        .item-container [data-role="share-link"],
-        .item-container [data-role="product-link"] {
-          display: none !important;
-        }
-      `;
-      document.head.appendChild(injectedStyle);
-    }
 
     // ────────────────────────────────────────────────────────────────────────
     // (C) Grab DOM nodes & bail if missing
@@ -254,24 +220,6 @@ export default function LiveShopping({ channelId, onLike }) {
       card.classList.add("focused");
       lastBestRef.current = card;
 
-      const id = card.getAttribute("data-product-id");
-      setSelectedCardData({
-        id,
-        itemTypeName: inferItemTypeName(card),
-        name: card.querySelector('[data-role="product-name"]')?.innerText || "",
-        price:
-          card.querySelector('[data-role="product-price"]')?.innerText || "",
-        description:
-          card.querySelector('[data-role="ai-description"]')?.innerText || "",
-        frameImageUrl:
-          card.querySelector('[data-role="frame-image"]')?.src || "",
-        matchText:
-          card.querySelector('[data-role="matchText"]')?.innerText || "",
-        vendorLogoUrl:
-          card.querySelector('[data-role="vendor-logo"]')?.src || "",
-        productUrl:
-          card.querySelector('[data-role="product-link"]')?.href || "",
-      });
     }
 
     // ───────── updateFocusDuringScroll: only run when focus really changes ─────────
@@ -316,7 +264,7 @@ export default function LiveShopping({ channelId, onLike }) {
     function makeCard(isP0 = false) {
       const wrapper = document.createElement("div");
       wrapper.innerHTML = renderToStaticMarkup(
-        <ProductCard isP0={isP0} showDetails={deviceCanHover} />
+        <ProductCard isP0={isP0} showDetails />
       );
       const card = wrapper.firstElementChild;
       if (card && deviceCanHover) {
@@ -366,7 +314,6 @@ export default function LiveShopping({ channelId, onLike }) {
         scrollBox.removeEventListener("scroll", onScroll, { passive: true });
       }
       if (injectedScript) document.head.removeChild(injectedScript);
-      if (injectedStyle) document.head.removeChild(injectedStyle);
     };
   }, [channelId, deviceCanHover, handleLike, handleDislike, handleShare]);
 
@@ -382,175 +329,8 @@ export default function LiveShopping({ channelId, onLike }) {
       <div id="absolute-container" ref={scrollBoxRef}>
         <div id="itemContent" ref={beltRef}></div>
       </div>
-      {/* ─────────────────────────────────────────────────────────────────
-           (2) DETAILS PANEL: visible when a card is in focus
-      ───────────────────────────────────────────────────────────────── */}
-      <div
-        className="live-details"
-        style={{ display: /* deviceCanHover ? "none" : */ "flex" }}
-      >
-        {selectedCardData.name ? (
-          <>
-            {/* (e) NAME */}
-            <h2 className="live-product-name">{selectedCardData.name}</h2>
-
-            {/* (f) DESCRIPTION */}
-            <p
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "6px",
-                fontSize: "0.95rem",
-                lineHeight: "1.4",
-                color: "#ddd",
-              }}
-            >
-              <span
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                {/* (c) MATCH TEXT */}
-                {selectedCardData.matchText && (
-                  <span
-                    style={{
-                      display: "inline",
-                      fontSize: "1rem",
-                      fontWeight: "600",
-                      color: "#fff",
-                    }}
-                  >
-                    AI {selectedCardData.matchText}
-                  </span>
-                )}
-
-                {/* Inline toggle */}
-                {/* Frame always visible; toggle removed */}
-              </span>
-              {selectedCardData.description}
-            </p>
-
-            {/* (d-1) FRAME IMAGE: only when toggled on */}
-            {selectedCardData.frameImageUrl && (
-              <div
-                className="live-frame-image-container"
-                style={{
-                  overflow: "hidden",
-                  aspectRatio: "16/9",
-                  maxWidth: "calc(200px * 16 / 9)",
-                  width: "fit-content",
-                  maxHeight: "200px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                  opacity: 1,
-                  transform: "translateY(0)",
-                  transition:
-                    "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
-                }}
-              >
-                <img
-                  src={selectedCardData.frameImageUrl}
-                  alt={`Frame for ${selectedCardData.name}`}
-                  className="live-frame-image"
-                />
-              </div>
-            )}
-            {/* (g) PRICE */}
-            {selectedCardData.price && (
-              <p
-                style={{
-                  fontSize: "1rem",
-                  color: "#fff",
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                  lineHeight: "1.4rem",
-                  gap: "1rem",
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "1rem",
-                    fontWeight: "600",
-                    color: "#aaf",
-                    marginRight: "0.15rem",
-                  }}
-                >
-                  Price:
-                </span>
-                {selectedCardData.price}
-              </p>
-            )}
-
-            {/* (h) CTA + SOCIAL BUTTONS */}
-            <div className="product-buttons-container">
-              {/* Shop Now */}
-              {selectedCardData.productUrl && (
-                <a
-                  href={selectedCardData.productUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "1rem",
-                    background: "var(--color-primary)",
-                    color: "#fff",
-                    textAlign: "center",
-                    textDecoration: "none",
-                    padding: "6px 10px",
-                    borderRadius: "6px",
-                    fontSize: "0.95rem",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <p>Shop On</p>
-                  {/* (d) VENDOR LOGO (if present) */}
-                  {selectedCardData.vendorLogoUrl && (
-                    <img
-                      src={selectedCardData.vendorLogoUrl}
-                      alt="Vendor Logo"
-                      style={{
-                        width: "auto",
-                        height: "24px",
-                        borderRadius: "6px",
-                        backgroundColor: "white",
-                      }}
-                    />
-                  )}
-                </a>
-              )}
-              <div
-                style={{
-                  display: "flex",
-                  gap: 16,
-                  justifyContent: "space-around",
-                }}
-              >
-                <LikeButton
-                  itemId={selectedCardData.id}
-                  itemTypeName={selectedCardData.itemTypeName}
-                  onSuccess={onLike}
-                />
-                <DislikeButton
-                  itemId={selectedCardData.id}
-                  itemTypeName={selectedCardData.itemTypeName}
-                  onSuccess={onLike}
-                />
-                <ShareButton
-                  title={selectedCardData.name}
-                  url={selectedCardData.productUrl}
-                />
-              </div>
-            </div>
-          </>
-        ) : (
-          <p style={{ color: "#aaa" }}>Loading products…</p>
-        )}
-      </div>
+      {/* The single details panel was removed so each product card now displays
+          its details individually. */}
     </div>
   );
 }
