@@ -1,5 +1,5 @@
 // src/components/LiveShopping.jsx
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server.browser";
 import ChannelLogo from "./ChannelLogo";
 
@@ -36,7 +36,6 @@ export default function LiveShopping({ channelId, onLike }) {
     vendorLogoUrl: "",
     productUrl: "",
   });
-
 
   // ───────── Detect hover (desktop vs mobile) ─────────
   const deviceCanHover = window.matchMedia(
@@ -370,7 +369,6 @@ export default function LiveShopping({ channelId, onLike }) {
       if (injectedStyle) document.head.removeChild(injectedStyle);
     };
   }, [channelId, deviceCanHover, handleLike, handleDislike, handleShare]);
-
 
   // ─────────────────────────────────────────────────────────────────
   // Render
