@@ -9,18 +9,25 @@ import { useFavorites } from "../../contexts/FavoritesContext";
 export default function DislikeButton({ itemId, itemTypeName, onSuccess }) {
   const { user } = useAuth();
   const { openSidebar } = useSidebar();
-  const { fetchFavorites } = useFavorites();
+  const { votes, fetchFavorites } = useFavorites();
   const [active, setActive] = useState(false);
   const btnRef = useRef(null);
 
   useEffect(() => {
     const btn = btnRef.current;
-    if (!btn) return setActive(false);
-    const card = btn.closest(".item-container");
-    const id = itemId || card?.getAttribute("data-product-id");
+    let id = itemId;
+    if (!id) {
+      const card = btn?.closest(".item-container");
+      id = card?.getAttribute("data-product-id");
+    }
     if (!id) return setActive(false);
-    setActive(btn.classList.contains("clicked"));
-  }, [itemId]);
+    const vote = votes.find((v) => String(v.item_id) === String(id));
+    if (vote) {
+      setActive(vote.vote_type === -1);
+    } else {
+      setActive(btn?.classList.contains("clicked"));
+    }
+  }, [votes, itemId]);
 
   function inferItemTypeName(card) {
     const url =
