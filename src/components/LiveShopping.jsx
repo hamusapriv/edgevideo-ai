@@ -160,19 +160,7 @@ export default function LiveShopping({ channelId, onLike }) {
   // ───────── add at top of your useEffect ─────────
   const lastBestRef = useRef(null);
 
-  // ───────── Selected-card state ─────────
-  const [selectedCardData, setSelectedCardData] = useState({
-    id: null,
-    itemTypeName: "", // ← add this
-
-    name: "",
-    price: "",
-    description: "",
-    frameImageUrl: "",
-    matchText: "",
-    vendorLogoUrl: "",
-    productUrl: "",
-  });
+  const [allCardData, setAllCardData] = useState([]);
 
   const [allCardData, setAllCardData] = useState([]);
 
@@ -419,9 +407,6 @@ export default function LiveShopping({ channelId, onLike }) {
 
       card.classList.add("focused");
       lastBestRef.current = card;
-
-      const data = collectCardData(card);
-      if (data) setSelectedCardData(data);
     }
 
     // ───────── updateFocusDuringScroll: only run when focus really changes ─────────
@@ -533,173 +518,12 @@ export default function LiveShopping({ channelId, onLike }) {
         <div id="itemContent" ref={beltRef}></div>
       </div>
       {/* ─────────────────────────────────────────────────────────────────
-           (2) DETAILS PANEL: visible when a card is in focus
+           (2) DETAILS PANEL: list of all cards
       ───────────────────────────────────────────────────────────────── */}
-      <div
-        className="live-details"
-        style={{ display: /* deviceCanHover ? "none" : */ "flex" }}
-      >
-        {selectedCardData.name ? (
-          <>
-            {/* (e) NAME */}
-            <h2 className="live-product-name">{selectedCardData.name}</h2>
-
-            {/* (f) DESCRIPTION */}
-            <p
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "6px",
-                fontSize: "0.95rem",
-                lineHeight: "1.4",
-                color: "#ddd",
-              }}
-            >
-              <span
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                {/* (c) MATCH TEXT */}
-                {selectedCardData.matchText && (
-                  <span
-                    style={{
-                      display: "inline",
-                      fontSize: "1rem",
-                      fontWeight: "600",
-                      color: "#fff",
-                    }}
-                  >
-                    AI {selectedCardData.matchText}
-                  </span>
-                )}
-
-                {/* Inline toggle */}
-                {/* Frame always visible; toggle removed */}
-              </span>
-              {selectedCardData.description}
-            </p>
-
-            {/* (d-1) FRAME IMAGE: only when toggled on */}
-            {selectedCardData.frameImageUrl && (
-              <div
-                className="live-frame-image-container"
-                style={{
-                  overflow: "hidden",
-                  aspectRatio: "16/9",
-                  maxWidth: "calc(200px * 16 / 9)",
-                  width: "fit-content",
-                  maxHeight: "200px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                  opacity: 1,
-                  transform: "translateY(0)",
-                  transition:
-                    "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
-                }}
-              >
-                <img
-                  src={selectedCardData.frameImageUrl}
-                  alt={`Frame for ${selectedCardData.name}`}
-                  className="live-frame-image"
-                />
-              </div>
-            )}
-            {/* (g) PRICE */}
-            {selectedCardData.price && (
-              <p
-                style={{
-                  fontSize: "1rem",
-                  color: "#fff",
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                  lineHeight: "1.4rem",
-                  gap: "1rem",
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "1rem",
-                    fontWeight: "600",
-                    color: "#aaf",
-                    marginRight: "0.15rem",
-                  }}
-                >
-                  Price:
-                </span>
-                {selectedCardData.price}
-              </p>
-            )}
-
-            {/* (h) CTA + SOCIAL BUTTONS */}
-            <div className="product-buttons-container">
-              {/* Shop Now */}
-              {selectedCardData.productUrl && (
-                <a
-                  href={selectedCardData.productUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "1rem",
-                    background: "var(--color-primary)",
-                    color: "#fff",
-                    textAlign: "center",
-                    textDecoration: "none",
-                    padding: "6px 10px",
-                    borderRadius: "6px",
-                    fontSize: "0.95rem",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <p>Shop On</p>
-                  {/* (d) VENDOR LOGO (if present) */}
-                  {selectedCardData.vendorLogoUrl && (
-                    <img
-                      src={selectedCardData.vendorLogoUrl}
-                      alt="Vendor Logo"
-                      style={{
-                        width: "auto",
-                        height: "24px",
-                        borderRadius: "6px",
-                        backgroundColor: "white",
-                      }}
-                    />
-                  )}
-                </a>
-              )}
-              <div
-                style={{
-                  display: "flex",
-                  gap: 16,
-                  justifyContent: "space-around",
-                }}
-              >
-                <LikeButton
-                  itemId={selectedCardData.id}
-                  itemTypeName={selectedCardData.itemTypeName}
-                  onSuccess={onLike}
-                />
-                <DislikeButton
-                  itemId={selectedCardData.id}
-                  itemTypeName={selectedCardData.itemTypeName}
-                  onSuccess={onLike}
-                />
-                <ShareButton
-                  title={selectedCardData.name}
-                  url={selectedCardData.productUrl}
-                />
-              </div>
-            </div>
-          </>
-        ) : (
-          <p style={{ color: "#aaa" }}>Loading products…</p>
-        )}
+      <div className="all-live-details">
+        {allCardData.map((d, i) => (
+          <DetailsPanel key={i} data={d} onLike={onLike} />
+        ))}
       </div>
       <div className="all-live-details">
         {allCardData.map((d, i) => (
