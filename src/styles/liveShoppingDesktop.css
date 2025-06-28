@@ -122,4 +122,8 @@
   .all-live-details {
     flex-direction: column;
   }
+
+  .ai-details {
+    flex-direction: column;
+  }
 }

@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server.browser";
 import ChannelLogo from "./ChannelLogo";
+import AiDetails from "./AiDetails";
 
 import LikeButton from "./buttons/LikeButton";
 import DislikeButton from "./buttons/DislikeButton";
@@ -513,6 +514,11 @@ export default function LiveShopping({ channelId, onLike }) {
            (1) SCROLLABLE BELT: only images are visible here
       ───────────────────────────────────────────────────────────────── */}
       <div id="absolute-container" ref={scrollBoxRef}>
+        <div className="ai-details">
+          {allCardData.map((d, i) => (
+            <AiDetails key={i} data={d} />
+          ))}
+        </div>
         <div id="itemContent" ref={beltRef}></div>
         <div className="all-live-details">
           {allCardData.map((d, i) => (

@@ -474,6 +474,12 @@ section {
   padding: 10px;
 }
 
+.ai-details {
+  display: flex;
+  gap: 20px;
+  padding: 10px;
+}
+
 /* Quick Access Tab */
 .quick-access-list {
   list-style: none;
