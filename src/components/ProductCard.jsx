@@ -4,40 +4,42 @@ import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
 import SvgFrame from "./svgs/SvgFrame";
 
-export default function ProductCard({ product, showDetails = false, onSelect }) {
+export default function ProductCard({ isP0, showDetails = false }) {
   const hidden = showDetails ? {} : { display: "none" };
   const [animateFrame, setAnimateFrame] = useState(false);
 
+  // collapse the frame when details hide
   useEffect(() => {
     if (!showDetails) {
       setAnimateFrame(false);
     }
   }, [showDetails]);
 
-  if (!product) return null;
-
-  const {
-    id,
-    title,
-    image,
-    back_image: backImage,
-    explanation,
-    matchType,
-    logo_url: logoUrl,
-    price,
-    currency,
-    link,
-  } = product;
-
   return (
-    <div className={`item-container${showDetails ? " show-details" : ""}`} onClick={onSelect}>
+    <div
+      className={`item-container ${isP0 ? "product0" : ""} ${
+        showDetails ? "show-details" : ""
+      }`}
+    >
       <div className="live-image-container">
-        <img data-role="product-image" src={image} alt="Product" loading="lazy" />
+        <img
+          data-role="product-image"
+          src={null}
+          alt="Product Image"
+          loading="lazy"
+        />
       </div>
-      <div className="card-details live-details" style={showDetails ? {} : { display: "none" }}>
-        <div data-role="product-name" style={{ ...hidden }}>
-          {title}
-        </div>
+      <div
+        className="card-details live-details"
+        style={showDetails ? {} : { display: "none" }}
+      >
+        <div
+          data-role="product-name"
+          style={{
+            ...hidden,
+          }}
+        />
+
         <div
           style={{
             display: "flex",
@@ -66,12 +68,18 @@ export default function ProductCard({ product, showDetails = false, onSelect }) 
                 gap: "0.25rem",
               }}
             >
-              AI <span data-role="matchText" style={{ ...hidden }}>{matchType}</span>
+              AI{" "}
+              <span
+                data-role="matchText"
+                style={{
+                  ...hidden,
+                }}
+              />
             </span>
+            {/* Inline toggle */}
             <button
               data-role="frame-toggle"
-              onClick={(e) => {
-                e.stopPropagation();
+              onClick={() => {
                 setAnimateFrame((prev) => !prev);
               }}
               style={{
@@ -94,10 +102,13 @@ export default function ProductCard({ product, showDetails = false, onSelect }) 
           <p
             data-role="ai-description"
             className="ai-query"
-            style={{ ...hidden, fontSize: "0.85rem", color: "#ddd", whiteSpace: "normal" }}
-          >
-            {explanation}
-          </p>
+            style={{
+              ...hidden,
+              fontSize: "0.85rem",
+              color: "#ddd",
+              whiteSpace: "normal",
+            }}
+          />
         </div>
         <div
           className="live-frame-image-container"
@@ -112,15 +123,22 @@ export default function ProductCard({ product, showDetails = false, onSelect }) 
             borderRadius: "8px",
             opacity: animateFrame ? 1 : 0,
             transform: animateFrame ? "translateY(0)" : "translateY(-20px)",
-            transition: "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
+            transition:
+              "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
           }}
         >
-          <img className="live-frame-image" data-role="frame-image" src={backImage} alt="" />
+          <img
+            className="live-frame-image"
+            data-role="frame-image"
+            src={null}
+            alt=""
+          />
         </div>
+
         <p
           data-role="product-price-container"
           style={{
-            display: price ? "flex" : "none",
+            display: "none",
             fontSize: "1rem",
             color: "#fff",
             justifyContent: "flex-start",
@@ -138,14 +156,23 @@ export default function ProductCard({ product, showDetails = false, onSelect }) 
           >
             Price:
           </span>
-          <span data-role="product-price" style={{ padding: "0", fontSize: "0.9rem", color: "#fff" }}>
-            {price} {currency}
-          </span>{" "}
+          <span
+            data-role="product-price"
+            style={{
+              ...hidden,
+              padding: "0",
+              fontSize: "0.9rem",
+              color: "#fff",
+            }}
+          />{" "}
         </p>
+
+        {/*=========================== */}
         <div className="product-buttons-container">
+          {/* Shop Now */}
           <a
             data-role="product-link"
-            href={link}
+            href=""
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -163,16 +190,22 @@ export default function ProductCard({ product, showDetails = false, onSelect }) 
               fontSize: "0.95rem",
               fontWeight: "bold",
             }}
-            onClick={(e) => e.stopPropagation()}
           >
             <p>Shop On</p>
+            {/* (d) VENDOR LOGO (if present) */}
             <img
               data-role="vendor-logo"
-              src={logoUrl}
+              src={null}
               alt="Vendor Logo"
-              style={{ width: "auto", height: "24px", borderRadius: "6px", backgroundColor: "white" }}
+              style={{
+                width: "auto",
+                height: "24px",
+                borderRadius: "6px",
+                backgroundColor: "white",
+              }}
             />
           </a>
+
           <div
             style={{
               ...hidden,
@@ -181,11 +214,13 @@ export default function ProductCard({ product, showDetails = false, onSelect }) 
               justifyContent: "space-around",
             }}
           >
-            <LikeButton itemId={id} />
-            <DislikeButton itemId={id} />
-            <ShareButton title={title} url={link} />
+            <LikeButton />
+            <DislikeButton />
+            <ShareButton />
           </div>
         </div>
+
+        {/*====== Below are to be implemented up */}
       </div>
     </div>
   );
