@@ -313,6 +313,8 @@ section {
 }
 
 #absolute-container {
+  display: flex;
+  flex-direction: column;
   -webkit-overflow-scrolling: touch;
   position: relative;
   overflow-x: auto;
@@ -329,7 +331,6 @@ section {
   padding: 12px 6px;
   align-items: flex-start;
   white-space: nowrap;
-  position: absolute;
   min-width: 110vw;
 }
 
@@ -469,7 +470,6 @@ section {
 
 .all-live-details {
   display: flex;
-  flex-direction: column;
   gap: 20px;
   padding: 10px;
 }

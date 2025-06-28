@@ -26,9 +26,7 @@ function DetailsPanel({ data, onLike }) {
           color: "#ddd",
         }}
       >
-        <span
-          style={{ display: "flex", alignItems: "center", gap: "6px" }}
-        >
+        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           {data.matchText && (
             <span
               style={{
@@ -57,7 +55,8 @@ function DetailsPanel({ data, onLike }) {
             borderRadius: "8px",
             opacity: 1,
             transform: "translateY(0)",
-            transition: "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
+            transition:
+              "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
           }}
         >
           <img
@@ -162,8 +161,6 @@ export default function LiveShopping({ channelId, onLike }) {
 
   const [allCardData, setAllCardData] = useState([]);
 
-  const [allCardData, setAllCardData] = useState([]);
-
   // ───────── Detect hover (desktop vs mobile) ─────────
   const deviceCanHover = window.matchMedia(
     "(hover: hover) and (pointer: fine)"
@@ -199,20 +196,14 @@ export default function LiveShopping({ channelId, onLike }) {
     return {
       id: card.getAttribute("data-product-id"),
       itemTypeName: inferItemTypeName(card),
-      name:
-        card.querySelector('[data-role="product-name"]')?.innerText || "",
-      price:
-        card.querySelector('[data-role="product-price"]')?.innerText || "",
+      name: card.querySelector('[data-role="product-name"]')?.innerText || "",
+      price: card.querySelector('[data-role="product-price"]')?.innerText || "",
       description:
         card.querySelector('[data-role="ai-description"]')?.innerText || "",
-      frameImageUrl:
-        card.querySelector('[data-role="frame-image"]')?.src || "",
-      matchText:
-        card.querySelector('[data-role="matchText"]')?.innerText || "",
-      vendorLogoUrl:
-        card.querySelector('[data-role="vendor-logo"]')?.src || "",
-      productUrl:
-        card.querySelector('[data-role="product-link"]')?.href || "",
+      frameImageUrl: card.querySelector('[data-role="frame-image"]')?.src || "",
+      matchText: card.querySelector('[data-role="matchText"]')?.innerText || "",
+      vendorLogoUrl: card.querySelector('[data-role="vendor-logo"]')?.src || "",
+      productUrl: card.querySelector('[data-role="product-link"]')?.href || "",
     };
   }, []);
 
@@ -503,7 +494,14 @@ export default function LiveShopping({ channelId, onLike }) {
       if (injectedScript) document.head.removeChild(injectedScript);
       if (injectedStyle) document.head.removeChild(injectedStyle);
     };
-  }, [channelId, deviceCanHover, handleLike, handleDislike, handleShare, collectCardData]);
+  }, [
+    channelId,
+    deviceCanHover,
+    handleLike,
+    handleDislike,
+    handleShare,
+    collectCardData,
+  ]);
 
   // ─────────────────────────────────────────────────────────────────
   // Render
@@ -516,20 +514,15 @@ export default function LiveShopping({ channelId, onLike }) {
       ───────────────────────────────────────────────────────────────── */}
       <div id="absolute-container" ref={scrollBoxRef}>
         <div id="itemContent" ref={beltRef}></div>
+        <div className="all-live-details">
+          {allCardData.map((d, i) => (
+            <DetailsPanel key={i} data={d} onLike={onLike} />
+          ))}
+        </div>
       </div>
       {/* ─────────────────────────────────────────────────────────────────
            (2) DETAILS PANEL: list of all cards
       ───────────────────────────────────────────────────────────────── */}
-      <div className="all-live-details">
-        {allCardData.map((d, i) => (
-          <DetailsPanel key={i} data={d} onLike={onLike} />
-        ))}
-      </div>
-      <div className="all-live-details">
-        {allCardData.map((d, i) => (
-          <DetailsPanel key={i} data={d} onLike={onLike} />
-        ))}
-      </div>
     </div>
   );
 }
