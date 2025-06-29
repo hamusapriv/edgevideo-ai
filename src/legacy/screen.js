@@ -123,8 +123,7 @@ async function fetchVotedProducts() {
     votedProducts = combinedVotes;
     edgeConsole.log(`Total voted items fetched: ${votedProducts.length}.`);
 
-    // **Recommendation:** Remove this call, rely on UpdateProductViaDataRole for styling
-    // applyInitialVoteStyles();
+    applyInitialVoteStyles();
 
     if (encounteredError) {
       edgeConsole.warn(
@@ -712,6 +711,18 @@ function UpdateProductViaDataRole(i, time = null) {
     // Like/Dislike/Share buttons are handled by React components now
     itemContainer.setAttribute("data-product-id", product.id);
 
+    const existingVote = votedProducts.find(
+      (v) => String(v.item_id) === String(product.id)
+    );
+    const voteType = existingVote
+      ? existingVote.vote_type === 1
+        ? "upvote"
+        : existingVote.vote_type === -1
+        ? "downvote"
+        : "none"
+      : "none";
+    updateVoteButtonStyles(product.id, voteType);
+
     // Update price display (existing logic)
     if ("price" in product && product.price !== null && product.price !== "") {
       let currency = "currency" in product ? product.currency : "USD"; // Default currency if needed
@@ -777,6 +788,50 @@ function UpdateProductViaDataRole(i, time = null) {
 
 // Expose for other modules that rely on a global function
 window.UpdateProductViaDataRole = UpdateProductViaDataRole;
+
+// Restore simple helpers for reflecting vote state on desktop
+function updateVoteButtonStyles(productId, voteType) {
+  if (voteType === 1 || voteType === "1") voteType = "upvote";
+  else if (voteType === -1 || voteType === "-1") voteType = "downvote";
+
+  const likeButtons = document.querySelectorAll(
+    `[data-role="like"][data-product-id="${productId}"], ` +
+      `.like-button[data-product-id="${productId}"], ` +
+      `.item-container[data-product-id="${productId}"] .like-button`
+  );
+  const dislikeButtons = document.querySelectorAll(
+    `[data-role="dislike"][data-product-id="${productId}"], ` +
+      `.dislike-button[data-product-id="${productId}"], ` +
+      `.item-container[data-product-id="${productId}"] .dislike-button`
+  );
+
+  likeButtons.forEach((btn) => {
+    btn.classList.toggle("clicked", voteType === "upvote");
+  });
+  dislikeButtons.forEach((btn) => {
+    btn.classList.toggle("clicked", voteType === "downvote");
+  });
+}
+window.updateVoteButtonStyles = updateVoteButtonStyles;
+
+function applyInitialVoteStyles() {
+  if (!votedProducts.length) return;
+  const containers = document.querySelectorAll(
+    ".item-container[data-product-id]"
+  );
+  containers.forEach((c) => {
+    const id = c.getAttribute("data-product-id");
+    const vote = votedProducts.find((v) => String(v.item_id) === String(id));
+    const vt = vote
+      ? vote.vote_type === 1
+        ? "upvote"
+        : vote.vote_type === -1
+        ? "downvote"
+        : "none"
+      : "none";
+    updateVoteButtonStyles(id, vt);
+  });
+}
 
 /**
  * Updates the visual style of ALL like/dislike buttons on the page

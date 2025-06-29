@@ -35,15 +35,6 @@
     fill: white;
   }
 
-  /* Product card details displayed on hover devices */
-  .item-container.show-details {
-    height: auto;
-  }
-
-  .item-container.show-details .card-details {
-    display: flex;
-  }
-
   .item-container {
     width: fit-content;
     height: 250px;
@@ -77,8 +68,8 @@
     min-height: 280px;
     min-width: 320px;
     order: 2;
-    width: 100%;
     padding: 20px;
+    flex-direction: row;
   }
 
   #itemContent {
@@ -126,5 +117,13 @@
     background-image: linear-gradient(237deg, #ffffff08, #80808070);
     transition: all 0.5s ease;
     gap: 10px;
+  }
+
+  .all-live-details {
+    flex-direction: column;
+  }
+
+  .ai-details {
+    flex-direction: column;
   }
 }
