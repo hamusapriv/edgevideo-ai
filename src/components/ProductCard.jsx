@@ -1,26 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import LikeButton from "./buttons/LikeButton";
 import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
-import SvgFrame from "./svgs/SvgFrame";
 
 export default function ProductCard({ isP0, showDetails = false }) {
   const hidden = showDetails ? {} : { display: "none" };
-  const [animateFrame, setAnimateFrame] = useState(false);
-
-  // collapse the frame when details hide
-  useEffect(() => {
-    if (!showDetails) {
-      setAnimateFrame(false);
-    }
-  }, [showDetails]);
 
   return (
-    <div
-      className={`item-container ${isP0 ? "product0" : ""} ${
-        showDetails ? "show-details" : ""
-      }`}
-    >
+    <div className={`item-container ${isP0 ? "product0" : ""}`}>
       <div className="live-image-container">
         <img
           data-role="product-image"
@@ -76,28 +63,7 @@ export default function ProductCard({ isP0, showDetails = false }) {
                 }}
               />
             </span>
-            {/* Inline toggle */}
-            <button
-              data-role="frame-toggle"
-              onClick={() => {
-                setAnimateFrame((prev) => !prev);
-              }}
-              style={{
-                display: "inline-flex",
-                padding: 0,
-                marginLeft: "4px",
-                border: "none",
-                background: "transparent",
-                color: "#4fa",
-                cursor: "pointer",
-                fontSize: "0.9rem",
-              }}
-            >
-              <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
-              <span data-role="toggle-text">
-                {animateFrame ? "Hide Frame" : "Show Frame"}
-              </span>
-            </button>
+            {/* Frame always visible, toggle removed */}
           </div>
           <p
             data-role="ai-description"
@@ -118,11 +84,11 @@ export default function ProductCard({ isP0, showDetails = false }) {
             aspectRatio: "16/9",
             maxWidth: "calc(200px * 16 / 9)",
             width: "fit-content",
-            maxHeight: animateFrame ? "200px" : "0px",
+            maxHeight: "200px",
             objectFit: "cover",
             borderRadius: "8px",
-            opacity: animateFrame ? 1 : 0,
-            transform: animateFrame ? "translateY(0)" : "translateY(-20px)",
+            opacity: 1,
+            transform: "translateY(0)",
             transition:
               "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
           }}
