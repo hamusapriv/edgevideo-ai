@@ -25,13 +25,14 @@ export default function DislikeButton({ itemId, itemTypeName, onSuccess }) {
     if (vote) {
       setActive(vote.vote_type === -1);
     } else {
-      setActive(btn?.classList.contains("clicked"));
+      setActive(false);
     }
   }, [votes, itemId]);
 
   function inferItemTypeName(card) {
     const url =
-      card?.querySelector("[data-role='product-link']")?.href?.toLowerCase() || "";
+      card?.querySelector("[data-role='product-link']")?.href?.toLowerCase() ||
+      "";
     if (card?.classList.contains("ticket-style")) {
       return url.includes("viator") ? "Viator Ticket" : "DB Ticket";
     }
