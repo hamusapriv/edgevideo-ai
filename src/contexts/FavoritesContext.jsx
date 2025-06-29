@@ -14,6 +14,8 @@ const DOWNVOTE_URL = "https://fastapi.edgevideo.ai/tracking/vote/down";
 
 const FavoritesContext = createContext({
   favorites: [],
+  // votes include upvotes and downvotes for quick lookups
+  votes: [],
   removeFavorite: async () => {},
   fetchFavorites: async () => {},
 });
@@ -21,11 +23,13 @@ const FavoritesContext = createContext({
 export function FavoritesProvider({ children }) {
   const { user } = useAuth();
   const [favorites, setFavorites] = useState([]);
+  const [votes, setVotes] = useState([]);
 
   // 1️⃣ fetch & annotate on login or refresh
   const fetchFavorites = useCallback(async () => {
     if (!user) {
       setFavorites([]);
+      setVotes([]);
       return;
     }
     try {
@@ -38,18 +42,17 @@ export function FavoritesProvider({ children }) {
       if (!r1.ok || !r2.ok) throw new Error("Failed to fetch votes");
       const [a1, a2] = await Promise.all([r1.json(), r2.json()]);
 
-      // Map & keep only upvotes (vote_type===1)
-      const all = [...a1, ...a2]
-        .filter((v) => v.vote_type === 1)
-        .map((v) => ({
-          ...v,
-          itemTypeName: getItemTypeNameFromId(v.item_type_id),
-        }));
+      const combined = [...a1, ...a2].map((v) => ({
+        ...v,
+        itemTypeName: getItemTypeNameFromId(v.item_type_id),
+      }));
 
-      setFavorites(all);
+      setVotes(combined);
+      setFavorites(combined.filter((v) => v.vote_type === 1));
     } catch (e) {
       console.error("Error loading favorites:", e);
       setFavorites([]);
+      setVotes([]);
     }
   }, [user]);
 
@@ -70,11 +73,18 @@ export function FavoritesProvider({ children }) {
       body: JSON.stringify({ itemId, itemTypeName }),
     });
     setFavorites((f) => f.filter((v) => String(v.item_id) !== String(itemId)));
+    setVotes((v) =>
+      v.map((entry) =>
+        String(entry.item_id) === String(itemId)
+          ? { ...entry, vote_type: -1 }
+          : entry
+      )
+    );
   }
 
   return (
     <FavoritesContext.Provider
-      value={{ favorites, removeFavorite, fetchFavorites }}
+      value={{ favorites, votes, removeFavorite, fetchFavorites }}
     >
       {children}
     </FavoritesContext.Provider>
