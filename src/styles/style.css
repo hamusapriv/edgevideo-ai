@@ -567,13 +567,6 @@ section {
   border: 1px solid rgba(255, 255, 255, 0.41);
 }
 
-.ai-frame-gallery .frame-gallery-item:first-child {
-  border-left: none;
-}
-.ai-frame-gallery .frame-gallery-item:last-child {
-  border-right: none;
-}
-
 .ai-frame-gallery .frame-gallery-item img {
   object-fit: cover;
 }
