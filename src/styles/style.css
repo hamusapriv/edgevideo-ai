@@ -277,13 +277,13 @@ section {
   align-items: center;
   background-color: white;
   opacity: 0.4;
-  transform: scale(0.95);
+  transform: scale(0.9);
   flex: 0 0 auto;
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
   position: relative;
-  transition: all 0.5s ease;
+  transition: all 0.3s ease;
   margin: 0;
 }
 
@@ -321,28 +321,29 @@ section {
 
 /* ─────── “Focused” card: scale + shadow ─────── */
 .item-container.focused {
-  transform: scale(1.1);
+  transform: scale(1);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   z-index: 1;
   opacity: 1;
-  margin: 0 10px;
+  margin: 0;
 }
 
 #absolute-container {
+  display: flex;
+  align-items: center;
   -webkit-overflow-scrolling: touch;
   position: relative;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 10px;
   border-radius: 8px;
-  min-height: 200px;
+  min-height: 180px;
   min-width: 300px;
+  margin: 10px;
 }
 
 #itemContent {
   display: flex;
   flex-direction: row;
-  padding: 12px 6px;
   align-items: flex-start;
   white-space: nowrap;
   position: absolute;
@@ -492,13 +493,14 @@ section {
 
 .ai-frame-gallery {
   display: flex;
+  align-items: center;
   flex-direction: row;
   overflow-x: auto;
   pointer-events: none;
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: 10px;
-  min-height: 110px;
+  min-height: 120px;
 }
 
 .ai-frame-gallery::-webkit-scrollbar {
@@ -506,7 +508,6 @@ section {
 }
 
 .frame-gallery-item.focused {
-  outline: 2px solid var(--color-primary);
   opacity: 1;
   transform: scale(1);
 }
@@ -522,6 +523,57 @@ section {
   overflow: hidden;
   cursor: pointer;
   position: relative;
-  transition: all 0.5s ease;
+  transition: all 0.3s ease;
   margin: 0;
+  border-radius: 6px;
+}
+
+.ai-frame-gallery {
+  /* your own padding/margins still apply here */
+  --hole-size: 6px;
+  --hole-gap: 20px;
+  --frame-border: 2px;
+
+  display: flex;
+  position: relative;
+
+  background-color: black;
+  background-image: repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent var(--hole-gap),
+      rgba(255, 255, 255, 0.7) var(--hole-gap),
+      rgba(255, 255, 255, 0.7) calc(var(--hole-gap) + var(--hole-size))
+    ),
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent var(--hole-gap),
+      rgba(255, 255, 255, 0.7) var(--hole-gap),
+      rgba(255, 255, 255, 0.7) calc(var(--hole-gap) + var(--hole-size))
+    );
+  background-repeat: repeat-x, repeat-x;
+  background-size: calc(var(--hole-gap) + var(--hole-size)) var(--hole-size),
+    calc(var(--hole-gap) + var(--hole-size)) var(--hole-size);
+
+  /* shift the top row down 8px, bottom row up 8px */
+  background-position: center 4px, center calc(100% - 4px);
+}
+
+.ai-frame-gallery .frame-gallery-item {
+  /* margin removed */
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.41);
+}
+
+.ai-frame-gallery .frame-gallery-item:first-child {
+  border-left: none;
+}
+.ai-frame-gallery .frame-gallery-item:last-child {
+  border-right: none;
+}
+
+.ai-frame-gallery .frame-gallery-item img {
+  object-fit: cover;
 }

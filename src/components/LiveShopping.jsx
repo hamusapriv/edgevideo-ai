@@ -82,7 +82,7 @@ export default function LiveShopping({ onLike }) {
           );
           setTimeout(() => {
             setDisplayProducts((cur) => cur.filter((it) => it.id !== p.id));
-          }, 500);
+          }, 300);
         }
       });
 
