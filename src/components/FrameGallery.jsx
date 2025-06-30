@@ -1,7 +1,7 @@
 import React from "react";
 import { useProducts } from "../contexts/ProductsContext";
 
-export default function FrameGallery() {
+export default function FrameGallery({ selectedId }) {
   const { products } = useProducts();
   return (
     <div className="ai-frame-gallery">
@@ -15,7 +15,7 @@ export default function FrameGallery() {
               minHeight: "90px",
             }}
             key={p.id}
-            className="frame-gallery-item"
+            className={`frame-gallery-item${selectedId === p.id ? " focused" : ""}`}
           >
             <img
               style={{
@@ -29,16 +29,25 @@ export default function FrameGallery() {
               src={p.back_image}
               alt={`Frame for ${p.title}`}
             />
-            <p
-              style={{
-                fontSize: "0.8rem",
-                color: "#fff",
-                textAlign: "center",
-                marginTop: "4px",
-              }}
-            >
-              {p.description || "No description available"}
-            </p>
+            {p.matchType && (
+              <p
+                style={{ fontSize: "0.8rem", color: "#fff", marginTop: "4px" }}
+              >
+                AI {p.matchType}
+              </p>
+            )}
+            {p.explanation && (
+              <p
+                style={{
+                  fontSize: "0.8rem",
+                  color: "#fff",
+                  textAlign: "center",
+                  marginTop: "4px",
+                }}
+              >
+                {p.explanation}
+              </p>
+            )}
           </div>
         ) : null
       )}

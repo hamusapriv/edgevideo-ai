@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import LikeButton from "./buttons/LikeButton";
 import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
-import SvgFrame from "./svgs/SvgFrame";
 import { FormatPrice } from "../legacy/modules/productsModule";
 
-export default function ProductCard({ product, showDetails = false }) {
-  const [animateFrame, setAnimateFrame] = useState(false);
+export default function ProductCard({ product, showDetails = false, focused = false }) {
   if (!product) return null;
 
   const hidden = showDetails ? {} : { display: "none" };
@@ -25,61 +23,15 @@ export default function ProductCard({ product, showDetails = false }) {
     : product.logo_url || "";
 
   return (
-    <div className={`item-container ${showDetails ? "show-details" : ""}`} data-product-id={product.id}>
+    <div
+      className={`item-container ${showDetails ? "show-details" : ""} ${focused ? "focused" : ""}`}
+      data-product-id={product.id}
+    >
       <div className="live-image-container">
         <img data-role="product-image" src={product.image} alt={product.title} loading="lazy" />
       </div>
       <div className="card-details live-details" style={showDetails ? {} : { display: "none" }}>
         <div data-role="product-name" style={hidden}>{product.title}</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "0.95rem", lineHeight: "1.4", color: "#ddd" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            {product.matchType && (
-              <span style={{ display: "inline-flex", fontSize: "1rem", fontWeight: "600", color: "#fff", justifyContent: "center", alignItems: "center", gap: "0.25rem" }}>
-                AI <span data-role="matchText" style={hidden}>{product.matchType}</span>
-              </span>
-            )}
-            <button
-              data-role="frame-toggle"
-              onClick={() => setAnimateFrame((p) => !p)}
-              style={{
-                display: "inline-flex",
-                padding: 0,
-                marginLeft: "4px",
-                border: "none",
-                background: "transparent",
-                color: "#4fa",
-                cursor: "pointer",
-                fontSize: "0.9rem",
-              }}
-            >
-              <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
-              <span data-role="toggle-text">{animateFrame ? "Hide Frame" : "Show Frame"}</span>
-            </button>
-          </div>
-          <p data-role="ai-description" className="ai-query" style={{ ...hidden, fontSize: "0.85rem", color: "#ddd", whiteSpace: "normal" }}>
-            {product.explanation}
-          </p>
-        </div>
-        {product.back_image && (
-          <div
-            className="live-frame-image-container"
-            data-role="frame-container"
-            style={{
-              overflow: "hidden",
-              aspectRatio: "16/9",
-              maxWidth: "calc(200px * 16 / 9)",
-              width: "fit-content",
-              maxHeight: animateFrame ? "200px" : "0px",
-              objectFit: "cover",
-              borderRadius: "8px",
-              opacity: animateFrame ? 1 : 0,
-              transform: animateFrame ? "translateY(0)" : "translateY(-20px)",
-              transition: "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
-            }}
-          >
-            <img className="live-frame-image" data-role="frame-image" src={product.back_image} alt={`Frame for ${product.title}`} />
-          </div>
-        )}
         {price && (
           <p
             data-role="product-price-container"
