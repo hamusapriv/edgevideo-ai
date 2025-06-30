@@ -494,8 +494,15 @@ section {
   display: flex;
   flex-direction: row;
   overflow-x: auto;
+  pointer-events: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   padding: 10px;
   min-height: 110px;
+}
+
+.ai-frame-gallery::-webkit-scrollbar {
+  display: none;
 }
 
 .frame-gallery-item.focused {

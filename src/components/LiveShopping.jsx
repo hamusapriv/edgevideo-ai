@@ -176,29 +176,9 @@ export default function LiveShopping({ onLike }) {
       lock = false;
     }
 
-    function syncFromGallery() {
-      if (lock) return;
-      lock = true;
-      const horiz = gallery.scrollWidth > gallery.clientWidth;
-      if (horiz) {
-        const maxG = gallery.scrollWidth - gallery.clientWidth;
-        const maxC = container.scrollWidth - container.clientWidth;
-        const ratio = maxG ? gallery.scrollLeft / maxG : 0;
-        container.scrollLeft = ratio * maxC;
-      } else {
-        const maxG = gallery.scrollHeight - gallery.clientHeight;
-        const maxC = container.scrollHeight - container.clientHeight;
-        const ratio = maxG ? gallery.scrollTop / maxG : 0;
-        container.scrollTop = ratio * maxC;
-      }
-      lock = false;
-    }
-
     container.addEventListener("scroll", syncFromContainer, { passive: true });
-    gallery.addEventListener("scroll", syncFromGallery, { passive: true });
     return () => {
       container.removeEventListener("scroll", syncFromContainer);
-      gallery.removeEventListener("scroll", syncFromGallery);
     };
   }, []);
 
