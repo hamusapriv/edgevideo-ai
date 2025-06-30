@@ -51,13 +51,13 @@
     background-color: transparent;
     justify-content: center;
     align-items: center;
-    gap: 30px;
-    transform: scale(1);
+    gap: 10px;
+    transform: scale(0.95);
     transform-origin: calc(100% - 90px) 50%;
   }
   .item-container.focused {
     box-shadow: none;
-    transform: scale(1.1);
+    transform: scale(1);
   }
   .live-image-container {
     display: flex;
@@ -84,7 +84,6 @@
   #itemContent {
     inset: 50px 12% auto 12%;
     flex-direction: column;
-    gap: 20px;
     align-items: center;
     min-width: 0;
   }
