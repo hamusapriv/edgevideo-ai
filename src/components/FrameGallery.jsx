@@ -1,10 +1,10 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { useProducts } from "../contexts/ProductsContext";
 
-export default function FrameGallery({ selectedId }) {
+const FrameGallery = forwardRef(function FrameGallery({ selectedId }, ref) {
   const { products } = useProducts();
   return (
-    <div className="ai-frame-gallery">
+    <div className="ai-frame-gallery" ref={ref}>
       {products.map((p) =>
         p.back_image ? (
           <div
@@ -78,4 +78,6 @@ export default function FrameGallery({ selectedId }) {
       )}
     </div>
   );
-}
+});
+
+export default FrameGallery;

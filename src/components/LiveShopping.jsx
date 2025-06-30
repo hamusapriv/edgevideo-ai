@@ -14,6 +14,7 @@ export default function LiveShopping({ onLike }) {
   const [selected, setSelected] = useState(null);
   const [displayProducts, setDisplayProducts] = useState([]);
   const scrollRef = useRef(null);
+  const galleryRef = useRef(null);
   const beltRef = useRef(null);
   const lastFocusedRef = useRef(null);
   const deviceCanHover = window.matchMedia(
@@ -150,9 +151,60 @@ export default function LiveShopping({ onLike }) {
     return () => box.removeEventListener("scroll", updateFocusDuringScroll);
   }, [displayProducts, toSelectedData]);
 
+  useEffect(() => {
+    const gallery = galleryRef.current;
+    const container = scrollRef.current;
+    if (!gallery || !container) return;
+
+    let lock = false;
+
+    function syncFromContainer() {
+      if (lock) return;
+      lock = true;
+      const horiz = container.scrollWidth > container.clientWidth;
+      if (horiz) {
+        const maxC = container.scrollWidth - container.clientWidth;
+        const maxG = gallery.scrollWidth - gallery.clientWidth;
+        const ratio = maxC ? container.scrollLeft / maxC : 0;
+        gallery.scrollLeft = ratio * maxG;
+      } else {
+        const maxC = container.scrollHeight - container.clientHeight;
+        const maxG = gallery.scrollHeight - gallery.clientHeight;
+        const ratio = maxC ? container.scrollTop / maxC : 0;
+        gallery.scrollTop = ratio * maxG;
+      }
+      lock = false;
+    }
+
+    function syncFromGallery() {
+      if (lock) return;
+      lock = true;
+      const horiz = gallery.scrollWidth > gallery.clientWidth;
+      if (horiz) {
+        const maxG = gallery.scrollWidth - gallery.clientWidth;
+        const maxC = container.scrollWidth - container.clientWidth;
+        const ratio = maxG ? gallery.scrollLeft / maxG : 0;
+        container.scrollLeft = ratio * maxC;
+      } else {
+        const maxG = gallery.scrollHeight - gallery.clientHeight;
+        const maxC = container.scrollHeight - container.clientHeight;
+        const ratio = maxG ? gallery.scrollTop / maxG : 0;
+        container.scrollTop = ratio * maxC;
+      }
+      lock = false;
+    }
+
+    container.addEventListener("scroll", syncFromContainer, { passive: true });
+    gallery.addEventListener("scroll", syncFromGallery, { passive: true });
+    return () => {
+      container.removeEventListener("scroll", syncFromContainer);
+      gallery.removeEventListener("scroll", syncFromGallery);
+    };
+  }, []);
+
   return (
     <div className="liveshopping-container" style={{ width: "100%" }}>
-      <FrameGallery selectedId={selected?.id} />
+      <FrameGallery ref={galleryRef} selectedId={selected?.id} />
       <div id="absolute-container" ref={scrollRef}>
         <div id="itemContent" ref={beltRef} style={{ display: "flex" }}>
           {displayProducts.map((p) => (
