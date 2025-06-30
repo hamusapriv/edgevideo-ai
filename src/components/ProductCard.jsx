@@ -4,7 +4,13 @@ import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
 import { FormatPrice } from "../legacy/modules/productsModule";
 
-export default function ProductCard({ product, showDetails = false, focused = false, extraClass = "" }) {
+export default function ProductCard({
+  product,
+  showDetails = false,
+  focused = false,
+  extraClass = "",
+  onMouseEnter,
+}) {
   if (!product) return null;
 
   const hidden = showDetails ? {} : { display: "none" };
@@ -26,6 +32,7 @@ export default function ProductCard({ product, showDetails = false, focused = fa
     <div
       className={`item-container ${showDetails ? "show-details" : ""} ${focused ? "focused" : ""} ${extraClass}`}
       data-product-id={product.id}
+      onMouseEnter={onMouseEnter}
     >
       <div className="live-image-container">
         <img data-role="product-image" src={product.image} alt={product.title} loading="lazy" />
