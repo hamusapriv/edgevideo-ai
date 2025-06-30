@@ -22,7 +22,6 @@ export default function FrameGallery({ selectedId }) {
                 minHeight: "90px",
                 maxWidth: "100%",
                 height: "90px",
-                maxWidth: "100%",
                 objectFit: "contain",
               }}
               key={p.id}
