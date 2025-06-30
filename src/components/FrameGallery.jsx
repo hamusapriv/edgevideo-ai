@@ -8,46 +8,72 @@ export default function FrameGallery({ selectedId }) {
       {products.map((p) =>
         p.back_image ? (
           <div
-            style={{
-              minWidth: "160px",
-              width: "160px",
-              height: "90px",
-              minHeight: "90px",
-            }}
+            style={{ position: "relative" }}
             key={p.id}
-            className={`frame-gallery-item${selectedId === p.id ? " focused" : ""}`}
+            className={`frame-gallery-item ${
+              selectedId === p.id ? " focused" : ""
+            }`}
           >
             <img
               style={{
-                width: "100%",
-                height: "100%",
+                width: "160px",
+                minWidth: "160px",
+                maxHeight: "90px",
+                minHeight: "90px",
                 maxWidth: "100%",
-                maxHeight: "100%",
+                height: "90px",
+                maxWidth: "100%",
                 objectFit: "contain",
               }}
               key={p.id}
               src={p.back_image}
               alt={`Frame for ${p.title}`}
             />
-            {p.matchType && (
-              <p
-                style={{ fontSize: "0.8rem", color: "#fff", marginTop: "4px" }}
-              >
-                AI {p.matchType}
-              </p>
-            )}
-            {p.explanation && (
-              <p
-                style={{
-                  fontSize: "0.8rem",
-                  color: "#fff",
-                  textAlign: "center",
-                  marginTop: "4px",
-                }}
-              >
-                {p.explanation}
-              </p>
-            )}
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                padding: "4px",
+                left: 0,
+                right: 0,
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                background: "rgba(0, 0, 0, 0.5)",
+              }}
+            >
+              {p.matchType && (
+                <p
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "#fff",
+                    marginTop: "4px",
+                    maxWidth: "160px",
+                    whiteSpace: "normal",
+                  }}
+                >
+                  AI {p.matchType}
+                </p>
+              )}
+              {p.explanation && (
+                <p
+                  style={{
+                    fontSize: "0.7rem",
+                    color: "#fff",
+                    textAlign: "left",
+                    marginTop: "4px",
+
+                    maxWidth: "160px",
+                    whiteSpace: "normal",
+                  }}
+                >
+                  {p.explanation}
+                </p>
+              )}
+            </div>
           </div>
         ) : null
       )}
