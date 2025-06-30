@@ -480,3 +480,13 @@ section {
 .quick-access-btn {
   width: 100%;
 }
+
+.ai-frame-gallery {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  padding: 10px;
+  gap: 10px;
+  min-height: 110px;
+  min-height: 110px;
+}

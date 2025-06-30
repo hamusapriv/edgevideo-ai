@@ -8,6 +8,7 @@ import ShareButton from "./buttons/ShareButton";
 import SvgFrame from "./svgs/SvgFrame";
 import { useProducts } from "../contexts/ProductsContext";
 import { FormatPrice } from "../legacy/modules/productsModule";
+import FrameGallery from "./FrameGallery";
 
 export default function LiveShopping({ channelId, onLike }) {
   const { products, addProduct } = useProducts();
@@ -18,13 +19,14 @@ export default function LiveShopping({ channelId, onLike }) {
 
   const toSelectedData = useCallback((p) => {
     if (!p) return null;
-    const itemTypeName = p.type === "ticket"
-      ? p.link?.toLowerCase().includes("viator")
-        ? "Viator Ticket"
-        : "DB Ticket"
-      : p.type === "deal"
-      ? "Deal"
-      : "DB Product";
+    const itemTypeName =
+      p.type === "ticket"
+        ? p.link?.toLowerCase().includes("viator")
+          ? "Viator Ticket"
+          : "DB Ticket"
+        : p.type === "deal"
+        ? "Deal"
+        : "DB Product";
     return {
       id: p.id,
       itemTypeName,
@@ -64,6 +66,7 @@ export default function LiveShopping({ channelId, onLike }) {
 
   return (
     <div className="liveshopping-container" style={{ width: "100%" }}>
+      <FrameGallery />
       <ChannelLogo channelId={channelId} className="channel-logo" />
       <div id="absolute-container">
         <div id="itemContent" style={{ display: "flex", gap: 16 }}>
