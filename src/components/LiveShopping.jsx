@@ -14,6 +14,7 @@ export default function LiveShopping({ channelId, onLike }) {
   const [selected, setSelected] = useState(null);
   const scrollRef = useRef(null);
   const beltRef = useRef(null);
+  const lastFocusedRef = useRef(null);
   const deviceCanHover = window.matchMedia(
     "(hover: hover) and (pointer: fine)"
   ).matches;
@@ -66,37 +67,52 @@ export default function LiveShopping({ channelId, onLike }) {
   );
 
   useEffect(() => {
-    if (deviceCanHover) return;
     const box = scrollRef.current;
     const belt = beltRef.current;
     if (!box || !belt) return;
 
-    function updateFocus() {
-      const rect = box.getBoundingClientRect();
-      const focusX = rect.left + rect.width / 2;
-      const cards = Array.from(belt.children);
-      let best = null;
-      let smallest = Infinity;
-      cards.forEach((card) => {
-        const r = card.getBoundingClientRect();
-        const center = r.left + r.width / 2;
-        const d = Math.abs(center - focusX);
-        if (d < smallest) {
-          smallest = d;
-          best = card;
-        }
-      });
-      if (best) {
-        const id = best.getAttribute("data-product-id");
-        const product = products.find((pr) => String(pr.id) === id);
-        if (product) setSelected(toSelectedData(product));
+    function applyFocus(card) {
+      if (!card || card === lastFocusedRef.current) return;
+      const id = card.getAttribute("data-product-id");
+      const product = products.find((pr) => String(pr.id) === id);
+      if (product) {
+        lastFocusedRef.current = card;
+        setSelected(toSelectedData(product));
       }
     }
 
-    box.addEventListener("scroll", updateFocus, { passive: true });
-    requestAnimationFrame(updateFocus);
-    return () => box.removeEventListener("scroll", updateFocus);
-  }, [deviceCanHover, products, toSelectedData]);
+    function updateFocusDuringScroll() {
+      const containerRect = box.getBoundingClientRect();
+      const containerWidth = containerRect.width;
+      const scrollLeft = box.scrollLeft;
+      const maxScroll = belt.scrollWidth - containerWidth;
+
+      const START = 190;
+      const END = containerWidth - 190;
+      const t = maxScroll > 0 ? scrollLeft / maxScroll : 0;
+      const focusX = containerRect.left + (START + t * (END - START));
+
+      const cards = Array.from(belt.querySelectorAll(".item-container"));
+      let bestCard = null;
+      let smallestDelta = Infinity;
+
+      cards.forEach((card) => {
+        const rect = card.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const delta = Math.abs(centerX - focusX);
+        if (delta < smallestDelta) {
+          smallestDelta = delta;
+          bestCard = card;
+        }
+      });
+
+      applyFocus(bestCard);
+    }
+
+    box.addEventListener("scroll", updateFocusDuringScroll, { passive: true });
+    requestAnimationFrame(updateFocusDuringScroll);
+    return () => box.removeEventListener("scroll", updateFocusDuringScroll);
+  }, [products, toSelectedData]);
 
   return (
     <div className="liveshopping-container" style={{ width: "100%" }}>
