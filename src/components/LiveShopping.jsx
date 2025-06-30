@@ -81,7 +81,7 @@ export default function LiveShopping({ onLike }) {
           );
           setTimeout(() => {
             setDisplayProducts((cur) => cur.filter((it) => it.id !== p.id));
-          }, 300);
+          }, 500);
         }
       });
 
@@ -123,8 +123,8 @@ export default function LiveShopping({ onLike }) {
       const scrollLeft = box.scrollLeft;
       const maxScroll = belt.scrollWidth - containerWidth;
 
-      const START = 190;
-      const END = containerWidth - 190;
+      const START = 120; // start focus area
+      const END = containerWidth - 120; // start focus area;
       const t = maxScroll > 0 ? scrollLeft / maxScroll : 0;
       const focusX = containerRect.left + (START + t * (END - START));
 
@@ -154,16 +154,16 @@ export default function LiveShopping({ onLike }) {
     <div className="liveshopping-container" style={{ width: "100%" }}>
       <FrameGallery selectedId={selected?.id} />
       <div id="absolute-container" ref={scrollRef}>
-        <div id="itemContent" ref={beltRef} style={{ display: "flex", gap: 16 }}>
+        <div id="itemContent" ref={beltRef} style={{ display: "flex" }}>
           {displayProducts.map((p) => (
-            <div key={p.id} onMouseEnter={() => handleHover(p)}>
-              <ProductCard
-                product={p}
-                showDetails={deviceCanHover}
-                focused={selected?.id === p.id}
-                extraClass={p._status}
-              />
-            </div>
+            <ProductCard
+              key={p.id}
+              product={p}
+              showDetails={deviceCanHover}
+              focused={selected?.id === p.id}
+              extraClass={p._status}
+              onMouseEnter={() => handleHover(p)}
+            />
           ))}
         </div>
       </div>

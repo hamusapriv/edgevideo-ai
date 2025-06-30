@@ -41,7 +41,7 @@ export default function FrameGallery({ selectedId }) {
                 flexDirection: "column",
                 justifyContent: "space-between",
                 alignItems: "flex-start",
-                background: "rgba(0, 0, 0, 0.5)",
+                background: "rgba(0, 0, 0, 0.3)",
               }}
             >
               {p.matchType && (

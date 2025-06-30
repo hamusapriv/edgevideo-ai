@@ -270,8 +270,8 @@ section {
 /* Live Shopping */
 
 .item-container {
-  width: 200px;
-  height: 200px;
+  width: 160px;
+  height: 160px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -283,8 +283,8 @@ section {
   overflow: hidden;
   cursor: pointer;
   position: relative;
-  transition: all 0.2s ease;
-  margin: 0 6px;
+  transition: all 0.5s ease;
+  margin: 0;
 }
 
 .item-container img {
@@ -315,6 +315,8 @@ section {
   width: 0;
   height: 0;
   opacity: 0;
+  margin: 0;
+  padding: 0;
 }
 
 /* ─────── “Focused” card: scale + shadow ─────── */
@@ -332,7 +334,7 @@ section {
   overflow-y: hidden;
   padding: 10px;
   border-radius: 8px;
-  min-height: 250px;
+  min-height: 200px;
   min-width: 300px;
 }
 
@@ -493,11 +495,26 @@ section {
   flex-direction: row;
   overflow-x: auto;
   padding: 10px;
-  gap: 10px;
-  min-height: 110px;
   min-height: 110px;
 }
 
 .frame-gallery-item.focused {
   outline: 2px solid var(--color-primary);
+  opacity: 1;
+  transform: scale(1);
+}
+
+.frame-gallery-item {
+  width: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.4;
+  transform: scale(0.95);
+  flex: 0 0 auto;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.5s ease;
+  margin: 0;
 }
