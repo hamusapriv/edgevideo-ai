@@ -117,7 +117,6 @@ export default function LiveShopping({ channelId, onLike }) {
   return (
     <div className="liveshopping-container" style={{ width: "100%" }}>
       <FrameGallery selectedId={selected?.id} />
-      <ChannelLogo channelId={channelId} className="channel-logo" />
       <div id="absolute-container" ref={scrollRef}>
         <div id="itemContent" ref={beltRef} style={{ display: "flex", gap: 16 }}>
           {products.map((p) => (
