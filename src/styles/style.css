@@ -304,6 +304,19 @@ section {
   height: 0px;
 }
 
+/* Item enter/exit animations */
+.item-container.enter {
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.item-container.exit {
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
 /* ─────── “Focused” card: scale + shadow ─────── */
 .item-container.focused {
   transform: scale(1.1);

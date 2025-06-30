@@ -9,9 +9,10 @@ import { useProducts } from "../contexts/ProductsContext";
 import { FormatPrice } from "../legacy/modules/productsModule";
 import FrameGallery from "./FrameGallery";
 
-export default function LiveShopping({ channelId, onLike }) {
+export default function LiveShopping({ onLike }) {
   const { products, addProduct } = useProducts();
   const [selected, setSelected] = useState(null);
+  const [displayProducts, setDisplayProducts] = useState([]);
   const scrollRef = useRef(null);
   const beltRef = useRef(null);
   const lastFocusedRef = useRef(null);
@@ -53,6 +54,41 @@ export default function LiveShopping({ channelId, onLike }) {
     return () => window.removeEventListener("new-product", handler);
   }, [addProduct, toSelectedData]);
 
+  // sync products with animated display list
+  useEffect(() => {
+    setDisplayProducts((prev) => {
+      const prevIds = prev.map((p) => p.id);
+      const nextIds = products.map((p) => p.id);
+      let updated = [...prev];
+
+      // handle additions
+      products.forEach((p) => {
+        if (!prevIds.includes(p.id)) {
+          updated.push({ ...p, _status: "enter" });
+          requestAnimationFrame(() => {
+            setDisplayProducts((cur) =>
+              cur.map((it) => (it.id === p.id ? { ...it, _status: "" } : it))
+            );
+          });
+        }
+      });
+
+      // handle removals
+      prev.forEach((p) => {
+        if (!nextIds.includes(p.id) && p._status !== "exit") {
+          updated = updated.map((it) =>
+            it.id === p.id ? { ...it, _status: "exit" } : it
+          );
+          setTimeout(() => {
+            setDisplayProducts((cur) => cur.filter((it) => it.id !== p.id));
+          }, 300);
+        }
+      });
+
+      return updated;
+    });
+  }, [products]);
+
   useEffect(() => {
     if (!selected && products.length) {
       setSelected(toSelectedData(products[0]));
@@ -74,7 +110,7 @@ export default function LiveShopping({ channelId, onLike }) {
     function applyFocus(card) {
       if (!card || card === lastFocusedRef.current) return;
       const id = card.getAttribute("data-product-id");
-      const product = products.find((pr) => String(pr.id) === id);
+      const product = displayProducts.find((pr) => String(pr.id) === id);
       if (product) {
         lastFocusedRef.current = card;
         setSelected(toSelectedData(product));
@@ -112,19 +148,20 @@ export default function LiveShopping({ channelId, onLike }) {
     box.addEventListener("scroll", updateFocusDuringScroll, { passive: true });
     requestAnimationFrame(updateFocusDuringScroll);
     return () => box.removeEventListener("scroll", updateFocusDuringScroll);
-  }, [products, toSelectedData]);
+  }, [displayProducts, toSelectedData]);
 
   return (
     <div className="liveshopping-container" style={{ width: "100%" }}>
       <FrameGallery selectedId={selected?.id} />
       <div id="absolute-container" ref={scrollRef}>
         <div id="itemContent" ref={beltRef} style={{ display: "flex", gap: 16 }}>
-          {products.map((p) => (
+          {displayProducts.map((p) => (
             <div key={p.id} onMouseEnter={() => handleHover(p)}>
               <ProductCard
                 product={p}
                 showDetails={deviceCanHover}
                 focused={selected?.id === p.id}
+                extraClass={p._status}
               />
             </div>
           ))}
