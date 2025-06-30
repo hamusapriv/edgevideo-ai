@@ -4,7 +4,7 @@ import HomeTab from "./HomeTab";
 import LiveShopping from "./LiveShopping";
 import FavoritesTab from "./FavoritesTab";
 
-export default function ShoppingTab({ channelId, openProfileSidebar }) {
+export default function ShoppingTab({ openProfileSidebar }) {
   const nestedConfig = useMemo(
     () => [
       { key: "live", label: "Live Now", Component: LiveShopping },
@@ -110,10 +110,7 @@ export default function ShoppingTab({ channelId, openProfileSidebar }) {
               className="nested-content"
             >
               {key === "live" ? (
-                <LiveShopping
-                  channelId={channelId}
-                  onLike={() => setRefreshFavoritesKey((k) => k + 1)}
-                />
+                <LiveShopping onLike={() => setRefreshFavoritesKey((k) => k + 1)} />
               ) : (
                 <HomeTab />
               )}

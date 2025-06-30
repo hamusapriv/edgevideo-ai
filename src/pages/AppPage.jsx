@@ -17,7 +17,7 @@ import "../styles/app.css";
 
 
 export default function AppPage() {
-  const channelId = useChannelId();
+  useChannelId();
 
   // 1) Main tabs config
   const tabConfig = useMemo(
@@ -132,10 +132,7 @@ export default function AppPage() {
           return (
             <div key={key} className="tab-content" ref={panelRefs.current[i]}>
               {key === "shopping" ? (
-                <TabComponent
-                  channelId={channelId}
-                  openProfileSidebar={handleToggleSidebar}
-                />
+                <TabComponent openProfileSidebar={handleToggleSidebar} />
               ) : (
                 <TabComponent />
               )}

@@ -4,7 +4,7 @@ import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
 import { FormatPrice } from "../legacy/modules/productsModule";
 
-export default function ProductCard({ product, showDetails = false, focused = false }) {
+export default function ProductCard({ product, showDetails = false, focused = false, extraClass = "" }) {
   if (!product) return null;
 
   const hidden = showDetails ? {} : { display: "none" };
@@ -24,7 +24,7 @@ export default function ProductCard({ product, showDetails = false, focused = fa
 
   return (
     <div
-      className={`item-container ${showDetails ? "show-details" : ""} ${focused ? "focused" : ""}`}
+      className={`item-container ${showDetails ? "show-details" : ""} ${focused ? "focused" : ""} ${extraClass}`}
       data-product-id={product.id}
     >
       <div className="live-image-container">
