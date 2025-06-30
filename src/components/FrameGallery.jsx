@@ -15,6 +15,7 @@ export default function FrameGallery() {
               minHeight: "90px",
             }}
             key={p.id}
+            className="frame-gallery-item"
           >
             <img
               style={{
