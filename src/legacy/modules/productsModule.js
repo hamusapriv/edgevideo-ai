@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { UpdateProductViaDataRole } from "../screen";
 export let products = [];
 export let productDataQueue = [];
 export let productsPaused = false;
@@ -36,7 +35,9 @@ export function processProductDataQueue() {
     if (existingIndex === -1) {
       products.push(data);
       if (products.length > 10) products.shift();
-      UpdateProductViaDataRole(products.length - 1);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("new-product", { detail: data }));
+      }
       if (typeof flashShopping === "function") {
         flashShopping();
       }

@@ -9,6 +9,7 @@ import App from "./App";
 import { AuthProvider } from "./contexts/AuthContext";
 import { FavoritesProvider } from "./contexts/FavoritesContext";
 import { SidebarProvider } from "./contexts/SidebarContext";
+import { ProductsProvider } from "./contexts/ProductsContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <>
@@ -16,7 +17,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <FavoritesProvider>
           <SidebarProvider>
-            <App />
+            <ProductsProvider>
+              <App />
+            </ProductsProvider>
           </SidebarProvider>
         </FavoritesProvider>
       </AuthProvider>
