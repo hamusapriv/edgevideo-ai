@@ -46,14 +46,14 @@
 
   .item-container {
     width: fit-content;
-    height: 250px;
+    height: 180px;
     display: flex;
     background-color: transparent;
     justify-content: center;
     align-items: center;
     gap: 30px;
     transform: scale(1);
-    transform-origin: calc(100% - 125px) 50%;
+    transform-origin: calc(100% - 90px) 50%;
   }
   .item-container.focused {
     box-shadow: none;

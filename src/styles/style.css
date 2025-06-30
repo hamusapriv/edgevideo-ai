@@ -325,6 +325,7 @@ section {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   z-index: 1;
   opacity: 1;
+  margin: 0 10px;
 }
 
 #absolute-container {
@@ -371,7 +372,6 @@ section {
   left: 0;
   right: 0;
   backdrop-filter: blur(10px);
-  padding: 6px;
 }
 
 .channel-logo {
