@@ -248,69 +248,17 @@ export default function LiveShopping({ channelId, onLike }) {
       });
     }
 
-    let frameOpenTimer = null;
-    let frameCloseTimer = null;
-
     function applyFocus(card) {
       if (!card || card === lastBestRef.current) return;
 
-      // 1) clear any pending open/close timers
-      clearTimeout(frameOpenTimer);
-      clearTimeout(frameCloseTimer);
-
-      // 2) tear down the previously-focused card
+      // remove highlight from previously focused card
       if (lastBestRef.current) {
         lastBestRef.current.classList.remove("focused");
-        const prevContainer = lastBestRef.current.querySelector(
-          '[data-role="frame-container"]'
-        );
-
-        const prevText = lastBestRef.current.querySelector(
-          '[data-role="toggle-text"]'
-        );
-        if (prevContainer) {
-          prevContainer.dataset.visible = "false";
-          prevContainer.style.maxHeight = "0px";
-          prevContainer.style.opacity = "0";
-          prevContainer.style.transform = "translateY(-20px)";
-        }
-        if (prevText) prevText.textContent = "Show Frame";
       }
 
-      // 3) focus this new card
+      // highlight the new card
       card.classList.add("focused");
       lastBestRef.current = card;
-
-      // pull out the elements we'll animate
-      const frameContainer = card.querySelector(
-        '[data-role="frame-container"]'
-      );
-      const toggleText = card.querySelector('[data-role="toggle-text"]');
-
-      // 4) immediately collapse it
-      frameContainer.dataset.visible = "false";
-      frameContainer.style.maxHeight = "0px";
-      frameContainer.style.opacity = "0";
-      frameContainer.style.transform = "translateY(-20px)";
-      if (toggleText) toggleText.textContent = "Show Frame";
-
-      // 5) open after 0.5s…
-      frameOpenTimer = setTimeout(() => {
-        frameContainer.dataset.visible = "true";
-        frameContainer.style.maxHeight = "200px";
-        frameContainer.style.opacity = "1";
-        frameContainer.style.transform = "translateY(0)";
-        if (toggleText) toggleText.textContent = "Hide Frame";
-
-        // 6) …then auto-close after 2s
-        frameCloseTimer = setTimeout(() => {
-          frameContainer.dataset.visible = "false";
-          frameContainer.style.maxHeight = "0px";
-          frameContainer.style.opacity = "0";
-          frameContainer.style.transform = "translateY(-20px)";
-          if (toggleText) toggleText.textContent = "Show Frame";
-        }, 2000);
-      }, 500);
 
       // 7) finally, update your details panel as before
       const id = card.getAttribute("data-product-id");
@@ -446,19 +394,6 @@ export default function LiveShopping({ channelId, onLike }) {
     };
   }, [channelId, deviceCanHover, handleLike, handleDislike, handleShare]);
 
-  // ───────── Hide frame when user focuses a different product ─────────
-  useEffect(() => {
-    // collapse any existing frame
-    setAnimateFrame(false);
-
-    // open after 0.5 seconds
-    const timer = setTimeout(() => {
-      setAnimateFrame(true);
-    }, 1000);
-
-    // clear timeout if we switch focus again
-    return () => clearTimeout(timer);
-  }, [selectedCardData.id]);
 
   // ─────────────────────────────────────────────────────────────────
   // Render
