@@ -138,4 +138,8 @@
     min-height: 110px;
     min-width: 180px;
   }
+
+  .frame-gallery-item.focused {
+    outline: 2px solid var(--color-primary);
+  }
 }

@@ -1,11 +1,10 @@
 // src/components/LiveShopping.jsx
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ChannelLogo from "./ChannelLogo";
 import ProductCard from "./ProductCard";
 import LikeButton from "./buttons/LikeButton";
 import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
-import SvgFrame from "./svgs/SvgFrame";
 import { useProducts } from "../contexts/ProductsContext";
 import { FormatPrice } from "../legacy/modules/productsModule";
 import FrameGallery from "./FrameGallery";
@@ -13,6 +12,8 @@ import FrameGallery from "./FrameGallery";
 export default function LiveShopping({ channelId, onLike }) {
   const { products, addProduct } = useProducts();
   const [selected, setSelected] = useState(null);
+  const scrollRef = useRef(null);
+  const beltRef = useRef(null);
   const deviceCanHover = window.matchMedia(
     "(hover: hover) and (pointer: fine)"
   ).matches;
@@ -64,15 +65,52 @@ export default function LiveShopping({ channelId, onLike }) {
     [toSelectedData]
   );
 
+  useEffect(() => {
+    if (deviceCanHover) return;
+    const box = scrollRef.current;
+    const belt = beltRef.current;
+    if (!box || !belt) return;
+
+    function updateFocus() {
+      const rect = box.getBoundingClientRect();
+      const focusX = rect.left + rect.width / 2;
+      const cards = Array.from(belt.children);
+      let best = null;
+      let smallest = Infinity;
+      cards.forEach((card) => {
+        const r = card.getBoundingClientRect();
+        const center = r.left + r.width / 2;
+        const d = Math.abs(center - focusX);
+        if (d < smallest) {
+          smallest = d;
+          best = card;
+        }
+      });
+      if (best) {
+        const id = best.getAttribute("data-product-id");
+        const product = products.find((pr) => String(pr.id) === id);
+        if (product) setSelected(toSelectedData(product));
+      }
+    }
+
+    box.addEventListener("scroll", updateFocus, { passive: true });
+    requestAnimationFrame(updateFocus);
+    return () => box.removeEventListener("scroll", updateFocus);
+  }, [deviceCanHover, products, toSelectedData]);
+
   return (
     <div className="liveshopping-container" style={{ width: "100%" }}>
-      <FrameGallery />
+      <FrameGallery selectedId={selected?.id} />
       <ChannelLogo channelId={channelId} className="channel-logo" />
-      <div id="absolute-container">
-        <div id="itemContent" style={{ display: "flex", gap: 16 }}>
+      <div id="absolute-container" ref={scrollRef}>
+        <div id="itemContent" ref={beltRef} style={{ display: "flex", gap: 16 }}>
           {products.map((p) => (
             <div key={p.id} onMouseEnter={() => handleHover(p)}>
-              <ProductCard product={p} showDetails={deviceCanHover} />
+              <ProductCard
+                product={p}
+                showDetails={deviceCanHover}
+                focused={selected?.id === p.id}
+              />
             </div>
           ))}
         </div>
@@ -84,82 +122,6 @@ export default function LiveShopping({ channelId, onLike }) {
         {selected ? (
           <>
             <h2 className="live-product-name">{selected.name}</h2>
-            <p
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "6px",
-                fontSize: "0.95rem",
-                lineHeight: "1.4",
-                color: "#ddd",
-              }}
-            >
-              <span
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                {selected.matchText && (
-                  <span
-                    style={{
-                      display: "inline",
-                      fontSize: "1rem",
-                      fontWeight: "600",
-                      color: "#fff",
-                    }}
-                  >
-                    AI {selected.matchText}
-                  </span>
-                )}
-                <button
-                  onClick={() => {
-                    setSelected((s) => ({ ...s, showFrame: !s.showFrame }));
-                  }}
-                  style={{
-                    display: "inline-flex",
-                    padding: 0,
-                    marginLeft: "4px",
-                    border: "none",
-                    background: "transparent",
-                    color: "#4fa",
-                    cursor: "pointer",
-                    fontSize: "0.9rem",
-                  }}
-                >
-                  <SvgFrame style={{ marginRight: "4px", flexShrink: 0 }} />
-                  {selected.showFrame ? "Hide Frame" : "Show Frame"}
-                </button>
-              </span>
-              {selected.description}
-            </p>
-            {selected.frameImageUrl && (
-              <div
-                className="live-frame-image-container"
-                style={{
-                  overflow: "hidden",
-                  aspectRatio: "16/9",
-                  maxWidth: "calc(200px * 16 / 9)",
-                  width: "fit-content",
-                  maxHeight: selected.showFrame ? "200px" : "0px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                  opacity: selected.showFrame ? 1 : 0,
-                  transform: selected.showFrame
-                    ? "translateY(0)"
-                    : "translateY(-20px)",
-                  transition:
-                    "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease",
-                }}
-              >
-                <img
-                  src={selected.frameImageUrl}
-                  alt={`Frame for ${selected.name}`}
-                  className="live-frame-image"
-                />
-              </div>
-            )}
             {selected.price && (
               <p
                 style={{
