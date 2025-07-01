@@ -36,13 +36,10 @@ export default function LiveShopping() {
         if (!prevIds.includes(p.id)) {
           updated.unshift({ ...p, _status: "enter" });
 
-          // allow one paint with the .enter class so transitions fire
           requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              setDisplayProducts((cur) =>
-                cur.map((it) => (it.id === p.id ? { ...it, _status: "" } : it))
-              );
-            });
+            setDisplayProducts((cur) =>
+              cur.map((it) => (it.id === p.id ? { ...it, _status: "" } : it))
+            );
           });
         }
       });
@@ -53,13 +50,9 @@ export default function LiveShopping() {
           updated = updated.map((it) =>
             it.id === p.id ? { ...it, _status: "exit" } : it
           );
-
-          // wait for exit transition before removing the item
-          requestAnimationFrame(() => {
-            setTimeout(() => {
-              setDisplayProducts((cur) => cur.filter((it) => it.id !== p.id));
-            }, 500);
-          });
+          setTimeout(() => {
+            setDisplayProducts((cur) => cur.filter((it) => it.id !== p.id));
+          }, 500);
         }
       });
 
