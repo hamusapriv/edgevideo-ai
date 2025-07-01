@@ -1,3 +1,6 @@
+// src/contexts/ProductsContext.jsx
+// This file defines a context for managing products in a React application.
+
 import React, { createContext, useCallback, useContext, useState } from "react";
 
 const ProductsContext = createContext({
