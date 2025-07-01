@@ -1,18 +1,19 @@
 import React, { forwardRef } from "react";
 import { useProducts } from "../contexts/ProductsContext";
 
-const FrameGallery = forwardRef(function FrameGallery({ selectedId }, ref) {
+const FrameGallery = forwardRef(function FrameGallery({ selectedId, items }, ref) {
   const { products } = useProducts();
+  const frames = items || products;
   return (
     <div className="ai-frame-gallery" ref={ref}>
-      {products.map((p) =>
+      {frames.map((p) =>
         p.back_image ? (
           <div
             style={{ position: "relative" }}
             key={p.id}
-            className={`frame-gallery-item ${
+            className={`frame-gallery-item${
               selectedId === p.id ? " focused" : ""
-            }`}
+            }${p._status ? ` ${p._status}` : ""}`}
           >
             <img
               style={{

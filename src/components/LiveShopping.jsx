@@ -66,6 +66,28 @@ export default function LiveShopping({ onLike }) {
       products.forEach((p) => {
         if (!prevIds.includes(p.id)) {
           updated.unshift({ ...p, _status: "enter" });
+
+          const container = scrollRef.current;
+          const gallery = galleryRef.current;
+          const first = beltRef.current?.querySelector(".item-container");
+          if (container && gallery && first) {
+            const horiz = container.scrollWidth > container.clientWidth;
+            const delta = horiz ? first.offsetWidth : first.offsetHeight;
+            if (horiz) {
+              container.scrollLeft += delta;
+              const maxC = container.scrollWidth - container.clientWidth;
+              const maxG = gallery.scrollWidth - gallery.clientWidth;
+              const ratio = maxC ? container.scrollLeft / maxC : 0;
+              gallery.scrollLeft = ratio * maxG;
+            } else {
+              container.scrollTop += delta;
+              const maxC = container.scrollHeight - container.clientHeight;
+              const maxG = gallery.scrollHeight - gallery.clientHeight;
+              const ratio = maxC ? container.scrollTop / maxC : 0;
+              gallery.scrollTop = ratio * maxG;
+            }
+          }
+
           requestAnimationFrame(() => {
             setDisplayProducts((cur) =>
               cur.map((it) => (it.id === p.id ? { ...it, _status: "" } : it))
@@ -184,7 +206,11 @@ export default function LiveShopping({ onLike }) {
 
   return (
     <div className="liveshopping-container" style={{ width: "100%" }}>
-      <FrameGallery ref={galleryRef} selectedId={selected?.id} />
+      <FrameGallery
+        ref={galleryRef}
+        selectedId={selected?.id}
+        items={displayProducts}
+      />
       <div id="absolute-container" ref={scrollRef}>
         <div id="itemContent" ref={beltRef} style={{ display: "flex" }}>
           {displayProducts.map((p) => (

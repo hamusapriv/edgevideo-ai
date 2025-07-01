@@ -309,6 +309,7 @@ section {
   width: 0;
   height: 0;
   opacity: 0;
+  transform: scale(0);
 }
 
 .item-container.exit {
@@ -317,6 +318,7 @@ section {
   opacity: 0;
   margin: 0;
   padding: 0;
+  transform: scale(0);
 }
 
 /* ─────── “Focused” card: scale + shadow ─────── */
@@ -526,6 +528,22 @@ section {
   transition: all 0.3s ease;
   margin: 0;
   border-radius: 6px;
+}
+
+.frame-gallery-item.enter {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  transform: scale(0);
+}
+
+.frame-gallery-item.exit {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+  transform: scale(0);
 }
 
 .ai-frame-gallery {
