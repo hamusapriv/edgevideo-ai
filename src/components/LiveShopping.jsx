@@ -52,7 +52,7 @@ export default function LiveShopping() {
           );
           setTimeout(() => {
             setDisplayProducts((cur) => cur.filter((it) => it.id !== p.id));
-          }, 300);
+          }, 500);
         }
       });
 

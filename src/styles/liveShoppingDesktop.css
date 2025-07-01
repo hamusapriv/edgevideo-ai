@@ -82,7 +82,7 @@
   }
 
   #itemContent {
-    inset: 50px 12% auto 12%;
+    inset: 0;
     flex-direction: column;
     align-items: center;
     min-width: 0;
