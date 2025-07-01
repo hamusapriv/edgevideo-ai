@@ -310,6 +310,7 @@ section {
   height: 0;
   opacity: 0;
   overflow: hidden;
+  transform: scale(0);
 }
 
 .item-container.exit {
@@ -318,6 +319,7 @@ section {
   opacity: 0;
   margin: 0;
   padding: 0;
+  transform: scale(0);
 }
 
 /* ─────── “Focused” card: scale + shadow ─────── */
