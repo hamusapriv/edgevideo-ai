@@ -8,60 +8,21 @@ import useIsMobile from "../hooks/useIsMobile";
 export default function LiveShopping() {
   const { products, addProduct } = useProducts();
   const [selectedId, setSelectedId] = useState(null);
-  const [displayProducts, setDisplayProducts] = useState(() =>
-    products.map((p) => ({ ...p, _status: "" }))
-  );
+  const [displayProducts, setDisplayProducts] = useState([]);
   const isMobile = useIsMobile();
   const scrollRef = useRef(null);
   const galleryRef = useRef(null);
   const beltRef = useRef(null);
   const lastFocusedRef = useRef(null);
-  const exitTimers = useRef({});
-
 
   useEffect(() => {
     function handler(e) {
-      const p = e.detail;
-      addProduct(p);
-      setSelectedId((cur) => cur || String(p.id));
-
-      setDisplayProducts((prev) => {
-        if (prev.some((it) => it.id === p.id)) return prev;
-        return [{ ...p, _status: "enter" }, ...prev];
-      });
+      addProduct(e.detail);
+      setSelectedId((cur) => cur || String(e.detail.id));
     }
-
     window.addEventListener("new-product", handler);
     return () => window.removeEventListener("new-product", handler);
   }, [addProduct]);
-
-  // remove enter class after mount
-  useEffect(() => {
-    if (displayProducts.some((p) => p._status === "enter")) {
-      const t = setTimeout(() => {
-        setDisplayProducts((prev) =>
-          prev.map((it) => (it._status === "enter" ? { ...it, _status: "" } : it))
-        );
-      }, 50);
-      return () => clearTimeout(t);
-    }
-  }, [displayProducts]);
-
-  // clean up items marked for exit
-  useEffect(() => {
-    displayProducts.forEach((p) => {
-      if (p._status === "exit" && !exitTimers.current[p.id]) {
-        exitTimers.current[p.id] = setTimeout(() => {
-          setDisplayProducts((cur) => cur.filter((it) => it.id !== p.id));
-          delete exitTimers.current[p.id];
-        }, 500);
-      }
-    });
-    return () => {
-      Object.values(exitTimers.current).forEach(clearTimeout);
-      exitTimers.current = {};
-    };
-  }, [displayProducts]);
 
   // sync products with animated display list
   useEffect(() => {
@@ -70,10 +31,16 @@ export default function LiveShopping() {
       const nextIds = products.map((p) => p.id);
       let updated = [...prev];
 
-      // handle additions (if any arrived via context update)
+      // handle additions: put new items at the start so they appear first
       products.forEach((p) => {
         if (!prevIds.includes(p.id)) {
           updated.unshift({ ...p, _status: "enter" });
+
+          requestAnimationFrame(() => {
+            setDisplayProducts((cur) =>
+              cur.map((it) => (it.id === p.id ? { ...it, _status: "" } : it))
+            );
+          });
         }
       });
 
@@ -83,6 +50,9 @@ export default function LiveShopping() {
           updated = updated.map((it) =>
             it.id === p.id ? { ...it, _status: "exit" } : it
           );
+          setTimeout(() => {
+            setDisplayProducts((cur) => cur.filter((it) => it.id !== p.id));
+          }, 500);
         }
       });
 
