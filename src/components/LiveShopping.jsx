@@ -36,11 +36,11 @@ export default function LiveShopping() {
         if (!prevIds.includes(p.id)) {
           updated.unshift({ ...p, _status: "enter" });
 
-          setTimeout(() => {
+          requestAnimationFrame(() => {
             setDisplayProducts((cur) =>
               cur.map((it) => (it.id === p.id ? { ...it, _status: "" } : it))
             );
-          }, 50);
+          });
         }
       });
 
