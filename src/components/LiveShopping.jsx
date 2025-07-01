@@ -3,11 +3,13 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import ProductCard from "./ProductCard";
 import { useProducts } from "../contexts/ProductsContext";
 import FrameGallery from "./FrameGallery";
+import useIsMobile from "../hooks/useIsMobile";
 
 export default function LiveShopping() {
   const { products, addProduct } = useProducts();
   const [selectedId, setSelectedId] = useState(null);
   const [displayProducts, setDisplayProducts] = useState([]);
+  const isMobile = useIsMobile();
   const scrollRef = useRef(null);
   const galleryRef = useRef(null);
   const beltRef = useRef(null);
@@ -64,14 +66,19 @@ export default function LiveShopping() {
     }
   }, [products, selectedId]);
 
-  const handleHover = useCallback((p) => {
-    setSelectedId(String(p.id));
-  }, []);
+  const handleHover = useCallback(
+    (p) => {
+      if (!isMobile) {
+        setSelectedId(String(p.id));
+      }
+    },
+    [isMobile]
+  );
 
   useEffect(() => {
     const box = scrollRef.current;
     const beltEl = beltRef.current;
-    if (!box || !beltEl) return;
+    if (!box || !beltEl || !isMobile) return;
 
     function applyFocus(card) {
       if (!card || card === lastFocusedRef.current) return;
@@ -126,7 +133,7 @@ export default function LiveShopping() {
     return () => {
       box.removeEventListener("scroll", updateFocusDuringScroll);
     };
-  }, [displayProducts]);
+  }, [displayProducts, isMobile]);
 
   useEffect(() => {
     const gallery = galleryRef.current;
@@ -182,7 +189,7 @@ export default function LiveShopping() {
               showDetails
               focused={String(selectedId) === String(p.id)}
               extraClass={p._status}
-              onMouseEnter={() => handleHover(p)}
+              onMouseEnter={isMobile ? undefined : () => handleHover(p)}
             />
           ))}
         </div>
