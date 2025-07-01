@@ -12,7 +12,7 @@ const FrameGallery = forwardRef(function FrameGallery({ selectedId, items }, ref
             style={{ position: "relative" }}
             key={p.id}
             className={`frame-gallery-item${
-              selectedId === p.id ? " focused" : ""
+              String(selectedId) === String(p.id) ? " focused" : ""
             }${p._status ? ` ${p._status}` : ""}`}
           >
             <img

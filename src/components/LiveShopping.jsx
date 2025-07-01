@@ -16,7 +16,7 @@ export default function LiveShopping() {
   useEffect(() => {
     function handler(e) {
       addProduct(e.detail);
-      setSelectedId((cur) => cur || e.detail.id);
+      setSelectedId((cur) => cur || String(e.detail.id));
     }
     window.addEventListener("new-product", handler);
     return () => window.removeEventListener("new-product", handler);
@@ -60,12 +60,12 @@ export default function LiveShopping() {
 
   useEffect(() => {
     if (!selectedId && products.length) {
-      setSelectedId(products[0].id);
+      setSelectedId(String(products[0].id));
     }
   }, [products, selectedId]);
 
   const handleHover = useCallback((p) => {
-    setSelectedId(p.id);
+    setSelectedId(String(p.id));
   }, []);
 
   useEffect(() => {
@@ -75,8 +75,8 @@ export default function LiveShopping() {
 
     function applyFocus(card) {
       if (!card || card === lastFocusedRef.current) return;
-      const id = Number(card.getAttribute("data-product-id"));
-      if (displayProducts.some((pr) => pr.id === id)) {
+      const id = card.getAttribute("data-product-id");
+      if (displayProducts.some((pr) => String(pr.id) === String(id))) {
         lastFocusedRef.current = card;
         setSelectedId(id);
       }
@@ -180,9 +180,10 @@ export default function LiveShopping() {
               key={p.id}
               product={p}
               showDetails
-              focused={selectedId === p.id}
+              focused={String(selectedId) === String(p.id)}
               extraClass={p._status}
               onMouseEnter={() => handleHover(p)}
+              onClick={() => handleHover(p)}
             />
           ))}
         </div>

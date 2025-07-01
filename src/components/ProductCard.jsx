@@ -10,6 +10,7 @@ export default function ProductCard({
   focused = false,
   extraClass = "",
   onMouseEnter,
+  onClick,
 }) {
   if (!product) return null;
 
@@ -33,6 +34,8 @@ export default function ProductCard({
       className={`item-container ${showDetails ? "show-details" : ""} ${focused ? "focused" : ""} ${extraClass}`}
       data-product-id={product.id}
       onMouseEnter={onMouseEnter}
+      onClick={onClick}
+      onTouchStart={onClick}
     >
       <div className="live-image-container">
         <img data-role="product-image" src={product.image} alt={product.title} loading="lazy" />
