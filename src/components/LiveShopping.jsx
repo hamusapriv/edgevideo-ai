@@ -62,10 +62,10 @@ export default function LiveShopping({ onLike }) {
       const nextIds = products.map((p) => p.id);
       let updated = [...prev];
 
-      // handle additions
+      // handle additions: put new items at the start so they appear first
       products.forEach((p) => {
         if (!prevIds.includes(p.id)) {
-          updated.push({ ...p, _status: "enter" });
+          updated.unshift({ ...p, _status: "enter" });
           requestAnimationFrame(() => {
             setDisplayProducts((cur) =>
               cur.map((it) => (it.id === p.id ? { ...it, _status: "" } : it))
