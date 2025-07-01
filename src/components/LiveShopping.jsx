@@ -8,34 +8,18 @@ import useIsMobile from "../hooks/useIsMobile";
 export default function LiveShopping() {
   const { products, addProduct } = useProducts();
   const [selectedId, setSelectedId] = useState(null);
-  const [displayProducts, setDisplayProducts] = useState(() => products);
+  const [displayProducts, setDisplayProducts] = useState([]);
   const isMobile = useIsMobile();
   const scrollRef = useRef(null);
   const galleryRef = useRef(null);
   const beltRef = useRef(null);
   const lastFocusedRef = useRef(null);
 
-
   useEffect(() => {
     function handler(e) {
-      const p = e.detail;
-      addProduct(p);
-      setSelectedId((cur) => cur || String(p.id));
-
-      setDisplayProducts((prev) => {
-        if (prev.some((it) => it.id === p.id)) return prev;
-        const updated = [{ ...p, _status: "enter" }, ...prev];
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            setDisplayProducts((cur) =>
-              cur.map((it) => (it.id === p.id ? { ...it, _status: "" } : it))
-            );
-          });
-        });
-        return updated;
-      });
+      addProduct(e.detail);
+      setSelectedId((cur) => cur || String(e.detail.id));
     }
-
     window.addEventListener("new-product", handler);
     return () => window.removeEventListener("new-product", handler);
   }, [addProduct]);
@@ -43,8 +27,22 @@ export default function LiveShopping() {
   // sync products with animated display list
   useEffect(() => {
     setDisplayProducts((prev) => {
+      const prevIds = prev.map((p) => p.id);
       const nextIds = products.map((p) => p.id);
       let updated = [...prev];
+
+      // handle additions: put new items at the start so they appear first
+      products.forEach((p) => {
+        if (!prevIds.includes(p.id)) {
+          updated.unshift({ ...p, _status: "enter" });
+
+          requestAnimationFrame(() => {
+            setDisplayProducts((cur) =>
+              cur.map((it) => (it.id === p.id ? { ...it, _status: "" } : it))
+            );
+          });
+        }
+      });
 
       // handle removals
       prev.forEach((p) => {
@@ -52,13 +50,9 @@ export default function LiveShopping() {
           updated = updated.map((it) =>
             it.id === p.id ? { ...it, _status: "exit" } : it
           );
-
-          // wait for exit transition before removing the item
-          requestAnimationFrame(() => {
-            setTimeout(() => {
-              setDisplayProducts((cur) => cur.filter((it) => it.id !== p.id));
-            }, 500);
-          });
+          setTimeout(() => {
+            setDisplayProducts((cur) => cur.filter((it) => it.id !== p.id));
+          }, 500);
         }
       });
 
