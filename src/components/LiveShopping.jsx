@@ -183,7 +183,6 @@ export default function LiveShopping() {
               focused={String(selectedId) === String(p.id)}
               extraClass={p._status}
               onMouseEnter={() => handleHover(p)}
-              onClick={() => handleHover(p)}
             />
           ))}
         </div>
