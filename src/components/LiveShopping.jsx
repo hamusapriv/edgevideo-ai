@@ -8,57 +8,89 @@ import useIsMobile from "../hooks/useIsMobile";
 export default function LiveShopping() {
   const { products, addProduct } = useProducts();
   const [selectedId, setSelectedId] = useState(null);
-  const [displayProducts, setDisplayProducts] = useState([]);
+  const [displayProducts, setDisplayProducts] = useState(() =>
+    products.map((p) => ({ ...p, _status: "" }))
+  );
   const isMobile = useIsMobile();
   const scrollRef = useRef(null);
   const galleryRef = useRef(null);
   const beltRef = useRef(null);
   const lastFocusedRef = useRef(null);
+  const enterTimers = useRef({});
+  const exitTimers = useRef({});
+
+  const scheduleEnterRemoval = useCallback((id) => {
+    if (enterTimers.current[id]) return;
+    enterTimers.current[id] = true;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setDisplayProducts((cur) =>
+          cur.map((it) => (it.id === id ? { ...it, _status: "" } : it))
+        );
+        delete enterTimers.current[id];
+      });
+    });
+  }, []);
+
+  const scheduleExitRemoval = useCallback((id) => {
+    if (exitTimers.current[id]) return;
+    exitTimers.current[id] = setTimeout(() => {
+      setDisplayProducts((cur) => cur.filter((it) => it.id !== id));
+      delete exitTimers.current[id];
+    }, 500);
+  }, []);
+
 
   useEffect(() => {
     function handler(e) {
-      addProduct(e.detail);
-      setSelectedId((cur) => cur || String(e.detail.id));
+      const p = e.detail;
+      addProduct(p);
+      setSelectedId((cur) => cur || String(p.id));
+
+      setDisplayProducts((prev) => {
+        if (prev.some((it) => it.id === p.id)) return prev;
+        return [{ ...p, _status: "enter" }, ...prev];
+      });
+      scheduleEnterRemoval(p.id);
     }
+
     window.addEventListener("new-product", handler);
     return () => window.removeEventListener("new-product", handler);
-  }, [addProduct]);
+  }, [addProduct, scheduleEnterRemoval]);
+
+
+  useEffect(() => {
+    const timers = exitTimers.current;
+    return () => {
+      Object.values(timers).forEach(clearTimeout);
+    };
+  }, []);
 
   // sync products with animated display list
   useEffect(() => {
+    const prevIds = displayProducts.map((p) => p.id);
+    const nextIds = products.map((p) => p.id);
+    const additions = products.filter((p) => !prevIds.includes(p.id));
+    const removals = displayProducts.filter((p) => !nextIds.includes(p.id));
+
+    if (!additions.length && !removals.length) return;
+
     setDisplayProducts((prev) => {
-      const prevIds = prev.map((p) => p.id);
-      const nextIds = products.map((p) => p.id);
       let updated = [...prev];
-
-      // handle additions: put new items at the start so they appear first
-      products.forEach((p) => {
-        if (!prevIds.includes(p.id)) {
-          updated.unshift({ ...p, _status: "enter" });
-
-          requestAnimationFrame(() => {
-            setDisplayProducts((cur) =>
-              cur.map((it) => (it.id === p.id ? { ...it, _status: "" } : it))
-            );
-          });
-        }
+      additions.forEach((p) => {
+        updated.unshift({ ...p, _status: "enter" });
       });
-
-      // handle removals
-      prev.forEach((p) => {
-        if (!nextIds.includes(p.id) && p._status !== "exit") {
-          updated = updated.map((it) =>
-            it.id === p.id ? { ...it, _status: "exit" } : it
-          );
-          setTimeout(() => {
-            setDisplayProducts((cur) => cur.filter((it) => it.id !== p.id));
-          }, 500);
-        }
+      removals.forEach((p) => {
+        updated = updated.map((it) =>
+          it.id === p.id ? { ...it, _status: "exit" } : it
+        );
       });
-
       return updated;
     });
-  }, [products]);
+
+    additions.forEach((p) => scheduleEnterRemoval(p.id));
+    removals.forEach((p) => scheduleExitRemoval(p.id));
+  }, [products, displayProducts, scheduleEnterRemoval, scheduleExitRemoval]);
 
   useEffect(() => {
     if (!selectedId && products.length) {
