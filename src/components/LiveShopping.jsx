@@ -13,7 +13,6 @@ export default function LiveShopping() {
   const beltRef = useRef(null);
   const lastFocusedRef = useRef(null);
 
-
   useEffect(() => {
     function handler(e) {
       addProduct(e.detail);
@@ -71,8 +70,8 @@ export default function LiveShopping() {
 
   useEffect(() => {
     const box = scrollRef.current;
-    const belt = beltRef.current;
-    if (!box || !belt) return;
+    const beltEl = beltRef.current;
+    if (!box || !beltEl) return;
 
     function applyFocus(card) {
       if (!card || card === lastFocusedRef.current) return;
@@ -84,17 +83,20 @@ export default function LiveShopping() {
     }
 
     function updateFocusDuringScroll() {
+      // 1) measurements for mapping scroll → focusY
       const containerRect = box.getBoundingClientRect();
       const containerHeight = containerRect.height;
       const scrollTop = box.scrollTop;
-      const maxScroll = belt.scrollHeight - containerHeight;
+      const maxScroll = beltEl.scrollHeight - containerHeight;
 
+      // 2) define the “focus zone” inside the container viewport
       const START = 120;
       const END = containerHeight - 120;
       const t = maxScroll > 0 ? scrollTop / maxScroll : 0;
-      const focusY = containerRect.top + (START + t * (END - START));
+      const focusY = containerRect.top + START + t * (END - START);
 
-      const cards = Array.from(belt.querySelectorAll(".item-container"));
+      // 3) find the card whose vertical center is closest to focusY
+      const cards = Array.from(beltEl.querySelectorAll(".item-container"));
       let bestCard = null;
       let smallestDelta = Infinity;
 
@@ -102,18 +104,28 @@ export default function LiveShopping() {
         const rect = card.getBoundingClientRect();
         const centerY = rect.top + rect.height / 2;
         const delta = Math.abs(centerY - focusY);
+
         if (delta < smallestDelta) {
           smallestDelta = delta;
           bestCard = card;
         }
       });
 
-      applyFocus(bestCard);
+      // 4) update classes & selection
+      cards.forEach((c) => c.classList.remove("focused"));
+      if (bestCard) {
+        bestCard.classList.add("focused");
+        applyFocus(bestCard);
+      }
     }
 
     box.addEventListener("scroll", updateFocusDuringScroll, { passive: true });
+    // run once on mount so one is already focused
     requestAnimationFrame(updateFocusDuringScroll);
-    return () => box.removeEventListener("scroll", updateFocusDuringScroll);
+
+    return () => {
+      box.removeEventListener("scroll", updateFocusDuringScroll);
+    };
   }, [displayProducts]);
 
   useEffect(() => {
@@ -122,22 +134,29 @@ export default function LiveShopping() {
     if (!gallery || !container) return;
 
     let lock = false;
-
     function syncFromContainer() {
       if (lock) return;
       lock = true;
-      const horiz = container.scrollWidth > container.clientWidth;
-      if (horiz) {
-        const maxC = container.scrollWidth - container.clientWidth;
-        const maxG = gallery.scrollWidth - gallery.clientWidth;
-        const ratio = maxC ? container.scrollLeft / maxC : 0;
-        gallery.scrollLeft = ratio * maxG;
+
+      // 1) how far container can scroll vertically
+      const maxContainerScroll =
+        container.scrollHeight - container.clientHeight;
+      const ratio =
+        maxContainerScroll > 0 ? container.scrollTop / maxContainerScroll : 0;
+
+      // 2) decide if gallery is horizontal (mobile) or vertical (desktop)
+      const isGalleryHorizontal = gallery.scrollWidth > gallery.clientWidth;
+
+      if (isGalleryHorizontal) {
+        // mobile: map to horizontal scroll
+        const maxGalleryScroll = gallery.scrollWidth - gallery.clientWidth;
+        gallery.scrollLeft = ratio * maxGalleryScroll;
       } else {
-        const maxC = container.scrollHeight - container.clientHeight;
-        const maxG = gallery.scrollHeight - gallery.clientHeight;
-        const ratio = maxC ? container.scrollTop / maxC : 0;
-        gallery.scrollTop = ratio * maxG;
+        // desktop: map to vertical scroll
+        const maxGalleryScroll = gallery.scrollHeight - gallery.clientHeight;
+        gallery.scrollTop = ratio * maxGalleryScroll;
       }
+
       lock = false;
     }
 

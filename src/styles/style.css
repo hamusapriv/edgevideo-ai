@@ -276,7 +276,6 @@ section {
   justify-content: center;
   align-items: center;
   gap: 10px;
-  background-color: white;
   opacity: 0.4;
   transform: scale(0.9);
   flex: 0 0 auto;
@@ -331,7 +330,8 @@ section {
 
 #absolute-container {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: center;
   -webkit-overflow-scrolling: touch;
   position: relative;
   overflow-y: auto;
@@ -360,6 +360,19 @@ section {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: hidden;
+}
+
+.live-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  width: 120px;
+  height: 120px;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
 }
 .live-frame-image {
   max-width: 100%;
@@ -457,7 +470,6 @@ section {
 }
 
 .card-details {
-  display: none;
   border-radius: 8px;
   color: #fff;
   flex-direction: column;
