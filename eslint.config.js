@@ -4,7 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default [
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'edgevideo-ai-8753a_6bbbbc7bd2acd0dd'] },
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {

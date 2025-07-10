@@ -28,8 +28,8 @@ export default function OAuthCallback() {
   }, [fetchUser, navigate]);
 
   return (
-    <p style={{ padding: 20, color: "#fff" }}>
+    <div style={{ padding: 20, color: "#fff" }}>
       <LoadingOverlay message="Signing In..." />
-    </p>
+    </div>
   );
 }
