@@ -1,1 +1,0 @@
-import{j as e}from"./index-wX5s4U5x.js";function n(){return e.jsxs("main",{className:"container",style:{color:"white",padding:"2rem 0"},children:[e.jsx("h1",{children:"InTravel Livestore"}),e.jsx("p",{children:"This is the content for the “InTravel Livestore” page. You can build out any static or dynamic content here—HTML, React components, etc."})]})}export{n as default};
