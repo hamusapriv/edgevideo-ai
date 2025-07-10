@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { channels } from "../data/channels";
 import ChannelLogo from "../components/ChannelLogo";
+import "../styles/demoPage.css"; // Ensure this file exists and contains necessary styles
 
 import Hls from "hls.js";
 export default function DemoPage() {
@@ -48,16 +49,11 @@ export default function DemoPage() {
   }
 
   return (
-    <div className="demo-page" style={{ padding: "1rem" }}>
-      <div style={{ marginBottom: "1rem" }}>
+    <div className="demo-page">
+      <div className="channel-logo">
         <ChannelLogo channelId={channel.id} />
       </div>
-      <video
-        ref={videoRef}
-        controls
-        autoPlay
-        style={{ width: "100%", maxWidth: "640px" }}
-      >
+      <video ref={videoRef} controls autoPlay muted>
         Your browser does not support the video tag.
       </video>
     </div>

@@ -1,4 +1,5 @@
-const DEFAULT_STREAM_URL = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
+const INSIGHT_TV_HLS =
+  "https://amg00861-amg00861c22-nbt-us-7736.playouts.now.amagi.tv/playlist.m3u8";
 
 export const channels = [
   {
@@ -24,7 +25,7 @@ export const channels = [
   {
     name: "EuroNews Travel",
     id: "bf08f473-7888-4fbb-a97e-d862f484a1c8",
-    streamUrl: DEFAULT_STREAM_URL,
+    streamUrl: "https://euronews-travel.edgevideo.ai/hls/stream.m3u8",
   },
   {
     name: "Insight TV (EU)",
@@ -35,12 +36,12 @@ export const channels = [
   {
     name: "Insight TV (UK)",
     id: "ada3896d-0456-4589-95fa-cf71718b79c8",
-    streamUrl: DEFAULT_STREAM_URL,
+    streamUrl: INSIGHT_TV_HLS,
   },
   {
     name: "Insight TV (US)",
     id: "3d8c4c38-2d6e-483c-bdc5-e1eeeadd155e",
-    streamUrl: DEFAULT_STREAM_URL,
+    streamUrl: INSIGHT_TV_HLS,
   },
   {
     name: "MVMNT Culture",
