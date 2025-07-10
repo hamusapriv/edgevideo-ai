@@ -1,16 +1,15 @@
-const DEFAULT_STREAM_URL =
-  "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
+const DEFAULT_STREAM_URL = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
 
 export const channels = [
   {
     name: "ATP Media",
     id: "2d192295-4e70-4187-a06d-55ecac2f9bf6",
-    streamUrl: DEFAULT_STREAM_URL,
+    streamUrl: "https://atp-loop.edgevideo.ai/hls/stream.m3u8",
   },
   {
     name: "CW Networks",
     id: "946027d4-367c-4f7d-90e4-4929638d60bc",
-    streamUrl: DEFAULT_STREAM_URL,
+    streamUrl: "https://cw-loop.edgevideo.ai/hls/stream.m3u8",
   },
   {
     name: "Danger TV",
@@ -20,7 +19,7 @@ export const channels = [
   {
     name: "EuroNews",
     id: "4deb3daf-a58c-4da5-aabc-e84f00eb50da",
-    streamUrl: "https://a-cdn.klowdtv.com/live3/euronews_720p/playlist.m3u8",
+    streamUrl: "https://www.edgevideo.ai/junk.m3u8",
   },
   {
     name: "EuroNews Travel",

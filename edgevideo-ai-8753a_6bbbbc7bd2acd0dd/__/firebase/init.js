@@ -1,0 +1,11 @@
+if (typeof firebase === 'undefined') throw new Error('hosting/init-error: Firebase SDK not detected. You must include it before /__/firebase/init.js');
+firebase.initializeApp({
+  "apiKey": "AIzaSyAdVJiqsli0jsTc1Vstli-Am8EBgH8qNsw",
+  "appId": "1:1099486842990:web:0143abeff974e9d0c0167f",
+  "authDomain": "edgevideo-ai-8753a.firebaseapp.com",
+  "databaseURL": "",
+  "measurementId": "G-JPW2TYD064",
+  "messagingSenderId": "1099486842990",
+  "projectId": "edgevideo-ai-8753a",
+  "storageBucket": "edgevideo-ai-8753a.firebasestorage.app"
+});

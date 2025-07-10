@@ -25,7 +25,11 @@ export default function DemoPage() {
   }, [searchParams]);
 
   if (!channel) {
-    return <div className="demo-page" style={{ padding: "1rem" }}>Channel not found.</div>;
+    return (
+      <div className="demo-page" style={{ padding: "1rem" }}>
+        Channel not found.
+      </div>
+    );
   }
 
   return (
