@@ -8,6 +8,7 @@ import Hls from "hls.js";
 export default function DemoPage() {
   const [searchParams] = useSearchParams();
   const [channel, setChannel] = useState(null);
+  const origin = window.location.origin;
 
   const videoRef = useRef(null);
   useEffect(() => {
@@ -40,22 +41,38 @@ export default function DemoPage() {
       return () => hls.destroy();
     }
   }, [channel]);
-  if (!channel) {
-    return (
-      <div className="demo-page" style={{ padding: "1rem" }}>
-        Channel not found.
-      </div>
-    );
-  }
-
   return (
     <div className="demo-page">
-      <div className="channel-logo">
-        <ChannelLogo channelId={channel.id} />
+      <div className="demo-links">
+        <ul className="quick-access-list">
+          {channels.map((c) => (
+            <li key={c.id}>
+              <button
+                className="btn btn--primary quick-access-btn"
+                onClick={() => {
+                  window.location.href = `${origin}/demo?channelName=${encodeURIComponent(
+                    c.name
+                  )}`;
+                }}
+              >
+                {c.name}
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
-      <video ref={videoRef} controls autoPlay muted>
-        Your browser does not support the video tag.
-      </video>
+      {channel ? (
+        <>
+          <div className="channel-logo">
+            <ChannelLogo channelId={channel.id} />
+          </div>
+          <video ref={videoRef} controls autoPlay muted>
+            Your browser does not support the video tag.
+          </video>
+        </>
+      ) : (
+        <p style={{ padding: "1rem" }}>Channel not found.</p>
+      )}
     </div>
   );
 }
