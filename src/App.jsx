@@ -13,6 +13,7 @@ const InTravelLivestorePage = lazy(() =>
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 const TermsPage = lazy(() => import("./pages/TermsPage"));
 const HomePage = lazy(() => import("./pages/HomePage"));
+const DemoPage = lazy(() => import("./pages/DemoPage"));
 import BuildInfo from "./components/BuildInfo";
 
 // OAuth callback
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="/privacy-policy" element={<PrivacyPage />} />
           <Route path="/terms-and-services" element={<TermsPage />} />
           <Route path="/home" element={<HomePage />} />
+          <Route path="/demo" element={<DemoPage />} />
 
           {/* 4) Fallback */}
           <Route path="*" element={<Navigate to="/home" replace />} />
