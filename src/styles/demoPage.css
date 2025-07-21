@@ -8,6 +8,9 @@
   font-family: var(--font-sans);
   position: relative;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 /* Background Effects */
@@ -106,7 +109,7 @@
 
 /* Hero Section */
 .demo-hero {
-  padding: 100px 2rem 3rem;
+  padding: 50px 2rem 1rem;
   text-align: center;
   position: relative;
   z-index: 1;
@@ -148,15 +151,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 600px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 24px;
-  padding: 2.5rem;
+  border-radius: 14px;
+  padding: 1.5rem;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  gap: 2rem;
+  width: fit-content;
 }
 
 .channel-selection-header {
@@ -203,7 +207,7 @@
 .demo-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 3rem 2rem;
+  padding: 1rem 2rem;
   display: grid;
   grid-template-columns: 1fr;
   gap: 3rem;
@@ -273,7 +277,16 @@
 
 /* Channel Selector Styles */
 .channel-selector {
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  height: 100px;
+  padding: 0 1.5rem;
 }
 
 .channel-selector label {
@@ -281,7 +294,7 @@
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-white);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   letter-spacing: 0.025em;
 }
 
@@ -341,7 +354,6 @@
   background: rgba(99, 102, 241, 0.1);
   border: 1px solid rgba(99, 102, 241, 0.3);
   border-radius: 16px;
-  margin-bottom: 1.5rem;
   transition: all 0.3s ease;
   height: 100px;
 }
@@ -410,7 +422,6 @@
   backdrop-filter: blur(24px);
   border: 1px solid rgba(99, 102, 241, 0.15);
   border-radius: 24px;
-  padding: 2rem;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
@@ -418,10 +429,8 @@
 .video-wrapper {
   position: relative;
   aspect-ratio: 16/9;
-  border-radius: 16px;
+  border-radius: 6px;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.6);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .demo-video {
@@ -872,10 +881,6 @@
     font-size: 1.1rem;
   }
 
-  .demo-channel-section {
-    padding: 2rem;
-  }
-
   .demo-container {
     padding: 2rem 1rem;
     gap: 2rem;
@@ -925,10 +930,6 @@
 
   .demo-hero h1 {
     font-size: 2rem;
-  }
-
-  .demo-channel-section {
-    padding: 1.5rem;
   }
 
   .selected-channel {
