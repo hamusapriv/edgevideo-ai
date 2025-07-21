@@ -1198,6 +1198,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all 0.3s ease;
+}
+
+.features-center:hover {
+  transform: scale(1.3);
 }
 
 .central-graphic {
@@ -1271,6 +1276,7 @@
   font-weight: 800;
   margin-bottom: 4rem;
   color: white;
+  padding: 0 1rem;
 }
 
 .testimonials-slider {
@@ -1353,6 +1359,7 @@
   font-weight: 800;
   margin-bottom: 4rem;
   color: white;
+  padding: 0 1rem;
 }
 
 .stats-grid {
@@ -1997,7 +2004,7 @@
 
   /* TV Frame Mobile */
   .tv-screen {
-    max-width: 300px;
+    max-width: none;
   }
 
   /* QR Code Mobile */
@@ -2160,10 +2167,6 @@
     gap: 1rem;
   }
 
-  .tv-screen {
-    max-width: 250px;
-  }
-
   .qr-image {
     width: 120px;
     height: 120px;
@@ -2173,12 +2176,16 @@
     width: auto;
     min-width: 150px;
     height: auto;
+    max-width: 60%;
   }
 
   .matched-product img {
     width: 100px;
     min-width: 100px;
     height: 100px;
+  }
+  .match-connector {
+    height: 40px;
   }
 
   .example-pair {
