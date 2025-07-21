@@ -12,11 +12,16 @@ import {
   FormatTicketDateTime,
   FormatPrice,
 } from "./modules/productsModule";
-import { setupLoginHandling, showLoggedOutState } from "./modules/googleAuthModule";
+import {
+  setupLoginHandling,
+  showLoggedOutState,
+} from "./modules/googleAuthModule";
 import { getChannelId } from "./modules/useChannelModule";
-const channelId = getChannelId();
 
 const wsUrl = "wss://slave-ws-service-342233178764.us-west1.run.app"; // WebSocket server URL
+
+// Global WebSocket instance for managing connections
+let currentWebSocket = null;
 
 // Add these near other configuration variables
 const VOTE_TRACKING_BASE_URL = "https://fastapi.edgevideo.ai/tracking";
@@ -28,14 +33,13 @@ let votedProducts = []; // Stores products fetched from /votes/products
 // Basic wrapper around the standard console so legacy code can log
 // without relying on a global provided elsewhere. This mirrors the
 // definition used in the standalone public script.
-let edgeConsole =
-  window.edgeConsole || {
-    log: (...args) => window.console.log(...args),
-    info: (...args) => window.console.info(...args),
-    warn: (...args) => window.console.warn(...args),
-    error: (...args) => window.console.error(...args),
-    debug: (...args) => window.console.debug(...args),
-  };
+let edgeConsole = window.edgeConsole || {
+  log: (...args) => window.console.log(...args),
+  info: (...args) => window.console.info(...args),
+  warn: (...args) => window.console.warn(...args),
+  error: (...args) => window.console.error(...args),
+  debug: (...args) => window.console.debug(...args),
+};
 window.edgeConsole = edgeConsole;
 
 /**
@@ -199,9 +203,11 @@ function SetShoppingAIStatus(messageText) {
 }
 
 async function getCachedProducts() {
+  const channelId = getChannelId();
   if (typeof channelId !== "undefined" && channelId !== null) {
+    edgeConsole.log("Fetching cached products for channel:", channelId);
     let cachedProductResponse = await fetch(
-      `https://fastapi.edgevideo.ai/product_search/recent_products/${channelId}/4`
+      `https://fastapi.edgevideo.ai/product_search/recent_products/${channelId}/1`
     );
     let cachedProductData = await cachedProductResponse.json();
     for (let cachedProduct of cachedProductData)
@@ -213,6 +219,16 @@ async function getCachedProducts() {
 }
 
 function initializeWebSocket() {
+  // Get current channel ID dynamically
+  const channelId = getChannelId();
+
+  // Close existing WebSocket if it exists
+  if (currentWebSocket && currentWebSocket.readyState === WebSocket.OPEN) {
+    edgeConsole.log("Closing existing WebSocket connection for channel switch");
+    currentWebSocket.close();
+    currentWebSocket = null;
+  }
+
   //channelId = "ba398d25-ef88-4762-bcd6-d75a2930fbeb";
   if (typeof channelId !== "undefined" && channelId !== null) {
     // channelId is defined and is not null
@@ -226,6 +242,7 @@ function initializeWebSocket() {
   }
 
   let ws = new WebSocket(wsUrl);
+  currentWebSocket = ws;
 
   ws.onopen = function open() {
     edgeConsole.log("Connected to the WebSocket server");
@@ -415,6 +432,7 @@ async function trackClick(productData) {
     };
 
     // Add channel_id if it's defined globally and not null
+    const channelId = getChannelId();
     if (typeof channelId !== "undefined" && channelId !== null) {
       payload.channel_id = channelId;
     }
@@ -468,9 +486,7 @@ function UpdateProductViaDataRole(i, time = null) {
   let itemContainer = document.querySelector(".product0");
 
   if (!itemContainer) {
-    edgeConsole.warn(
-      "UpdateProductViaDataRole: .product0 container not found"
-    );
+    edgeConsole.warn("UpdateProductViaDataRole: .product0 container not found");
     return;
   }
 

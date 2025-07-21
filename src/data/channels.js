@@ -1,4 +1,4 @@
-const INSIGHT_TV_HLS =
+const Z =
   "https://amg00861-amg00861c22-nbt-us-7736.playouts.now.amagi.tv/playlist.m3u8";
 
 export const channels = [
@@ -20,7 +20,9 @@ export const channels = [
   {
     name: "EuroNews",
     id: "4deb3daf-a58c-4da5-aabc-e84f00eb50da",
-    streamUrl: "https://www.edgevideo.ai/junk.m3u8",
+    youtubeUrl:
+      "https://www.youtube.com/embed/pykpO5kQJ98?autoplay=1&mute=1&controls=1",
+    isYouTubeEmbed: true,
   },
   {
     name: "EuroNews Travel",
@@ -30,18 +32,22 @@ export const channels = [
   {
     name: "Insight TV (EU)",
     id: "3af7a440-2c68-45bc-ab31-9384fc4c4bcb",
-    streamUrl:
-      "https://amg00861-amg00861c22-nbt-us-7736.playouts.now.amagi.tv/playlist.m3u8",
+    streamUrl: Z,
   },
   {
     name: "Insight TV (UK)",
     id: "ada3896d-0456-4589-95fa-cf71718b79c8",
-    streamUrl: INSIGHT_TV_HLS,
+    streamUrl: Z,
   },
   {
     name: "Insight TV (US)",
     id: "3d8c4c38-2d6e-483c-bdc5-e1eeeadd155e",
-    streamUrl: INSIGHT_TV_HLS,
+    streamUrl: Z,
+  },
+  {
+    name: "Lionsgate",
+    id: "0f3e2f64-2805-418e-86fa-01474055cd27",
+    streamUrl: "https://lionsgate-hls.edgevideo.ai/hls/stream.m3u8",
   },
   {
     name: "MVMNT Culture",

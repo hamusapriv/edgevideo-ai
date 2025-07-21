@@ -1,5 +1,5 @@
 // src/components/ProfileSidebar.jsx
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import LogoutButton from "../auth/LogoutButton";
@@ -10,6 +10,7 @@ import { useState } from "react";
 
 export default function ProfileSidebar({ isOpen, onClose }) {
   const { user } = useAuth();
+  const sidebarRef = useRef(null);
 
   // Pick avatar based on login state
   const avatarSeed = user ? user.avatarSeed : "guest";
@@ -17,9 +18,53 @@ export default function ProfileSidebar({ isOpen, onClose }) {
 
   const [showFaq, setShowFaq] = useState(false);
 
+  // Click outside to close sidebar
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    const handleEscapeKey = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    // Use capture phase to handle the event before other handlers
+    document.addEventListener("mousedown", handleClickOutside, true);
+    document.addEventListener("touchstart", handleClickOutside, true);
+    document.addEventListener("keydown", handleEscapeKey);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside, true);
+      document.removeEventListener("touchstart", handleClickOutside, true);
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [isOpen, onClose]);
+
+  // Prevent scrolling when sidebar is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   return (
     <>
-      <aside className={`profile-side${isOpen ? " open" : ""}`}>
+      <aside
+        ref={sidebarRef}
+        className={`profile-side${isOpen ? " open" : ""}`}
+      >
         <div className="profile-header">
           <h4 className="screen-title">Account</h4>
           <button

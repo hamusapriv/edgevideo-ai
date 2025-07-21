@@ -1,9 +1,10 @@
 // src/pages/AppPage.jsx
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import AppHeader from "../components/AppHeader";
+import EdgeLogo from "../assets/edgevideoai-logo.png";
+import ChannelLogo from "../components/ChannelLogo";
 import Tabs from "../components/Tabs";
-import ProfileSidebar from "../components/ProfileSidebar";
 import ScreenInitializer from "../screen/ScreenInitializer";
+import { useSidebar } from "../contexts/SidebarContext";
 
 // Tab‐pane components
 import ShoppingTab from "../components/ShoppingTab";
@@ -15,9 +16,15 @@ import FAQ from "../components/FAQ";
 import { useChannelId } from "../hooks/useChannelId";
 import "../styles/app.css";
 
+// Import test functions for development
+import "../utils/testAIStatus";
 
-export default function AppPage() {
-  useChannelId();
+function AppPage() {
+  // Use custom hook to get channelId from context or localStorage
+  const channelId = useChannelId();
+
+  // Use global sidebar state instead of local state
+  const { isOpen: isSidebarOpen, openSidebar, closeSidebar } = useSidebar();
 
   // 1) Main tabs config
   const tabConfig = useMemo(
@@ -51,12 +58,18 @@ export default function AppPage() {
     []
   );
 
-  // active tab & sidebar state
+  // active tab state
   const [activeTab, setActiveTab] = useState(tabConfig[0].key);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const handleToggleSidebar = () => setIsSidebarOpen((o) => !o);
-  const handleCloseSidebar = () => setIsSidebarOpen(false);
+  // Sidebar handlers using global context
+  const handleToggleSidebar = () => {
+    if (isSidebarOpen) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  };
+  const handleCloseSidebar = closeSidebar;
 
   // refs for sliding panels
   const prevIndexRef = useRef(0);
@@ -118,7 +131,16 @@ export default function AppPage() {
   return (
     <>
       <ScreenInitializer features={["products", "faces", "auth"]} />
-      <AppHeader onToggleSidebar={handleToggleSidebar} />
+      {/* Injected AppHeader content directly */}
+      <header className="header">
+        <img src={EdgeLogo} alt="EdgeVideo" height="30" />
+        {/* The sidebar‐toggle button has been removed from here */}
+
+        {/* Use channelId from useChannelId hook (state/prop, not window) */}
+        {channelId && (
+          <ChannelLogo channelId={channelId} className="channel-logo" />
+        )}
+      </header>
 
       <section
         style={{
@@ -129,10 +151,16 @@ export default function AppPage() {
       >
         {tabConfig.map(({ key, Component: TabComponent }, i) => {
           void TabComponent;
+          // Use a key that depends on both tab and channelId to avoid DOM errors
+          const panelKey = channelId ? `${key}-${channelId}` : key;
           return (
-            <div key={key} className="tab-content" ref={panelRefs.current[i]}>
+            <div
+              key={panelKey}
+              className="tab-content"
+              ref={panelRefs.current[i]}
+            >
               {key === "shopping" ? (
-                <TabComponent openProfileSidebar={handleToggleSidebar} />
+                <TabComponent openProfileSidebar={openSidebar} />
               ) : (
                 <TabComponent />
               )}
@@ -148,8 +176,9 @@ export default function AppPage() {
         onToggleSidebar={handleToggleSidebar}
       />
 
-      <ProfileSidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
       <AppBg />
     </>
   );
 }
+
+export default AppPage;

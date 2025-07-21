@@ -2,11 +2,18 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ProductCard from "./ProductCard";
 import { useProducts } from "../contexts/ProductsContext";
+import { useAIStatus } from "../contexts/AIStatusContext";
+import { useProductAIStatus } from "../hooks/useProductAIStatus";
 import FrameGallery from "./FrameGallery";
 import useIsMobile from "../hooks/useIsMobile";
+import AIStatusDisplay from "./AIStatusDisplay";
 
 export default function LiveShopping() {
   const { products, addProduct } = useProducts();
+  const { setShoppingAIStatus } = useAIStatus();
+  const { processProductWithAIStatus } = useProductAIStatus(
+    setShoppingAIStatus
+  );
   const [selectedId, setSelectedId] = useState(null);
   const [displayProducts, setDisplayProducts] = useState(() =>
     products.map((p) => ({ ...p, _status: "" }))
@@ -40,24 +47,28 @@ export default function LiveShopping() {
     }, 500);
   }, []);
 
-
   useEffect(() => {
-    function handler(e) {
+    async function handler(e) {
       const p = e.detail;
-      addProduct(p);
-      setSelectedId((cur) => cur || String(p.id));
 
-      setDisplayProducts((prev) => {
-        if (prev.some((it) => it.id === p.id)) return prev;
-        return [{ ...p, _status: "enter" }, ...prev];
-      });
-      scheduleEnterRemoval(p.id);
+      // Process product with AI status logic
+      const processedProduct = await processProductWithAIStatus(p);
+
+      if (processedProduct) {
+        addProduct(processedProduct);
+        setSelectedId((cur) => cur || String(processedProduct.id));
+
+        setDisplayProducts((prev) => {
+          if (prev.some((it) => it.id === processedProduct.id)) return prev;
+          return [{ ...processedProduct, _status: "enter" }, ...prev];
+        });
+        scheduleEnterRemoval(processedProduct.id);
+      }
     }
 
     window.addEventListener("new-product", handler);
     return () => window.removeEventListener("new-product", handler);
-  }, [addProduct, scheduleEnterRemoval]);
-
+  }, [addProduct, scheduleEnterRemoval, processProductWithAIStatus]);
 
   useEffect(() => {
     const timers = exitTimers.current;
@@ -68,14 +79,14 @@ export default function LiveShopping() {
 
   // sync products with animated display list
   useEffect(() => {
-    const prevIds = displayProducts.map((p) => p.id);
-    const nextIds = products.map((p) => p.id);
-    const additions = products.filter((p) => !prevIds.includes(p.id));
-    const removals = displayProducts.filter((p) => !nextIds.includes(p.id));
-
-    if (!additions.length && !removals.length) return;
-
     setDisplayProducts((prev) => {
+      const prevIds = prev.map((p) => p.id);
+      const nextIds = products.map((p) => p.id);
+      const additions = products.filter((p) => !prevIds.includes(p.id));
+      const removals = prev.filter((p) => !nextIds.includes(p.id));
+
+      if (!additions.length && !removals.length) return prev;
+
       let updated = [...prev];
       additions.forEach((p) => {
         updated.unshift({ ...p, _status: "enter" });
@@ -85,12 +96,14 @@ export default function LiveShopping() {
           it.id === p.id ? { ...it, _status: "exit" } : it
         );
       });
+
+      // Schedule animations
+      additions.forEach((p) => scheduleEnterRemoval(p.id));
+      removals.forEach((p) => scheduleExitRemoval(p.id));
+
       return updated;
     });
-
-    additions.forEach((p) => scheduleEnterRemoval(p.id));
-    removals.forEach((p) => scheduleExitRemoval(p.id));
-  }, [products, displayProducts, scheduleEnterRemoval, scheduleExitRemoval]);
+  }, [products, scheduleEnterRemoval, scheduleExitRemoval]);
 
   useEffect(() => {
     if (!selectedId && products.length) {
@@ -213,6 +226,7 @@ export default function LiveShopping() {
         items={displayProducts}
       />
       <div id="absolute-container" ref={scrollRef}>
+        <AIStatusDisplay />
         <div id="itemContent" ref={beltRef} style={{ display: "flex" }}>
           {displayProducts.map((p) => (
             <ProductCard

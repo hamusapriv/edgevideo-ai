@@ -14,13 +14,14 @@ export default function ProductCard({
   if (!product) return null;
 
   const hidden = showDetails ? {} : { display: "none" };
-  const itemTypeName = product.type === "ticket"
-    ? product.link?.toLowerCase().includes("viator")
-      ? "Viator Ticket"
-      : "DB Ticket"
-    : product.type === "deal"
-    ? "Deal"
-    : "DB Product";
+  const itemTypeName =
+    product.type === "ticket"
+      ? product.link?.toLowerCase().includes("viator")
+        ? "Viator Ticket"
+        : "DB Ticket"
+      : product.type === "deal"
+      ? "Deal"
+      : "DB Product";
   const price = product.price
     ? FormatPrice(product.price, product.currency || "USD")
     : "";
@@ -30,22 +31,68 @@ export default function ProductCard({
 
   return (
     <div
-      className={`item-container ${showDetails ? "show-details" : ""} ${focused ? "focused" : ""} ${extraClass}`}
+      className={`item-container ${showDetails ? "show-details" : ""} ${
+        focused ? "focused" : ""
+      } ${extraClass}`}
       data-product-id={product.id}
       onMouseEnter={onMouseEnter}
     >
       <div className="live-image-container">
-        <img data-role="product-image" src={product.image} alt={product.title} loading="lazy" />
+        <img
+          data-role="product-image"
+          src={product.image}
+          alt={product.title}
+          loading="lazy"
+        />
+        {vendorLogo && (
+          <img
+            data-role="vendor-logo"
+            src={vendorLogo}
+            alt="Vendor Logo"
+            style={{
+              position: "absolute",
+              top: "4px",
+              left: "4px",
+
+              width: "auto",
+              height: "24px",
+              borderRadius: "6px",
+              backgroundColor: "white",
+            }}
+          />
+        )}
       </div>
-      <div className="card-details live-details" style={showDetails ? {} : { display: "none" }}>
-        <div data-role="product-name" style={hidden}>{product.title}</div>
+      <div
+        className="card-details live-details"
+        style={showDetails ? {} : { display: "none" }}
+      >
+        <div data-role="product-name" style={hidden}>
+          {product.title}
+        </div>
         {price && (
           <p
             data-role="product-price-container"
-            style={{ display: "flex", fontSize: "1rem", color: "#fff", justifyContent: "flex-start", alignItems: "center", lineHeight: "1.4rem", gap: ".5rem" }}
+            style={{
+              display: "flex",
+              fontSize: "1rem",
+              color: "#fff",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              lineHeight: "1.4rem",
+              gap: ".5rem",
+            }}
           >
-            <span style={{ fontSize: "1rem", fontWeight: "600", color: "#aaf" }}>Price:</span>
-            <span data-role="product-price" style={{ padding: "0", fontSize: "0.9rem", color: "#fff" }}>{price}</span>
+            <span
+              style={{ fontSize: "1rem", fontWeight: "600", color: "#aaf" }}
+            >
+              Price:
+            </span>
+            <span
+              data-role="product-price"
+              style={{ padding: "0", fontSize: "0.9rem", color: "#fff" }}
+            >
+              {price}
+            </span>
           </p>
         )}
         <div className="product-buttons-container">
@@ -71,18 +118,17 @@ export default function ProductCard({
                 fontWeight: "bold",
               }}
             >
-              <p>Shop On</p>
-              {vendorLogo && (
-                <img
-                  data-role="vendor-logo"
-                  src={vendorLogo}
-                  alt="Vendor Logo"
-                  style={{ width: "auto", height: "24px", borderRadius: "6px", backgroundColor: "white" }}
-                />
-              )}
+              <p>Buy Now</p>
             </a>
           )}
-          <div style={{ ...hidden, display: "flex", gap: 16, justifyContent: "space-around" }}>
+          <div
+            style={{
+              ...hidden,
+              display: "flex",
+              gap: 16,
+              justifyContent: "space-around",
+            }}
+          >
             <LikeButton itemId={product.id} itemTypeName={itemTypeName} />
             <DislikeButton itemId={product.id} itemTypeName={itemTypeName} />
             <ShareButton title={product.title} url={product.link} />

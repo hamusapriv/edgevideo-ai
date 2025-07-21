@@ -13,7 +13,6 @@ export function UnpauseProducts() {
 }
 
 export function addToProductDataQueue(data) {
-
   const exists = productDataQueue.some((product) => product.id === data.id);
   if (!exists) {
     productDataQueue.push(data);
@@ -31,7 +30,9 @@ export function processProductDataQueue() {
   if (productDataQueue.length > 0 && !productsPaused) {
     let data = productDataQueue.shift();
     data.time = Date.now();
-    const existingIndex = products.findIndex((product) => product.id === data.id);
+    const existingIndex = products.findIndex(
+      (product) => product.id === data.id
+    );
     if (existingIndex === -1) {
       products.push(data);
       if (products.length > 10) products.shift();
@@ -86,7 +87,7 @@ export function FormatPrice(price, currency = "USD") {
   price = parseFloat(price);
   const currencyFormats = {
     USD: { symbol: "$", position: "prefix" },
-    "US$": { symbol: "$", position: "prefix" },
+    US$: { symbol: "$", position: "prefix" },
     $: { symbol: "$", position: "prefix" },
     GBP: { symbol: "Â£", position: "prefix" },
     "Â£": { symbol: "Â£", position: "prefix" },
@@ -95,9 +96,9 @@ export function FormatPrice(price, currency = "USD") {
     JPY: { symbol: "Â¥", position: "prefix" },
     "Â¥": { symbol: "Â¥", position: "prefix" },
     CAD: { symbol: "C$", position: "prefix" },
-    "C$": { symbol: "C$", position: "prefix" },
+    C$: { symbol: "C$", position: "prefix" },
     AUD: { symbol: "A$", position: "prefix" },
-    "A$": { symbol: "A$", position: "prefix" },
+    A$: { symbol: "A$", position: "prefix" },
     INR: { symbol: "â‚¹", position: "prefix" },
     "â‚¹": { symbol: "â‚¹", position: "prefix" },
     CNY: { symbol: "Â¥", position: "prefix" },
@@ -118,12 +119,16 @@ export function FormatPrice(price, currency = "USD") {
   }
   let formattedPrice;
   if (price % 1 === 0) {
-    formattedPrice = price.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    formattedPrice = price.toLocaleString(undefined, {
+      maximumFractionDigits: 0,
+    });
   } else {
     formattedPrice = price.toLocaleString(undefined, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
   }
-  return position === "prefix" ? `${symbol}${formattedPrice}` : `${formattedPrice}${symbol}`;
+  return position === "prefix"
+    ? `${symbol}${formattedPrice}`
+    : `${formattedPrice}${symbol}`;
 }

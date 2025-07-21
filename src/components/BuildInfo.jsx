@@ -1,10 +1,7 @@
 // src/components/BuildInfo.jsx
 import React from "react";
-/* global __COMMIT_HASH__ */
-import pkg from "../../package.json";
 
 export default function BuildInfo() {
-  console.log("Build loaded 🎉", __COMMIT_HASH__);
   return (
     <div
       style={{
@@ -18,7 +15,7 @@ export default function BuildInfo() {
         zIndex: 9999,
       }}
     >
-      v{pkg.version} - {__COMMIT_HASH__} - {Math.random().toString().slice(0, 6)}
+      v0.0.6 - - 0.5721
     </div>
   );
 }
