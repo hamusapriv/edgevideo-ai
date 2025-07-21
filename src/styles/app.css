@@ -80,13 +80,13 @@
   color: #ffffff;
   font-size: 0.875rem;
   font-weight: 500;
-  line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-bottom: -3px;
+  margin-bottom: -2px;
   margin-left: 6px;
   opacity: 0.6;
+  line-height: 1.5;
 }
 
 @keyframes pulse {
