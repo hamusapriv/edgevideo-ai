@@ -24,6 +24,7 @@ function normalizeUrl(url) {
 
 async function addImageToZip(zip, url, name) {
   const normalized = normalizeUrl(url);
+  if (!normalized) return;
   try {
     const res = await fetch(normalized, { referrerPolicy: "no-referrer" });
     if (!res.ok) throw new Error(`Status ${res.status}`);
@@ -45,13 +46,17 @@ export async function downloadProduct(product) {
   };
   zip.file("product.json", JSON.stringify(info, null, 2));
 
+  const tasks = [];
   if (product.image) {
-    await addImageToZip(zip, product.image, "image");
+    tasks.push(addImageToZip(zip, product.image, "image"));
   }
-  const frameUrl = product.frame_url || product.back_image;
+  const frameUrl =
+    product.frame_url || product.back_image || "/assets/main-frame.png";
   if (frameUrl) {
-    await addImageToZip(zip, frameUrl, "frame");
+    tasks.push(addImageToZip(zip, frameUrl, "frame"));
   }
+
+  await Promise.all(tasks);
 
   const blob = await zip.generateAsync({ type: "blob" });
   saveAs(blob, `product-${product.id || Date.now()}.zip`);
