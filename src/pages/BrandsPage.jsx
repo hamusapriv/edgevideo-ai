@@ -2,6 +2,7 @@ import React from "react";
 import "../styles/HomePage.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import BrandSlider from "../components/BrandSlider";
 
 export default function BrandsPage() {
 
@@ -45,6 +46,11 @@ export default function BrandsPage() {
               </p>
             </div>
           </div>
+        </section>
+
+        <section className="container">
+          <h2>Our Partners</h2>
+          <BrandSlider />
         </section>
       </main>
       <Footer />
