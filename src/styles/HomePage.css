@@ -1357,7 +1357,7 @@
 
 .brands-track {
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
   align-items: center;
   animation: scroll-left 50s linear infinite;
   width: max-content;
@@ -1370,15 +1370,16 @@
 }
 
 .brand-logo {
-  height: 60px;
+  height: 80px;
   flex-shrink: 0;
-  filter: grayscale(1) brightness(2);
   opacity: 0.8;
-  transition: filter 0.3s ease, opacity 0.3s ease;
+  transition: opacity 0.3s ease;
+  background-color: white;
+  padding: 6px;
+  border-radius: 8px;
 }
 
 .brand-logo:hover {
-  filter: none;
   opacity: 1;
 }
 

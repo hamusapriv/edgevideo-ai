@@ -5,7 +5,6 @@ import Footer from "../components/Footer";
 import BrandSlider from "../components/BrandSlider";
 
 export default function BrandsPage() {
-
   return (
     <div className="home">
       <div className="home-bg"></div>
@@ -15,9 +14,12 @@ export default function BrandsPage() {
         <section className="hero">
           <div className="hero-container">
             <div className="hero-content">
-              <h1 className="hero-title">Shoppable TV is the future of e-commerce</h1>
+              <h1 className="hero-title">
+                Shoppable TV is the future of e-commerce
+              </h1>
               <p className="hero-description">
-                Increase conversion by matching your products with relevant content, all powered by our cutting-edge AI technology.
+                Increase conversion by matching your products with relevant
+                content, all powered by our cutting-edge AI technology.
               </p>
               <div className="hero__actions">
                 <a href="mailto:info@edgevideo.ai" className="btn btn--primary">
@@ -32,24 +34,41 @@ export default function BrandsPage() {
           <h2>Why work with us?</h2>
           <div className="simple-content">
             <div className="simple-item">
-              <p>Television commerce is the future - Edge Video AI makes it possible for you - in real-time.</p>
-            </div>
-            <div className="simple-item">
-              <p>Integration couldn’t be simpler- all you need to do is give us access via an affiliate program.</p>
-            </div>
-            <div className="simple-item">
-              <p>Reach new audiences through TV - we match you only with highly relevant content.</p>
+              <p>
+                Television commerce is the future - Edge Video AI makes it
+                possible for you - in real-time.
+              </p>
             </div>
             <div className="simple-item">
               <p>
-                Get your brand listed in our database to enable real-time product recognition and seamless shopping directly from TV screens and mobile devices.
+                Integration couldn’t be simpler- all you need to do is give us
+                access via an affiliate program.
+              </p>
+            </div>
+            <div className="simple-item">
+              <p>
+                Reach new audiences through TV - we match you only with highly
+                relevant content.
+              </p>
+            </div>
+            <div className="simple-item">
+              <p>
+                Get your brand listed in our database to enable real-time
+                product recognition and seamless shopping directly from TV
+                screens and mobile devices.
               </p>
             </div>
           </div>
         </section>
 
-        <section className="container">
-          <h2>Our Partners</h2>
+        <section className="">
+          <h2
+            style={{
+              padding: "0 1rem",
+            }}
+          >
+            Our Partners
+          </h2>
           <BrandSlider />
         </section>
       </main>
@@ -57,4 +76,3 @@ export default function BrandsPage() {
     </div>
   );
 }
-
