@@ -28,7 +28,7 @@ export default function ViewersPage() {
         </section>
 
         <section className="simple-section container">
-          <h2>Why watch with us?</h2>
+          <h2>What’s in It for You?</h2>
           <div className="simple-content">
             <div className="simple-item">
               <p>Discover products in real-time, inspired by your favorite shows and stars.</p>
@@ -38,6 +38,17 @@ export default function ViewersPage() {
             </div>
             <div className="simple-item">
               <p>Stay tuned for rewards and exclusive deals via shoppable TV content.</p>
+            </div>
+          </div>
+        </section>
+        <section className="simple-section container">
+          <h2>Here’s what other viewers are saying about Shoppable TV</h2>
+          <div className="simple-content">
+            <div className="simple-item">
+              <p>“Wow this is really smooth, and super intuitive.”</p>
+            </div>
+            <div className="simple-item">
+              <p>“Pretty cool that I can buy exactly what I am seeing on screen.”</p>
             </div>
           </div>
         </section>
