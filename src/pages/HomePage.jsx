@@ -21,6 +21,115 @@ import ScrollToTopButton from "../components/ScrollToTopButton";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+const examplePairs = [
+  {
+    frame: "/assets/frame-product-pairs/Frame-Image-1.png",
+    product: "/assets/frame-product-pairs/product-1.png",
+    frameAlt: "Frame 1",
+    productAlt: "Product 1",
+  },
+  {
+    frame: "/assets/frame-product-pairs/Frame-Image-2.png",
+    product: "/assets/frame-product-pairs/product-2.png",
+    frameAlt: "Frame 2",
+    productAlt: "Product 2",
+  },
+  {
+    frame: "/assets/frame-product-pairs/Frame-Image-3.png",
+    product: "/assets/frame-product-pairs/product-3.png",
+    frameAlt: "Frame 3",
+    productAlt: "Product 3",
+  },
+  {
+    frame: "/assets/frame-product-pairs/Frame-Image-4.png",
+    product: "/assets/frame-product-pairs/product-4.png",
+    frameAlt: "Frame 4",
+    productAlt: "Product 4",
+  },
+  {
+    frame: "/assets/frame-product-pairs/Frame-Image-5.png",
+    product: "/assets/frame-product-pairs/product-5.png",
+    frameAlt: "Frame 5",
+    productAlt: "Product 5",
+  },
+  {
+    frame: "/assets/frame-product-pairs/Frame-Image-6.png",
+    product: "/assets/frame-product-pairs/product-6.png",
+    frameAlt: "Frame 6",
+    productAlt: "Product 6",
+  },
+  {
+    frame: "/assets/frame-product-pairs/Frame-Image-7.png",
+    product: "/assets/frame-product-pairs/product-7.png",
+    frameAlt: "Frame 7",
+    productAlt: "Product 7",
+  },
+  {
+    frame: "/assets/frame-product-pairs/Frame-Image-8.png",
+    product: "/assets/frame-product-pairs/product-8.png",
+    frameAlt: "Frame 8",
+    productAlt: "Product 8",
+  },
+  {
+    frame: "/assets/frame-product-pairs/Frame-Image-9.png",
+    product: "/assets/frame-product-pairs/product-9.png",
+    frameAlt: "Frame 9",
+    productAlt: "Product 9",
+  },
+  {
+    frame: "/assets/frame-product-pairs/Frame-Image-10.png",
+    product: "/assets/frame-product-pairs/product-10.png",
+    frameAlt: "Frame 10",
+    productAlt: "Product 10",
+  },
+  {
+    frame: "/assets/frame-product-pairs/Frame-Image-11.png",
+    product: "/assets/frame-product-pairs/product-11.png",
+    frameAlt: "Frame 11",
+    productAlt: "Product 11",
+  },
+];
+
+const testimonials = [
+  {
+    quote:
+      "Edge Video's AI is revolutionizing Shoppable TV, letting you buy what you see on-screen instantly. It's transforming ads into instant shopping experiences, making them super effective by connecting you with what you want, right when you want it.",
+    author: "Ralf Jacob",
+    role: "EVP Broadcast Operations & Technology for TelevisaUnivision",
+  },
+  {
+    quote:
+      "Edge Video's new AI-powered interactive TV is changing the game, turning passive watching into an engaging experience. It's all about getting viewers involved, boosting their happiness and loyalty. Edge Video is at the forefront, with AI making TV way more interactive and fun.",
+    author: "Alex Duka",
+    role: "Advisor and Board Member, former Managing Director, Citigroup",
+  },
+  {
+    quote: "Edge-AI is the most exciting product for video, since the drone.",
+    author: "Joshua Elmore",
+    role: "Sr. Director Content Operations, The Weather Channel",
+  },
+  {
+    quote:
+      "Edge Video blends web2 and web3 to transform shopping and gaming with interactive streams, boosting engagement and pioneering in digital entertainment. Their use of blockchain enhances the user experience, setting new standards in the online world.",
+    author: "Neil Wolfson",
+    role:
+      "Active Board Member and Venture Investor, Former Partner at KPMG and Former President of Wilmington Trust Investment Management",
+  },
+  {
+    quote:
+      "Edge Video's Web3 rewards are revolutionizing viewer loyalty with a blend of blockchain and AI, making rewards secure, transparent, and trustworthy. This fresh take is transforming how viewers engage and trust in the digital era.",
+    author: "Richard Entrup",
+    role: "Managing Director, Enterprise Innovation @ KPMG US",
+  },
+  {
+    quote:
+      "Edge Video's AI is flipping the script on streaming, turning your screen time into shopping time. Now, watching TV also means you can shop directly from your couch, opening up cool new earning avenues for creators and brands. It's like making your lazy TV time a shopping adventure!",
+    author: "Jeffrey Hayzlett",
+    role:
+      "Chairman, C-Suite Network Primetime Television & Podcast Host, Former CMO, Kodak",
+  },
+];
+
 export default function HomePage() {
   const [typedText, setTypedText] = useState("");
   const [isMobile, setIsMobile] = useState(false);
@@ -336,338 +445,17 @@ export default function HomePage() {
               <h3>See More Real Examples</h3>
               <div className="examples-slider">
                 <div className="examples-track">
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-1.png"
-                        alt="Frame 1"
-                      />
+                  {examplePairs.concat(examplePairs).map((item, index) => (
+                    <div key={index} className="example-pair">
+                      <div className="example-frame">
+                        <img src={item.frame} alt={item.frameAlt} />
+                      </div>
+                      <div className="example-arrow">→</div>
+                      <div className="example-product">
+                        <img src={item.product} alt={item.productAlt} />
+                      </div>
                     </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-1.png"
-                        alt="Product 1"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-2.png"
-                        alt="Frame 2"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-2.png"
-                        alt="Product 2"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-3.png"
-                        alt="Frame 3"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-3.png"
-                        alt="Product 3"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-4.png"
-                        alt="Frame 4"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-4.png"
-                        alt="Product 4"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-5.png"
-                        alt="Frame 5"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-5.png"
-                        alt="Product 5"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-6.png"
-                        alt="Frame 6"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-6.png"
-                        alt="Product 6"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-7.png"
-                        alt="Frame 7"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-7.png"
-                        alt="Product 7"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-8.png"
-                        alt="Frame 8"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-8.png"
-                        alt="Product 8"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-9.png"
-                        alt="Frame 9"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-9.png"
-                        alt="Product 9"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-10.png"
-                        alt="Frame 10"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-10.png"
-                        alt="Product 10"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-11.png"
-                        alt="Frame 11"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-11.png"
-                        alt="Product 11"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Duplicate for seamless infinite scroll */}
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-1.png"
-                        alt="Frame 1"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-1.png"
-                        alt="Product 1"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-2.png"
-                        alt="Frame 2"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-2.png"
-                        alt="Product 2"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-3.png"
-                        alt="Frame 3"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-3.png"
-                        alt="Product 3"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-4.png"
-                        alt="Frame 4"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-4.png"
-                        alt="Product 4"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-5.png"
-                        alt="Frame 5"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-5.png"
-                        alt="Product 5"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-6.png"
-                        alt="Frame 6"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-6.png"
-                        alt="Product 6"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-7.png"
-                        alt="Frame 7"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-7.png"
-                        alt="Product 7"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-8.png"
-                        alt="Frame 8"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-8.png"
-                        alt="Product 8"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-9.png"
-                        alt="Frame 9"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-9.png"
-                        alt="Product 9"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-10.png"
-                        alt="Frame 10"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-10.png"
-                        alt="Product 10"
-                      />
-                    </div>
-                  </div>
-                  <div className="example-pair">
-                    <div className="example-frame">
-                      <img
-                        src="/assets/frame-product-pairs/Frame-Image-11.png"
-                        alt="Frame 11"
-                      />
-                    </div>
-                    <div className="example-arrow">→</div>
-                    <div className="example-product">
-                      <img
-                        src="/assets/frame-product-pairs/product-11.png"
-                        alt="Product 11"
-                      />
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -751,186 +539,15 @@ export default function HomePage() {
           <h2>Here is what others have to say.</h2>
           <div className="testimonials-slider">
             <div className="testimonials-track">
-              <div className="testimonial">
-                <blockquote>
-                  Edge Video's AI is revolutionizing Shoppable TV, letting you
-                  buy what you see on-screen instantly. It's transforming ads
-                  into instant shopping experiences, making them super effective
-                  by connecting you with what you want, right when you want it.
-                </blockquote>
-                <div className="testimonial-author">
-                  <strong>Ralf Jacob</strong>
-                  <span>
-                    EVP Broadcast Operations & Technology for TelevisaUnivision
-                  </span>
+              {testimonials.concat(testimonials).map((t, index) => (
+                <div key={index} className="testimonial">
+                  <blockquote>{t.quote}</blockquote>
+                  <div className="testimonial-author">
+                    <strong>{t.author}</strong>
+                    <span>{t.role}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="testimonial">
-                <blockquote>
-                  Edge Video's new AI-powered interactive TV is changing the
-                  game, turning passive watching into an engaging experience.
-                  It's all about getting viewers involved, boosting their
-                  happiness and loyalty. Edge Video is at the forefront, with AI
-                  making TV way more interactive and fun.
-                </blockquote>
-                <div className="testimonial-author">
-                  <strong>Alex Duka</strong>
-                  <span>
-                    Advisor and Board Member, former Managing Director,
-                    Citigroup
-                  </span>
-                </div>
-              </div>
-              <div className="testimonial">
-                <blockquote>
-                  Edge-AI is the most exciting product for video, since the
-                  drone.
-                </blockquote>
-                <div className="testimonial-author">
-                  <strong>Joshua Elmore</strong>
-                  <span>
-                    Sr. Director Content Operations, The Weather Channel
-                  </span>
-                </div>
-              </div>
-              <div className="testimonial">
-                <blockquote>
-                  Edge Video blends web2 and web3 to transform shopping and
-                  gaming with interactive streams, boosting engagement and
-                  pioneering in digital entertainment. Their use of blockchain
-                  enhances the user experience, setting new standards in the
-                  online world.
-                </blockquote>
-                <div className="testimonial-author">
-                  <strong>Neil Wolfson</strong>
-                  <span>
-                    Active Board Member and Venture Investor, Former Partner at
-                    KPMG and Former President of Wilmington Trust Investment
-                    Management
-                  </span>
-                </div>
-              </div>
-              <div className="testimonial">
-                <blockquote>
-                  Edge Video's Web3 rewards are revolutionizing viewer loyalty
-                  with a blend of blockchain and AI, making rewards secure,
-                  transparent, and trustworthy. This fresh take is transforming
-                  how viewers engage and trust in the digital era.
-                </blockquote>
-                <div className="testimonial-author">
-                  <strong>Richard Entrup</strong>
-                  <span>
-                    Managing Director, Enterprise Innovation @ KPMG US
-                  </span>
-                </div>
-              </div>
-              <div className="testimonial">
-                <blockquote>
-                  Edge Video's AI is flipping the script on streaming, turning
-                  your screen time into shopping time. Now, watching TV also
-                  means you can shop directly from your couch, opening up cool
-                  new earning avenues for creators and brands. It's like making
-                  your lazy TV time a shopping adventure!
-                </blockquote>
-                <div className="testimonial-author">
-                  <strong>Jeffrey Hayzlett</strong>
-                  <span>
-                    Chairman, C-Suite Network Primetime Television & Podcast
-                    Host, Former CMO, Kodak
-                  </span>
-                </div>
-              </div>
-
-              {/* Duplicate testimonials for seamless infinite scroll */}
-              <div className="testimonial">
-                <blockquote>
-                  Edge Video's AI is revolutionizing Shoppable TV, letting you
-                  buy what you see on-screen instantly. It's transforming ads
-                  into instant shopping experiences, making them super effective
-                  by connecting you with what you want, right when you want it.
-                </blockquote>
-                <div className="testimonial-author">
-                  <strong>Ralf Jacob</strong>
-                  <span>
-                    EVP Broadcast Operations & Technology for TelevisaUnivision
-                  </span>
-                </div>
-              </div>
-              <div className="testimonial">
-                <blockquote>
-                  Edge Video's new AI-powered interactive TV is changing the
-                  game, turning passive watching into an engaging experience.
-                  It's all about getting viewers involved, boosting their
-                  happiness and loyalty. Edge Video is at the forefront, with AI
-                  making TV way more interactive and fun.
-                </blockquote>
-                <div className="testimonial-author">
-                  <strong>Alex Duka</strong>
-                  <span>
-                    Advisor and Board Member, former Managing Director,
-                    Citigroup
-                  </span>
-                </div>
-              </div>
-              <div className="testimonial">
-                <blockquote>
-                  Edge-AI is the most exciting product for video, since the
-                  drone.
-                </blockquote>
-                <div className="testimonial-author">
-                  <strong>Joshua Elmore</strong>
-                  <span>
-                    Sr. Director Content Operations, The Weather Channel
-                  </span>
-                </div>
-              </div>
-              <div className="testimonial">
-                <blockquote>
-                  Edge Video blends web2 and web3 to transform shopping and
-                  gaming with interactive streams, boosting engagement and
-                  pioneering in digital entertainment. Their use of blockchain
-                  enhances the user experience, setting new standards in the
-                  online world.
-                </blockquote>
-                <div className="testimonial-author">
-                  <strong>Neil Wolfson</strong>
-                  <span>
-                    Active Board Member and Venture Investor, Former Partner at
-                    KPMG and Former President of Wilmington Trust Investment
-                    Management
-                  </span>
-                </div>
-              </div>
-              <div className="testimonial">
-                <blockquote>
-                  Edge Video's Web3 rewards are revolutionizing viewer loyalty
-                  with a blend of blockchain and AI, making rewards secure,
-                  transparent, and trustworthy. This fresh take is transforming
-                  how viewers engage and trust in the digital era.
-                </blockquote>
-                <div className="testimonial-author">
-                  <strong>Richard Entrup</strong>
-                  <span>
-                    Managing Director, Enterprise Innovation @ KPMG US
-                  </span>
-                </div>
-              </div>
-              <div className="testimonial">
-                <blockquote>
-                  Edge Video's AI is flipping the script on streaming, turning
-                  your screen time into shopping time. Now, watching TV also
-                  means you can shop directly from your couch, opening up cool
-                  new earning avenues for creators and brands. It's like making
-                  your lazy TV time a shopping adventure!
-                </blockquote>
-                <div className="testimonial-author">
-                  <strong>Jeffrey Hayzlett</strong>
-                  <span>
-                    Chairman, C-Suite Network Primetime Television & Podcast
-                    Host, Former CMO, Kodak
-                  </span>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </section>
