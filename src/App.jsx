@@ -14,6 +14,9 @@ const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 const TermsPage = lazy(() => import("./pages/TermsPage"));
 const HomePage = lazy(() => import("./pages/HomePage"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
+const ChannelsPage = lazy(() => import("./pages/ChannelsPage"));
+const BrandsPage = lazy(() => import("./pages/BrandsPage"));
+const ViewersPage = lazy(() => import("./pages/ViewersPage"));
 import BuildInfo from "./components/BuildInfo";
 
 // OAuth callback
@@ -51,6 +54,9 @@ export default function App() {
           <Route path="/terms-and-services" element={<TermsPage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/demo" element={<DemoPage />} />
+          <Route path="/for-channels" element={<ChannelsPage />} />
+          <Route path="/for-brands" element={<BrandsPage />} />
+          <Route path="/for-viewers" element={<ViewersPage />} />
 
           {/* 4) Fallback */}
           <Route path="*" element={<Navigate to="/home" replace />} />
