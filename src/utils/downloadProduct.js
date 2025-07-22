@@ -11,14 +11,27 @@ function getFileExtension(url) {
   }
 }
 
+function normalizeUrl(url) {
+  if (!url) return "";
+  if (url.startsWith("//")) {
+    return `${window.location.protocol}${url}`;
+  }
+  if (url.startsWith("http://")) {
+    return `https://${url.substring(7)}`;
+  }
+  return url;
+}
+
 async function addImageToZip(zip, url, name) {
+  const normalized = normalizeUrl(url);
   try {
-    const res = await fetch(url);
+    const res = await fetch(normalized, { referrerPolicy: "no-referrer" });
+    if (!res.ok) throw new Error(`Status ${res.status}`);
     const blob = await res.blob();
-    const ext = getFileExtension(url);
+    const ext = getFileExtension(normalized);
     zip.file(`${name}${ext}`, blob);
   } catch (e) {
-    console.warn("Failed to fetch image", url, e);
+    console.warn("Failed to fetch image", normalized, e);
   }
 }
 
