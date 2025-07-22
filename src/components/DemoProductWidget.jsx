@@ -62,7 +62,11 @@ export default function DemoProductWidget({ onClose, channelName }) {
         <div className="products-list">
           {liveProducts.length > 0 ? (
             liveProducts.map((product, index) => (
-              <div key={product.id || index} className="demo-product-card">
+              <div
+                key={product.id || index}
+                className="demo-product-card"
+                data-product-id={product.id}
+              >
                 <div className="demo-product-main">
                   <div className="demo-product-image">
                     {product.image ? (
@@ -93,7 +97,7 @@ export default function DemoProductWidget({ onClose, channelName }) {
                       {" "}
                       <button
                         className="demo-download-button"
-                        title="Download product data and images as ZIP"
+                        title="Download product markup as JSON"
                         onClick={() => handleDownload(product)}
                       >
                         ↓
