@@ -31,9 +31,7 @@ export default function ProductCard({
 
   return (
     <div
-      className={`item-container ${showDetails ? "show-details" : ""} ${
-        focused ? "focused" : ""
-      } ${extraClass}`}
+      className={`item-container ${focused ? "focused" : ""} ${extraClass}`}
       data-product-id={product.id}
       onMouseEnter={onMouseEnter}
     >
@@ -63,7 +61,7 @@ export default function ProductCard({
         )}
       </div>
       <div
-        className="card-details live-details"
+        className="card-details"
         style={showDetails ? {} : { display: "none" }}
       >
         <div data-role="product-name" style={hidden}>
