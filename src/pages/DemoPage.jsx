@@ -496,7 +496,7 @@ export default function DemoPage() {
                                 <div className="demo-product-actions">
                                   <button
                                     className="demo-download-button"
-                                    title="Download product markup as JSON"
+                                    title="Download product data and images as ZIP"
                                     onClick={() => handleDownload(product)}
                                   >
                                     ↓
