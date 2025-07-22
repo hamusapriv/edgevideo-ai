@@ -1,18 +1,21 @@
+// Hook that reports whether the current device lacks hover capability.
 import { useEffect, useState } from "react";
 
-export default function useIsMobile(breakpoint = 768) {
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" ? window.innerWidth <= breakpoint : false
+export default function useIsMobile() {
+  const query = "(hover: none)";
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia(query).matches : false
   );
 
   useEffect(() => {
-    function handleResize() {
-      setIsMobile(window.innerWidth <= breakpoint);
+    const mql = window.matchMedia(query);
+    function handleChange(e) {
+      setIsMobile(e.matches);
     }
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [breakpoint]);
+    mql.addEventListener("change", handleChange);
+    return () => mql.removeEventListener("change", handleChange);
+  }, []);
 
   return isMobile;
 }
