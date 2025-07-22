@@ -45,6 +45,14 @@ export default function ChannelsPage() {
             </div>
           </div>
         </section>
+        <section className="simple-section container">
+          <h2>Schedule your Demo now!</h2>
+          <div className="hero__actions">
+            <a href="mailto:info@edgevideo.ai" className="btn btn--primary">
+              Contact Us
+            </a>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>

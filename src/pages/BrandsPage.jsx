@@ -39,6 +39,11 @@ export default function BrandsPage() {
             <div className="simple-item">
               <p>Reach new audiences through TV - we match you only with highly relevant content.</p>
             </div>
+            <div className="simple-item">
+              <p>
+                Get your brand listed in our database to enable real-time product recognition and seamless shopping directly from TV screens and mobile devices.
+              </p>
+            </div>
           </div>
         </section>
       </main>
