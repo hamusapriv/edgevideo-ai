@@ -93,7 +93,7 @@ export default function DemoProductWidget({ onClose, channelName }) {
                       {" "}
                       <button
                         className="demo-download-button"
-                        title="Download product data and images as ZIP"
+                        title="Download product markup as JSON"
                         onClick={() => handleDownload(product)}
                       >
                         ↓
