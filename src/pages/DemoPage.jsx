@@ -453,6 +453,7 @@ export default function DemoPage() {
                           <div
                             key={product.id || index}
                             className="demo-product-card"
+                            data-product-id={product.id}
                           >
                             {/* Top Images Section */}
                             <div className="demo-product-images">
