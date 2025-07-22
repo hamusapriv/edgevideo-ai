@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import "../styles/HomePage.css";
 import HeroImg from "/assets/hero-image.png";
 import HeroImg2 from "/assets/hero-image-2.png";
 import HeroVideoMp4 from "/assets/hero-video-min.mp4";
 import HeroVideoWebm from "/assets/hero-video.webm";
-import Logo from "/assets/logo.png";
 import AnimatedStat from "../components/AnimatedStat";
 import TelegramIcon from "../components/svgs/TelegramIcon";
 import TwitterIcon from "../components/svgs/TwitterIcon";
@@ -20,9 +18,10 @@ import VideoAnalyticsIcon from "../components/svgs/VideoAnalyticsIcon";
 import RevenueStreamIcon from "../components/svgs/RevenueStreamIcon";
 import ViewerEngagementIcon from "../components/svgs/ViewerEngagementIcon";
 import ScrollToTopButton from "../components/ScrollToTopButton";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 export default function HomePage() {
-  const [navOpen, setNavOpen] = useState(false);
   const [typedText, setTypedText] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const fullText = "The man in the video is wearing a royal blue t-shirt";
@@ -56,132 +55,11 @@ export default function HomePage() {
     return () => clearInterval(typeTimer);
   }, []);
 
-  const toggleNav = () => setNavOpen((v) => !v);
-
-  // Close nav when clicking a link on mobile
-  const closeNav = () => {
-    if (isMobile) {
-      setNavOpen(false);
-    }
-  };
-
-  // Handle escape key to close nav
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape" && navOpen) {
-        setNavOpen(false);
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [navOpen]);
-
-  // Prevent body scroll when nav is open on mobile
-  useEffect(() => {
-    if (isMobile && navOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [navOpen, isMobile]);
 
   return (
     <div className="home">
       <div className="home-bg"></div>
-      <div className="top-banner">
-        <span>Shoppable TV is NOW LIVE!</span>
-        <a
-          href="https://www.in.tv/shoppable-tv"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="banner-link"
-        >
-          Try It 👉
-        </a>
-      </div>
-
-      {/* Floating Logo */}
-      <div className="floating-logo">
-        <Link to="/home" className="logo-link">
-          <img src={Logo} alt="Edge Video AI Logo" className="logo-image" />
-          <div className="logo-text">
-            <span className="logo-edge">Edge</span>
-            <span className="logo-video">Video</span>
-            <span className="logo-ai">AI</span>
-          </div>
-        </Link>
-      </div>
-
-      {/* Floating Circular Navigation */}
-      <nav className="floating-nav">
-        <button
-          className={`nav-orb ${navOpen ? "nav-orb--open" : ""}`}
-          onClick={toggleNav}
-          aria-label="Toggle Navigation"
-        >
-          <div className="orb-inner">
-            <div className="orb-lines">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          </div>
-          <div className="orb-glow"></div>
-        </button>
-
-        <div className={`nav-items ${navOpen ? "nav-items--open" : ""}`}>
-          <Link
-            to="/for-channels"
-            className="nav-item"
-            data-tooltip="For Channels"
-            onClick={closeNav}
-          >
-            <span className="nav-item-text">Channels</span>
-          </Link>
-          <Link
-            to="/for-brands"
-            className="nav-item"
-            data-tooltip="For Brands"
-            onClick={closeNav}
-          >
-            <span className="nav-item-text">Brands</span>
-          </Link>
-          <Link
-            to="/for-viewers"
-            className="nav-item"
-            data-tooltip="For Viewers"
-            onClick={closeNav}
-          >
-            <span className="nav-item-text">Viewers</span>
-          </Link>
-          <Link
-            to="/app"
-            className="nav-item nav-item--primary"
-            data-tooltip="Open App"
-            onClick={closeNav}
-          >
-            <span className="nav-item-text">Open App</span>
-          </Link>
-          <a
-            href="mailto:info@edgevideo.ai"
-            className="nav-item"
-            data-tooltip="Contact Us"
-            onClick={closeNav}
-          >
-            <span className="nav-item-text">Contact</span>
-          </a>
-        </div>
-
-        <div
-          className={`nav-overlay ${navOpen ? "nav-overlay--open" : ""}`}
-          onClick={toggleNav}
-        ></div>
-      </nav>
+      <Navbar />
 
       <main className="home-main">
         <section className="hero">
@@ -1131,52 +1009,7 @@ export default function HomePage() {
           </ul>
         </section>
       </main>
-      <footer className="footer">
-        <div className="footer__inner container">
-          <div className="footer-content">
-            <div className="footer-logo">
-              <Link to="/home" className="logo">
-                <img
-                  src={Logo}
-                  alt="Edge Video AI Logo"
-                  style={{ height: "40px" }}
-                />
-                <div>
-                  <p
-                    style={{
-                      position: "relative",
-                      margin: 0,
-                      lineHeight: "1.2",
-                    }}
-                  >
-                    Edge
-                    <br /> &nbsp; Video
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: "3px",
-                        right: "-10px",
-                        fontSize: ".8rem",
-                        fontWeight: "400",
-                        opacity: "0.5",
-                      }}
-                    >
-                      AI
-                    </span>
-                  </p>
-                </div>
-              </Link>
-            </div>
-            <div className="footer-links">
-              <a href="mailto:developers@edgevideo.ai">Reach Out</a>
-              <Link to="/privacy">Privacy Policy</Link>
-              <Link to="/terms">Terms of Service</Link>
-              <a href="#cookies">Cookies Settings</a>
-            </div>
-          </div>
-          <p className="footer-copyright">Copyright © 2025 Edge Video B.V.</p>
-        </div>
-      </footer>
+      <Footer />
       <ScrollToTopButton />
     </div>
   );
