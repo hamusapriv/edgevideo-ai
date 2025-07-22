@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../styles/demoProductWidget.css";
+import { downloadProduct } from "../utils/downloadProduct";
 
 export default function DemoProductWidget({ onClose, channelName }) {
   const [liveProducts, setLiveProducts] = useState([]);
@@ -15,8 +16,8 @@ export default function DemoProductWidget({ onClose, channelName }) {
         // Check if product already exists
         if (prev.some((p) => p.id === product.id)) return prev;
 
-        // Add new product to the beginning, keep max 3 products
-        const updated = [product, ...prev].slice(0, 3);
+        // Add new product to the beginning, keep max 10 products
+        const updated = [product, ...prev].slice(0, 10);
         return updated;
       });
 
@@ -40,11 +41,8 @@ export default function DemoProductWidget({ onClose, channelName }) {
     };
   }, [isVisible]);
 
-  const handleDownload = (product) => {
-    // Simulate download functionality
-    alert(
-      `Downloading product data for "${product.title}"\n\nThis would download product images and data as a ZIP file.`
-    );
+  const handleDownload = async (product) => {
+    await downloadProduct(product);
   };
 
   const handleClose = () => {

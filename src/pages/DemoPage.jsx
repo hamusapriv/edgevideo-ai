@@ -4,6 +4,7 @@ import { channels } from "../data/channels";
 import ChannelLogo from "../components/ChannelLogo";
 import { initProductsFeature } from "../legacy/screen";
 import "../styles/demoPage.css";
+import { downloadProduct } from "../utils/downloadProduct";
 import Hls from "hls.js";
 import edgevideoIcon from "/assets/logo.png"; // Adjust path as needed
 import "../styles/reset.css"; // Ensure reset styles are applied
@@ -69,11 +70,8 @@ export default function DemoPage() {
   };
 
   // Product widget functionality
-  const handleDownload = (product) => {
-    // Simulate download functionality
-    alert(
-      `Downloading product data for "${product.title}"\n\nThis would download product images and data as a ZIP file.`
-    );
+  const handleDownload = async (product) => {
+    await downloadProduct(product);
   };
 
   // Listen for new products from the productsModule
@@ -86,8 +84,8 @@ export default function DemoPage() {
         // Check if product already exists
         if (prev.some((p) => p.id === product.id)) return prev;
 
-        // Add new product to the beginning, keep max 3 products
-        const updated = [product, ...prev].slice(0, 3);
+        // Add new product to the beginning, keep max 10 products
+        const updated = [product, ...prev].slice(0, 10);
         return updated;
       });
 
