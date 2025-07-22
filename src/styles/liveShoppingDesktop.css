@@ -35,11 +35,7 @@
     fill: white;
   }
 
-  /* Product card details displayed on hover devices */
 
-  .item-container.show-details .card-details {
-    display: flex;
-  }
 
   .item-container {
     width: 100%;
@@ -114,7 +110,7 @@
     transform: scale(1.05);
   }
 
-  .live-details {
+  .card-details {
     justify-content: center;
     max-height: none;
     width: 400px;
