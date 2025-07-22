@@ -56,3 +56,8 @@ This file outlines how Codex agents and contributors should work in this reposit
 - `test-preload.html`: standalone page for testing image preloading logic.
 
 Files generally import siblings with the same name. For example, `HomePage.jsx` imports components from `src/components` and styles from `src/styles`. Context providers defined in `src/contexts` are consumed by pages and components to share state.
+
+## Legacy External Scripts
+- https://edgevideopublic.s3.amazonaws.com/2nd/main.js
+- https://storage.googleapis.com/edge_cloud_storage/screenNoAnim.js?t=1749594368418
+These scripts were previously included in the app. Use them as references when migrating features to React and Vite.
