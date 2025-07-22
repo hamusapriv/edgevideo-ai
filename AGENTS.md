@@ -3,11 +3,11 @@
 This file outlines how Codex agents and contributors should work in this repository.
 
 ## Development Environment
-- Use **Node.js v20**. The GitHub workflows expect this version.
+- Use **Node.js v20 or later**. Node 22 is available in this environment.
 - Install dependencies with `npm ci`.
 - Local development server: `npm run dev`.
 - Build the production bundle with `npm run build`.
-- Lint the project with `npm run lint` and resolve any issues before committing.
+- Attempt to lint the project with `npm run lint`. If the command fails due to tooling or environment restrictions, document it in the PR.
 
 ## Code Style
 - Source files reside in the `src/` directory. React components use the `.jsx` extension.
@@ -35,3 +35,24 @@ This file outlines how Codex agents and contributors should work in this reposit
 - Deployment is handled by GitHub Actions defined in `.github/workflows/`.
 - Keep configuration files at the project root (e.g., `eslint.config.js`, `vite.config.js`) up to date with changes in project tooling.
 
+
+## Project Structure
+- `index.html`: entry point loaded by Vite.
+- `src/main.jsx`: initializes React and wraps the app with context providers.
+- `src/App.jsx`: defines application routes pointing to files in `src/pages`.
+- `src/pages/`: page-level React components (HomePage, DemoPage, TermsPage, etc.).
+- `src/components/`: reusable UI components. Subfolders contain button components, social media buttons, and SVG icons used by pages and layouts.
+- `src/contexts/`: React context providers for auth, favorites, sidebar state, product data, and AI status. Components import these contexts.
+- `src/hooks/`: custom hooks shared across components (e.g., infinite scroll, product AI status).
+- `src/legacy/`: older non-React modules used by `src/screen/ScreenInitializer.jsx` to integrate legacy behavior.
+- `src/screen/ScreenInitializer.jsx`: starts legacy features such as faces or products modules when requested by React pages.
+- `src/data/channels.js`: list of streaming channels displayed by components.
+- `src/utils/`: utility functions like image validation and AI status testing.
+- `src/styles/`: CSS files grouped by feature or page.
+- `public/`: static assets referenced by the application.
+- `vite.config.js`: Vite build configuration.
+- `eslint.config.js`: ESLint rules for linting.
+- `firebase.json`: Firebase hosting configuration.
+- `test-preload.html`: standalone page for testing image preloading logic.
+
+Files generally import siblings with the same name. For example, `HomePage.jsx` imports components from `src/components` and styles from `src/styles`. Context providers defined in `src/contexts` are consumed by pages and components to share state.
