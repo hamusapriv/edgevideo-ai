@@ -1,63 +1,18 @@
-import JSZip from "jszip";
 import { saveAs } from "file-saver";
 
-function getFileExtension(url) {
-  try {
-    const path = new URL(url).pathname;
-    const ext = path.substring(path.lastIndexOf("."));
-    return ext || "";
-  } catch {
-    return "";
-  }
-}
-
-function normalizeUrl(url) {
-  if (!url) return "";
-  if (url.startsWith("//")) {
-    return `${window.location.protocol}${url}`;
-  }
-  if (url.startsWith("http://")) {
-    return `https://${url.substring(7)}`;
-  }
-  return url;
-}
-
-async function addImageToZip(zip, url, name) {
-  const normalized = normalizeUrl(url);
-  if (!normalized) return;
-  try {
-    const res = await fetch(normalized, { referrerPolicy: "no-referrer" });
-    if (!res.ok) throw new Error(`Status ${res.status}`);
-    const blob = await res.blob();
-    const ext = getFileExtension(normalized);
-    zip.file(`${name}${ext}`, blob);
-  } catch (e) {
-    console.warn("Failed to fetch image", normalized, e);
-  }
-}
-
 export async function downloadProduct(product) {
-  const zip = new JSZip();
-  const info = {
-    id: product.id,
-    title: product.title || product.name || "",
-    price: product.price || "",
-    link: product.link || "",
-  };
-  zip.file("product.json", JSON.stringify(info, null, 2));
-
-  const tasks = [];
-  if (product.image) {
-    tasks.push(addImageToZip(zip, product.image, "image"));
+  let container = document.querySelector(
+    `.item-container[data-product-id="${product.id}"]`
+  );
+  if (!container) {
+    container = document.querySelector(
+      `.demo-product-card[data-product-id="${product.id}"]`
+    );
   }
-  const frameUrl =
-    product.frame_url || product.back_image || "/assets/main-frame.png";
-  if (frameUrl) {
-    tasks.push(addImageToZip(zip, frameUrl, "frame"));
-  }
-
-  await Promise.all(tasks);
-
-  const blob = await zip.generateAsync({ type: "blob" });
-  saveAs(blob, `product-${product.id || Date.now()}.zip`);
+  const html = container ? container.outerHTML : "";
+  const data = { id: product.id, html };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json",
+  });
+  saveAs(blob, `product-${product.id || Date.now()}.json`);
 }
