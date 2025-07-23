@@ -65,20 +65,20 @@ export default function ViewersPage() {
           <div className="simple-content">
             <div className="simple-item">
               <p>“Wow this is really smooth, and super intuitive.”</p>
-              <quote>— Maria, Spain</quote>
+              <strong>— Maria, Spain</strong>
             </div>
             <div className="simple-item">
               <p>
                 “Pretty cool that I can buy exactly what I am seeing on screen.”
               </p>
-              <quote>— Andy, Germany</quote>
+              <strong>— Andy, Germany</strong>
             </div>
             <div className="simple-item">
               <p>
                 “I love the idea of getting rewarded for interacting with shows
                 and content.”
               </p>
-              <quote>— Filip, Switzerland</quote>
+              <strong>— Filip, Switzerland</strong>
             </div>
           </div>
         </section>
