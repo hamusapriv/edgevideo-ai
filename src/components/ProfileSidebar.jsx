@@ -107,7 +107,7 @@ export default function ProfileSidebar({ isOpen, onClose }) {
             </div>
 
             {/* Account settings */}
-            <div className="list-block">
+            <div className="list-block none">
               <h5 className="block-title">Account settings</h5>
               <ListRow label="Orders & returns" />
               <ListRow label="Details & password" />
@@ -115,13 +115,13 @@ export default function ProfileSidebar({ isOpen, onClose }) {
             </div>
 
             {/* Location */}
-            <div className="list-block">
+            <div className="list-block none">
               <h5 className="block-title">My location</h5>
               <ListRow label="United States" />
             </div>
 
             {/* Shopping preferences */}
-            <div className="list-block">
+            <div className="list-block none">
               <h5 className="block-title">My shopping preferences</h5>
               <label className="pref-option selected">
                 <span>Women</span>

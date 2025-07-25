@@ -12,6 +12,17 @@ export function UnpauseProducts() {
   productsPaused = false;
 }
 
+export function clearProducts() {
+  products.length = 0; // Clear the products array
+  productDataQueue.length = 0; // Clear the queue as well
+
+  // Clear any pending timeout
+  if (productProcessTimeout != null) {
+    clearTimeout(productProcessTimeout);
+    productProcessTimeout = null;
+  }
+}
+
 export function addToProductDataQueue(data) {
   const exists = productDataQueue.some((product) => product.id === data.id);
   if (!exists) {

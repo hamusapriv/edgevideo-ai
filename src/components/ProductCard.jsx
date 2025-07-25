@@ -3,6 +3,10 @@ import LikeButton from "./buttons/LikeButton";
 import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
 import { FormatPrice } from "../legacy/modules/productsModule";
+import {
+  handleImageErrorWithPlaceholder,
+  isValidImageUrl,
+} from "../utils/imageValidation";
 
 export default function ProductCard({
   product,
@@ -29,6 +33,19 @@ export default function ProductCard({
     ? `https://s2.googleusercontent.com/s2/favicons?domain=${product.domain_url}&sz=64`
     : product.logo_url || "";
 
+  // Image error handlers using your utility
+  const handleProductImageError = (e) => {
+    handleImageErrorWithPlaceholder(
+      e,
+      product.image,
+      "https://via.placeholder.com/150x150?text=No+Image"
+    );
+  };
+
+  const handleVendorImageError = (e) => {
+    e.target.style.display = "none";
+  };
+
   return (
     <div
       className={`item-container ${focused ? "focused" : ""} ${extraClass}`}
@@ -36,17 +53,36 @@ export default function ProductCard({
       onMouseEnter={onMouseEnter}
     >
       <div className="live-image-container">
-        <img
-          data-role="product-image"
-          src={product.image}
-          alt={product.title}
-          loading="lazy"
-        />
+        {isValidImageUrl(product.image) ? (
+          <img
+            data-role="product-image"
+            src={product.image}
+            alt={product.title}
+            loading="lazy"
+            onError={handleProductImageError}
+          />
+        ) : (
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#f0f0f0",
+              color: "#666",
+              fontSize: "12px",
+            }}
+          >
+            No Image Available
+          </div>
+        )}
         {vendorLogo && (
           <img
             data-role="vendor-logo"
             src={vendorLogo}
             alt="Vendor Logo"
+            onError={handleVendorImageError}
             style={{
               position: "absolute",
               top: "4px",

@@ -2,6 +2,7 @@
 import React, { useEffect, useRef } from "react";
 import { useFavorites } from "../contexts/FavoritesContext";
 import { useAuth } from "../contexts/AuthContext";
+import { FormatPrice } from "../legacy/modules/productsModule";
 
 export default function FavouritesTab({
   refreshKey,
@@ -86,45 +87,75 @@ export default function FavouritesTab({
       ref={containerRef}
       style={{ overflowY: "auto", WebkitOverflowScrolling: "touch" }}
     >
-      {favorites.map((item) => (
-        <div
-          key={item.item_id}
-          className="fav-item"
-          data-item-id={item.item_id}
-          style={{ display: "flex", alignItems: "center", marginBottom: 8 }}
-        >
-          <a
-            href={item.affiliate_link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="fav-item-link w-inline-block"
-            style={{
-              flex: 1,
-              display: "flex",
-              textDecoration: "none",
-              width: "100%",
-            }}
-          >
-            <div className="fav-img-container" style={{ marginRight: 8 }}>
-              <img
-                src={item.image_link}
-                loading="lazy"
-                alt={item.name}
-                className="fav-img"
-              />
-            </div>
-            <h6 className="fav-h">{item.name}</h6>
-          </a>
+      {favorites.map((item) => {
+        // Format price if available
+        const formattedPrice = item.price
+          ? FormatPrice(item.price, item.currency || "USD")
+          : null;
 
-          <button
-            className="fav-remove"
-            aria-label="Remove favorite"
-            onClick={() => removeFavorite(item.item_id, item.itemTypeName)}
+        // Get AI explanation/description
+        const aiExplanation = item.explanation || item.description || null;
+
+        return (
+          <div
+            key={item.item_id}
+            className="fav-item"
+            data-item-id={item.item_id}
           >
-            Remove From Favorites
-          </button>
-        </div>
-      ))}
+            <div className="fav-item-link">
+              <div className="fav-img-container">
+                <img
+                  src={item.image_link}
+                  loading="lazy"
+                  alt={item.name}
+                  className="fav-img"
+                />
+              </div>
+
+              <div className="fav-content">
+                <h6 className="fav-h">{item.name}</h6>
+
+                {formattedPrice && (
+                  <div className="fav-price">
+                    <span className="fav-price-label">Price:</span>
+                    <span className="fav-price-value">{formattedPrice}</span>
+                  </div>
+                )}
+
+                {aiExplanation && (
+                  <div className="fav-description">
+                    <span className="fav-description-label">
+                      AI Description:
+                    </span>
+                    <p className="fav-description-text">{aiExplanation}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="fav-actions">
+              {item.affiliate_link && (
+                <a
+                  href={item.affiliate_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fav-buy-button"
+                >
+                  Buy Now
+                </a>
+              )}
+
+              <button
+                className="fav-remove"
+                aria-label="Remove favorite"
+                onClick={() => removeFavorite(item.item_id, item.itemTypeName)}
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

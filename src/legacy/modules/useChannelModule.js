@@ -1,9 +1,20 @@
-export function getChannelId() {
+// Cache to avoid repeated initialization and logging
+let cachedChannelId = null;
+let isInitialized = false;
+
+/**
+ * Initializes the channel ID once and caches it
+ * This should be called when the app starts or when channel changes
+ */
+function initializeChannelId(forceRefresh = false) {
+  if (isInitialized && !forceRefresh && cachedChannelId) {
+    return cachedChannelId;
+  }
+
   const DEFAULT_CHANNEL_ID =
     window.DEFAULT_CHANNEL_ID || "3d8c4c38-2d6e-483c-bdc5-e1eeeadd155e";
 
   // Priority order: URL params > window.channelId > localStorage > default
-  // This ensures /app route works correctly with ?channelId=... parameter
   let id;
 
   // First, check URL parameters (for /app route compatibility)
@@ -47,6 +58,84 @@ export function getChannelId() {
   }
   window.channelId = id;
 
-  console.log("getChannelId returning:", id);
+  // Cache the result
+  cachedChannelId = id;
+  isInitialized = true;
+
+  console.log("Channel ID initialized:", id);
   return id;
+}
+
+/**
+ * Gets the cached channel ID, initializing if necessary
+ * This is now a lightweight operation after first initialization
+ */
+export function getChannelId() {
+  if (cachedChannelId && isInitialized) {
+    return cachedChannelId;
+  }
+  return initializeChannelId();
+}
+
+/**
+ * Updates the channel ID and refreshes the cache
+ * Call this when the user changes channels (e.g., in DemoPage)
+ */
+export function setChannelId(newChannelId) {
+  if (newChannelId === null || newChannelId === undefined) {
+    // Only dispatch event if channel was actually set before
+    const wasSet = cachedChannelId !== null;
+
+    // Clear the channel ID
+    window.channelId = null;
+    try {
+      localStorage.removeItem("channelId");
+    } catch {
+      /* ignore write errors */
+    }
+
+    // Clear cache
+    cachedChannelId = null;
+    isInitialized = false;
+
+    console.log("Channel ID cleared");
+
+    // Only dispatch event if channel was actually cleared
+    if (wasSet) {
+      window.dispatchEvent(
+        new CustomEvent("channel-changed", {
+          detail: { channelId: null },
+        })
+      );
+    }
+    return;
+  }
+
+  // Check if channel is actually changing
+  const currentChannelId = getChannelId();
+  if (currentChannelId === newChannelId) {
+    console.log("Channel ID unchanged, not dispatching event:", newChannelId);
+    return;
+  }
+
+  // Update all storage locations
+  window.channelId = newChannelId;
+  try {
+    localStorage.setItem("channelId", newChannelId);
+  } catch {
+    /* ignore write errors */
+  }
+
+  // Update cache
+  cachedChannelId = newChannelId;
+  isInitialized = true;
+
+  console.log("Channel ID updated:", newChannelId);
+
+  // Dispatch event to notify WebSocket system of channel change
+  window.dispatchEvent(
+    new CustomEvent("channel-changed", {
+      detail: { channelId: newChannelId },
+    })
+  );
 }

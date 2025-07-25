@@ -99,6 +99,7 @@ export function handleImageErrorWithPlaceholder(
 
   if (placeholderUrl) {
     e.target.src = placeholderUrl;
+    e.target.style.backgroundColor = "#f0f0f0";
   } else {
     // Use a default placeholder or hide
     e.target.style.display = "none";

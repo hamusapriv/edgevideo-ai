@@ -1,13 +1,27 @@
 import React, { forwardRef } from "react";
 import { useProducts } from "../contexts/ProductsContext";
+import {
+  handleImageErrorWithPlaceholder,
+  isValidImageUrl,
+} from "../utils/imageValidation";
 
-const FrameGallery = forwardRef(function FrameGallery({ selectedId, items }, ref) {
+const FrameGallery = forwardRef(function FrameGallery(
+  { selectedId, items },
+  ref
+) {
   const { products } = useProducts();
   const frames = items || products;
+
+  const handleFrameImageError = (e, imageUrl) => {
+    handleImageErrorWithPlaceholder(e, imageUrl, null);
+    // Hide frame when image fails
+    e.target.parentElement.style.display = "none";
+  };
+
   return (
     <div className="ai-frame-gallery" ref={ref}>
       {frames.map((p) =>
-        p.back_image ? (
+        p.back_image && isValidImageUrl(p.back_image) ? (
           <div
             style={{ position: "relative" }}
             key={p.id}
@@ -28,6 +42,7 @@ const FrameGallery = forwardRef(function FrameGallery({ selectedId, items }, ref
               key={p.id}
               src={p.back_image}
               alt={`Frame for ${p.title}`}
+              onError={(e) => handleFrameImageError(e, p.back_image)}
             />
             <div
               style={{

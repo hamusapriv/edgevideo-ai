@@ -7,8 +7,6 @@ export function useProductAIStatus(setShoppingAIStatus) {
     async (product) => {
       if (!product) return null;
 
-      console.log("Processing new product:", product);
-
       // Step 1: Check if product image is valid
       if (!isValidImageUrl(product.image)) {
         console.warn("Invalid product image, skipping:", product.image);

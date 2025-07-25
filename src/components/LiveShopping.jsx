@@ -7,6 +7,7 @@ import { useProductAIStatus } from "../hooks/useProductAIStatus";
 import FrameGallery from "./FrameGallery";
 import useIsMobile from "../hooks/useIsMobile";
 import AIStatusDisplay from "./AIStatusDisplay";
+import { preloadImages } from "../utils/imageValidation";
 
 export default function LiveShopping() {
   const { products, addProduct } = useProducts();
@@ -66,8 +67,34 @@ export default function LiveShopping() {
       }
     }
 
+    // Handle new products from React contexts
     window.addEventListener("new-product", handler);
-    return () => window.removeEventListener("new-product", handler);
+
+    // Handle legacy products from screen.js WebSocket
+    async function legacyHandler(e) {
+      const { product } = e.detail;
+
+      // Process product with AI status logic
+      const processedProduct = await processProductWithAIStatus(product);
+
+      if (processedProduct) {
+        addProduct(processedProduct);
+        setSelectedId((cur) => cur || String(processedProduct.id));
+
+        setDisplayProducts((prev) => {
+          if (prev.some((it) => it.id === processedProduct.id)) return prev;
+          return [{ ...processedProduct, _status: "enter" }, ...prev];
+        });
+        scheduleEnterRemoval(processedProduct.id);
+      }
+    }
+
+    window.addEventListener("legacy-product-update", legacyHandler);
+
+    return () => {
+      window.removeEventListener("new-product", handler);
+      window.removeEventListener("legacy-product-update", legacyHandler);
+    };
   }, [addProduct, scheduleEnterRemoval, processProductWithAIStatus]);
 
   useEffect(() => {
@@ -76,6 +103,21 @@ export default function LiveShopping() {
       Object.values(timers).forEach(clearTimeout);
     };
   }, []);
+
+  // Preload upcoming product images for better performance
+  useEffect(() => {
+    if (products.length > 0) {
+      const imageUrls = products
+        .slice(0, 3)
+        .map((p) => p.image)
+        .filter(Boolean);
+      if (imageUrls.length > 0) {
+        preloadImages(imageUrls).catch((err) =>
+          console.warn("Failed to preload some product images:", err)
+        );
+      }
+    }
+  }, [products]);
 
   // sync products with animated display list
   useEffect(() => {

@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { channels } from "../data/channels";
 import ChannelLogo from "../components/ChannelLogo";
 import { initProductsFeature } from "../legacy/screen";
+import { setChannelId, getChannelId } from "../legacy/modules/useChannelModule";
 import "../styles/demoPage.css";
 import { downloadProduct } from "../utils/downloadProduct";
 import Hls from "hls.js";
@@ -10,7 +11,13 @@ import edgevideoIcon from "/assets/logo.png"; // Adjust path as needed
 import "../styles/reset.css"; // Ensure reset styles are applied
 
 export default function DemoPage() {
-  const [channel, setChannel] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  // Get channel from URL parameters, similar to /app route
+  const urlChannelId = searchParams.get("channelId");
+  const currentChannel = channels.find((c) => c.id === urlChannelId);
+
   const [videoLoading, setVideoLoading] = useState(false);
   const [videoError, setVideoError] = useState(null);
   const [liveProducts, setLiveProducts] = useState([]);
@@ -19,16 +26,9 @@ export default function DemoPage() {
   const origin = window.location.origin;
   const videoRef = useRef(null);
 
-  // Handle channel selection without page reload
+  // Handle channel selection by updating URL parameters
   const handleSelectChannel = (c) => {
-    console.log(
-      "Selecting channel:",
-      c.name,
-      "ID:",
-      c.id,
-      "Stream URL:",
-      c.streamUrl
-    );
+    console.log("Selecting channel:", c.name, "ID:", c.id);
 
     // Check for known problematic URLs
     if (c.streamUrl && c.streamUrl.includes("junk.m3u8")) {
@@ -38,35 +38,13 @@ export default function DemoPage() {
     // Clear any existing products when switching channels
     setLiveProducts([]);
 
-    setChannel(c);
-
-    // Set channel ID for shopping functionality - CRITICAL for products
-    window.channelId = c.id;
-
-    // Store in localStorage for persistence
-    try {
-      localStorage.setItem("channelId", c.id);
-    } catch (error) {
-      console.warn("Could not store channel ID in localStorage:", error);
-    }
-
-    // Log the channel change for debugging
-    console.log("Channel ID set to:", window.channelId);
-    console.log("localStorage channelId:", localStorage.getItem("channelId"));
-
-    // Initialize products for new channel
-    initProductsFeature();
+    // Navigate to the demo page with the channel ID as URL parameter
+    navigate(`/demo?channelId=${c.id}`);
   };
 
   const handleBackToChannels = () => {
-    console.log("Clearing channel selection");
-    setChannel(null);
-    window.channelId = null;
-    try {
-      localStorage.removeItem("channelId");
-    } catch (error) {
-      console.warn("Could not remove channel ID from localStorage:", error);
-    }
+    // Navigate back to demo page without channelId parameter
+    navigate("/demo");
   };
 
   // Product widget functionality
@@ -79,6 +57,21 @@ export default function DemoPage() {
     function handleNewProduct(event) {
       const product = event.detail;
       if (!product) return;
+
+      // Only show products for the current channel
+      if (
+        currentChannel &&
+        product.channel_id &&
+        product.channel_id !== currentChannel.id
+      ) {
+        console.log(
+          "Ignoring product from different channel:",
+          product.channel_id,
+          "vs",
+          currentChannel.id
+        );
+        return;
+      }
 
       setLiveProducts((prev) => {
         // Check if product already exists
@@ -107,38 +100,65 @@ export default function DemoPage() {
       window.removeEventListener("new-product", handleNewProduct);
       clearTimeout(timer);
     };
-  }, [isWidgetVisible]);
+  }, [isWidgetVisible, currentChannel]);
 
-  // Clean up URL parameters on component mount
+  // Clean up URL parameters and initialize WebSocket system on component mount
   useEffect(() => {
-    // Remove any existing URL parameters to keep the URL clean
-    if (window.location.search) {
-      window.history.replaceState(null, "", window.location.pathname);
+    // Clear non-channelId URL params on mount
+    const params = new URLSearchParams(window.location.search);
+    const channelId = params.get("channelId"); // Preserve channelId
+
+    // Create clean params with only channelId if it exists
+    const cleanParams = new URLSearchParams();
+    if (channelId) {
+      cleanParams.set("channelId", channelId);
     }
+
+    const newSearch = cleanParams.toString();
+    const newUrl =
+      window.location.pathname + (newSearch ? `?${newSearch}` : "");
+
+    if (newUrl !== window.location.pathname + window.location.search) {
+      window.history.replaceState({}, document.title, newUrl);
+    }
+
+    // Initialize the WebSocket system once when the component mounts
+    // This will handle channel changes automatically through the channel-changed event
+    initProductsFeature();
+
+    // Cleanup function to run when component unmounts
+    return () => {
+      // Clear channel ID when leaving demo page
+      setChannelId(null);
+    };
   }, []);
 
+  // Handle URL-based channel changes
   useEffect(() => {
-    if (!channel) return;
+    if (urlChannelId) {
+      // Channel selected via URL - set it in the legacy system
+      console.log("Setting channel from URL:", urlChannelId);
+      setChannelId(urlChannelId);
+      setLiveProducts([]); // Clear products when channel changes
+    } else {
+      // No channel in URL - clear the channel
+      setChannelId(null);
+      setLiveProducts([]);
+    }
+  }, [urlChannelId]);
+
+  useEffect(() => {
+    if (!currentChannel) return;
     const video = videoRef.current;
     if (!video) return;
 
-    console.log(
-      "Loading video for channel:",
-      channel.name,
-      "Channel ID:",
-      channel.id,
-      "Stream URL:",
-      channel.streamUrl,
-      "YouTube URL:",
-      channel.youtubeUrl
-    );
+    console.log("Loading video for channel:", currentChannel.name);
 
     setVideoLoading(true);
     setVideoError(null);
 
     // Handle YouTube embeds (like EuroNews)
-    if (channel.isYouTubeEmbed && channel.youtubeUrl) {
-      console.log("Using YouTube embed for:", channel.name);
+    if (currentChannel.isYouTubeEmbed && currentChannel.youtubeUrl) {
       setVideoLoading(false);
       return;
     }
@@ -151,7 +171,10 @@ export default function DemoPage() {
     video.load();
 
     // Check if URL is valid
-    if (!channel.streamUrl || channel.streamUrl.includes("junk.m3u8")) {
+    if (
+      !currentChannel.streamUrl ||
+      currentChannel.streamUrl.includes("junk.m3u8")
+    ) {
       setVideoError("Invalid stream URL for this channel");
       setVideoLoading(false);
       return;
@@ -159,12 +182,10 @@ export default function DemoPage() {
 
     // Video event listeners
     const handleLoadStart = () => {
-      console.log("Video load started for:", channel.name);
       setVideoLoading(true);
     };
 
     const handleCanPlay = () => {
-      console.log("Video can play for:", channel.name);
       setVideoLoading(false);
     };
 
@@ -175,7 +196,6 @@ export default function DemoPage() {
     };
 
     const handleLoadedData = () => {
-      console.log("Video data loaded for:", channel.name);
       setVideoLoading(false);
     };
 
@@ -187,13 +207,10 @@ export default function DemoPage() {
 
     // Try native HLS support first (Safari)
     if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      console.log("Using native HLS support for:", channel.name);
-      video.src = channel.streamUrl;
+      video.src = currentChannel.streamUrl;
     }
     // Use HLS.js for other browsers
     else if (Hls.isSupported()) {
-      console.log("Using HLS.js for:", channel.name);
-
       hlsInstance = new Hls({
         debug: false,
         enableWorker: true,
@@ -209,22 +226,17 @@ export default function DemoPage() {
         fragLoadingMaxRetry: 3,
       });
 
-      // HLS event handlers
+      // HLS event handlers - minimal logging
       hlsInstance.on(Hls.Events.MEDIA_ATTACHED, () => {
-        console.log("HLS media attached for:", channel.name);
+        // Media attached silently
       });
 
       hlsInstance.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-        console.log(
-          "HLS manifest parsed for:",
-          channel.name,
-          "Levels:",
-          data.levels.length
-        );
+        // Manifest parsed silently
       });
 
       hlsInstance.on(Hls.Events.LEVEL_LOADED, () => {
-        console.log("HLS level loaded for:", channel.name);
+        // Level loaded silently
       });
 
       hlsInstance.on(Hls.Events.FRAG_LOADED, () => {
@@ -235,45 +247,45 @@ export default function DemoPage() {
       });
 
       hlsInstance.on(Hls.Events.ERROR, (event, data) => {
-        console.error("HLS Error for", channel.name, ":", data);
+        console.error("HLS Error for", currentChannel.name, ":", data);
 
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
-              console.error("Fatal network error for:", channel.name);
+              console.error("Fatal network error for:", currentChannel.name);
               setVideoError(
-                `Network error: Cannot load stream for ${channel.name}`
+                `Network error: Cannot load stream for ${currentChannel.name}`
               );
               break;
             case Hls.ErrorTypes.MEDIA_ERROR:
               console.error(
                 "Fatal media error for:",
-                channel.name,
+                currentChannel.name,
                 "attempting recovery"
               );
               try {
                 hlsInstance.recoverMediaError();
               } catch (err) {
                 setVideoError(
-                  `Media error: Cannot play stream for ${channel.name}`
+                  `Media error: Cannot play stream for ${currentChannel.name}`
                 );
               }
               break;
             default:
-              console.error("Fatal error for:", channel.name);
-              setVideoError(`Stream error: Cannot load ${channel.name}`);
+              console.error("Fatal error for:", currentChannel.name);
+              setVideoError(`Stream error: Cannot load ${currentChannel.name}`);
               hlsInstance.destroy();
               break;
           }
         } else {
           // Non-fatal error, log but don't show error to user
-          console.warn("Non-fatal HLS error for:", channel.name, data);
+          console.warn("Non-fatal HLS error for:", currentChannel.name, data);
         }
         setVideoLoading(false);
       });
 
       // Load the stream
-      hlsInstance.loadSource(channel.streamUrl);
+      hlsInstance.loadSource(currentChannel.streamUrl);
       hlsInstance.attachMedia(video);
     }
     // HLS not supported
@@ -285,8 +297,6 @@ export default function DemoPage() {
 
     // Cleanup function
     return () => {
-      console.log("Cleaning up video for:", channel.name);
-
       // Remove event listeners
       video.removeEventListener("loadstart", handleLoadStart);
       video.removeEventListener("canplay", handleCanPlay);
@@ -306,7 +316,7 @@ export default function DemoPage() {
       video.src = "";
       video.load();
     };
-  }, [channel]);
+  }, [currentChannel]);
   return (
     <div className="demo-page">
       {/* Hero Section */}
@@ -326,7 +336,7 @@ export default function DemoPage() {
           <div className="select-wrapper">
             <select
               id="channelSelect"
-              value={channel?.id || ""}
+              value={currentChannel?.id || ""}
               onChange={(e) => {
                 const selected = channels.find((c) => c.id === e.target.value);
                 if (selected) handleSelectChannel(selected);
@@ -355,11 +365,14 @@ export default function DemoPage() {
           </div>
         </div>
 
-        {channel && (
+        {currentChannel && (
           <div className="selected-channel">
-            <ChannelLogo channelId={channel.id} className="channel-icon" />
+            <ChannelLogo
+              channelId={currentChannel.id}
+              className="channel-icon"
+            />
             <div className="channel-details">
-              <span className="channel-name">{channel.name}</span>
+              <span className="channel-name">{currentChannel.name}</span>
               <span className="channel-status">
                 <span className="status-indicator"></span>
                 Live
@@ -378,7 +391,7 @@ export default function DemoPage() {
       {/* Main Content */}
       <main className="demo-main">
         <div className="demo-container">
-          {channel && (
+          {currentChannel && (
             <div className="demo-content-grid">
               <div className="video-container">
                 <div className="video-wrapper">
@@ -395,10 +408,11 @@ export default function DemoPage() {
                   )}
 
                   {/* YouTube Embed for special channels */}
-                  {channel.isYouTubeEmbed && channel.youtubeUrl ? (
+                  {currentChannel.isYouTubeEmbed &&
+                  currentChannel.youtubeUrl ? (
                     <iframe
-                      src={channel.youtubeUrl}
-                      title={`${channel.name} Live Stream`}
+                      src={currentChannel.youtubeUrl}
+                      title={`${currentChannel.name} Live Stream`}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
                       className="demo-video youtube-embed"
@@ -421,13 +435,21 @@ export default function DemoPage() {
                       style={{
                         display: videoLoading || videoError ? "none" : "block",
                       }}
-                      onLoadStart={() =>
-                        console.log("Video element load start")
-                      }
-                      onCanPlay={() => console.log("Video element can play")}
-                      onPlay={() => console.log("Video started playing")}
-                      onPause={() => console.log("Video paused")}
-                      onWaiting={() => console.log("Video waiting for data")}
+                      onLoadStart={() => {
+                        // Video element load start silently
+                      }}
+                      onCanPlay={() => {
+                        // Video element can play silently
+                      }}
+                      onPlay={() => {
+                        // Video started playing silently
+                      }}
+                      onPause={() => {
+                        // Video paused silently
+                      }}
+                      onWaiting={() => {
+                        // Video waiting for data silently
+                      }}
                     >
                       Your browser does not support the video tag.
                     </video>
@@ -540,7 +562,7 @@ export default function DemoPage() {
             </div>
           )}
 
-          {!channel && (
+          {!currentChannel && (
             <div className="demo-placeholder">
               <div className="placeholder-content">
                 <div className="placeholder-icon">

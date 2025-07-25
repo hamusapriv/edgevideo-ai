@@ -11,20 +11,17 @@ import {
   processProductDataQueue,
   FormatTicketDateTime,
   FormatPrice,
-  clearProducts,
 } from "./modules/productsModule";
 import {
   setupLoginHandling,
   showLoggedOutState,
 } from "./modules/googleAuthModule";
 import { getChannelId } from "./modules/useChannelModule";
-import { isValidImageUrl } from "../utils/imageValidation";
 
 const wsUrl = "wss://slave-ws-service-342233178764.us-west1.run.app"; // WebSocket server URL
 
 // Global WebSocket instance for managing connections
 let currentWebSocket = null;
-let isManualChannelSwitch = false; // Flag to prevent auto-reconnect during manual switches
 
 // Add these near other configuration variables
 const VOTE_TRACKING_BASE_URL = "https://fastapi.edgevideo.ai/tracking";
@@ -174,23 +171,10 @@ function initializeWebSocket() {
   // Close existing WebSocket if it exists
   if (currentWebSocket && currentWebSocket.readyState === WebSocket.OPEN) {
     edgeConsole.log("Closing existing WebSocket connection for channel switch");
-    isManualChannelSwitch = true; // Set flag to prevent auto-reconnect
-
-    // Clear products before switching to avoid mixing products from different channels
-    clearProducts();
-
     currentWebSocket.close();
     currentWebSocket = null;
-
-    // Small delay to ensure the connection is fully closed before creating new one
-    setTimeout(() => createNewWebSocket(channelId), 50);
-    return;
   }
 
-  createNewWebSocket(channelId);
-}
-
-function createNewWebSocket(channelId) {
   if (typeof channelId !== "undefined" && channelId !== null) {
     // channelId is defined and is not null
   } else {
@@ -206,13 +190,6 @@ function createNewWebSocket(channelId) {
   ws.onopen = function open() {
     edgeConsole.log("Connected to the WebSocket server");
     SetShoppingAIStatus("Connected!");
-
-    // Reset manual switch flag once new connection is established
-    // But only if we're not currently in a manual switch process
-    if (!isManualChannelSwitch) {
-      // Normal connection, clear any previous flags
-    }
-
     ws.send(JSON.stringify({ subscribe: `product-${channelId}` }));
     ws.send(JSON.stringify({ subscribe: `shopping-ai-status-${channelId}` }));
     ws.send(JSON.stringify({ subscribe: `face-${channelId}` }));
@@ -236,23 +213,10 @@ function createNewWebSocket(channelId) {
   };
 
   ws.onclose = function close() {
-    edgeConsole.log("Disconnected from the WebSocket server.");
-
-    // Only attempt to reconnect if this wasn't a manual channel switch
-    if (!isManualChannelSwitch) {
-      edgeConsole.log("Attempting to reconnect...");
-      currentWebSocket = null;
-      setTimeout(initializeWebSocket, 5000);
-    } else {
-      edgeConsole.log(
-        "Manual channel switch detected, not attempting to reconnect."
-      );
-      currentWebSocket = null;
-      // Keep the flag set for a bit longer to prevent race conditions
-      setTimeout(() => {
-        isManualChannelSwitch = false;
-      }, 1000);
-    }
+    edgeConsole.log(
+      "Disconnected from the WebSocket server. Attempting to reconnect..."
+    );
+    setTimeout(initializeWebSocket, 5000);
   };
 
   ws.onerror = function error(err) {
@@ -356,14 +320,6 @@ function UpdateProductViaDataRole(i, time = null) {
 
   const product = products[i];
 
-  // Validate product image before dispatching (like original legacy code)
-  if (product.image && !isValidImageUrl(product.image)) {
-    edgeConsole.log(
-      'Product image contains "noimage" or is invalid, skipping update.'
-    );
-    return;
-  }
-
   // Dispatch a custom event that React components can listen to
   const productUpdateEvent = new CustomEvent("legacy-product-update", {
     detail: {
@@ -435,48 +391,9 @@ function initializeApp() {
   initAuthFeature();
 }
 
-// Track if channel change listener is already added to prevent duplicates
-let channelChangeListenerAdded = false;
-
 export function initProductsFeature() {
   initializeWebSocket();
   getCachedProducts();
-
-  // Add channel change listener only once
-  if (!channelChangeListenerAdded) {
-    const channelChangeHandler = (event) => {
-      const { channelId } = event.detail;
-      edgeConsole.log("Channel changed to:", channelId);
-
-      if (channelId) {
-        // Clear products from previous channel
-        clearProducts();
-
-        // Reconnect WebSocket for new channel
-        initializeWebSocket();
-        getCachedProducts();
-      } else {
-        // Clear products when channel is cleared
-        clearProducts();
-
-        // Close WebSocket if channel is cleared
-        if (
-          currentWebSocket &&
-          currentWebSocket.readyState === WebSocket.OPEN
-        ) {
-          edgeConsole.log("Closing WebSocket connection - channel cleared");
-          currentWebSocket.close();
-          currentWebSocket = null;
-        }
-      }
-    };
-
-    window.addEventListener("channel-changed", channelChangeHandler);
-    channelChangeListenerAdded = true;
-
-    // Store handler reference for potential cleanup
-    window.channelChangeHandler = channelChangeHandler;
-  }
 }
 
 export function initFacesFeature() {
