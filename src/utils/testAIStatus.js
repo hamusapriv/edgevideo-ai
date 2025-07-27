@@ -16,7 +16,6 @@ export function testAIStatus() {
     link: "https://example.com/product",
   };
 
-  console.log("Dispatching test product:", testProduct);
   window.dispatchEvent(new CustomEvent("new-product", { detail: testProduct }));
 }
 
@@ -31,7 +30,6 @@ export function testInvalidImage() {
     link: "https://example.com/product",
   };
 
-  console.log("Dispatching test product with invalid image:", testProduct);
   window.dispatchEvent(new CustomEvent("new-product", { detail: testProduct }));
 }
 

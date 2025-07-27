@@ -30,7 +30,8 @@ async function fetchUserDetails(token) {
       try {
         errorJson = await response.json();
       } catch (e) {}
-      const message = errorJson?.message || "Session invalid. Please log in again.";
+      const message =
+        errorJson?.message || "Session invalid. Please log in again.";
       throw new Error(message);
     }
     if (!response.ok) {
@@ -39,7 +40,8 @@ async function fetchUserDetails(token) {
         errorJson = await response.json();
       } catch (e) {}
       const message =
-        errorJson?.message || `Failed to fetch user details (Status: ${response.status})`;
+        errorJson?.message ||
+        `Failed to fetch user details (Status: ${response.status})`;
       throw new Error(message);
     }
 
@@ -49,7 +51,8 @@ async function fetchUserDetails(token) {
   } catch (error) {
     console.error("Error fetching user details:", error);
     if (errorMessageP) {
-      errorMessageP.textContent = error.message || "Could not retrieve user information.";
+      errorMessageP.textContent =
+        error.message || "Could not retrieve user information.";
     }
     showLoggedOutState();
     return null;
@@ -85,8 +88,6 @@ async function showLoggedInState(currentToken, fetchVotedProducts) {
 
     if (errorMessageP) errorMessageP.textContent = "";
 
-    console.log(`Logged in as: ${user.displayName} (${user.email})`);
-
     if (typeof fetchVotedProducts === "function") {
       await fetchVotedProducts();
     }
@@ -114,8 +115,6 @@ export function showLoggedOutState() {
   avatarContainers.forEach((div) => {
     div.style.display = "none";
   });
-
-  console.log("Showing logged out state.");
 }
 
 export function setupLoginHandling(fetchVotedProducts, populateFavoritesTab) {
@@ -130,7 +129,9 @@ export function setupLoginHandling(fetchVotedProducts, populateFavoritesTab) {
   if (signInButton) {
     signInButton.addEventListener("click", () => {
       if (errorMessageP) errorMessageP.textContent = "";
-      const googleLoginUrl = `${authRouteBase}/google?redirectUri=${encodeURIComponent(frontendUrl)}`;
+      const googleLoginUrl = `${authRouteBase}/google?redirectUri=${encodeURIComponent(
+        frontendUrl
+      )}`;
       window.location.href = googleLoginUrl;
     });
   } else {
@@ -150,17 +151,17 @@ export function setupLoginHandling(fetchVotedProducts, populateFavoritesTab) {
 
   if (favoritesButton) {
     favoritesButton.addEventListener("click", () => {
-      console.log("Favorites button clicked.");
       const token = localStorage.getItem("authToken");
       if (token) {
         if (typeof populateFavoritesTab === "function") {
           populateFavoritesTab();
         }
       } else {
-        console.log("User not logged in, cannot show favorites.");
         const favsContainer = document.getElementById("favs");
         if (favsContainer) {
-          favsContainer.querySelectorAll(".fav-item:not(.none)").forEach((item) => item.remove());
+          favsContainer
+            .querySelectorAll(".fav-item:not(.none)")
+            .forEach((item) => item.remove());
         }
       }
     });
@@ -176,16 +177,13 @@ export function setupLoginHandling(fetchVotedProducts, populateFavoritesTab) {
     currentToken = tokenFromUrl;
     localStorage.setItem("authToken", currentToken);
     window.history.replaceState({}, document.title, window.location.pathname);
-    console.log("Token received from URL, attempting login...");
     showLoggedInState(currentToken, fetchVotedProducts);
   } else {
     const storedToken = localStorage.getItem("authToken");
     if (storedToken) {
-      console.log("Token found in localStorage, attempting login...");
       currentToken = storedToken;
       showLoggedInState(currentToken, fetchVotedProducts);
     } else {
-      console.log("No token found. Showing logged out state.");
       showLoggedOutState();
     }
   }

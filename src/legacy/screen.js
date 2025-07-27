@@ -52,10 +52,8 @@ window.edgeConsole = edgeConsole;
  */
 async function fetchVotedProducts() {
   // Renamed conceptually, but function name stays
-  edgeConsole.log("Attempting to fetch all voted items (Products, Viator)...");
   const token = localStorage.getItem("authToken");
   if (!token) {
-    edgeConsole.log("Fetch voted items skipped: No auth token found.");
     votedProducts = [];
     return;
   }
@@ -115,9 +113,6 @@ async function fetchVotedProducts() {
 
         // Add successful results to the combined list
         const data = await response.json();
-        edgeConsole.log(
-          `Successfully fetched ${data.length} items from ${url}.`
-        );
         combinedVotes = combinedVotes.concat(data);
       } else {
         // Handle network errors or other fetch rejections
@@ -128,7 +123,6 @@ async function fetchVotedProducts() {
 
     // Update the global array with the combined results
     votedProducts = combinedVotes;
-    edgeConsole.log(`Total voted items fetched: ${votedProducts.length}.`);
 
     applyInitialVoteStyles();
 
@@ -155,7 +149,6 @@ function SetShoppingAIStatus(messageText) {
 async function getCachedProducts() {
   const channelId = getChannelId();
   if (typeof channelId !== "undefined" && channelId !== null) {
-    console.log("getCachedProducts: Fetching for channel:", channelId);
     let cachedProductResponse = await fetch(
       `https://fastapi.edgevideo.ai/product_search/recent_products/${channelId}/1`
     );
@@ -164,9 +157,6 @@ async function getCachedProducts() {
       addToProductDataQueue(cachedProduct);
     processProductDataQueue();
   } else {
-    console.log(
-      "getCachedProducts: No channel ID available, skipping cached products"
-    );
     // Don't retry if there's no channel - this is expected for demo page without selection
   }
 }
@@ -177,7 +167,6 @@ function initializeWebSocket() {
 
   // Close existing WebSocket if it exists
   if (currentWebSocket && currentWebSocket.readyState === WebSocket.OPEN) {
-    edgeConsole.log("Closing existing WebSocket connection for channel switch");
     isManualChannelSwitch = true; // Set flag to prevent auto-reconnect
 
     // Clear products before switching to avoid mixing products from different channels
@@ -199,7 +188,6 @@ function createNewWebSocket(channelId) {
     // channelId is defined and is not null
   } else {
     // channelId is either undefined or null
-    edgeConsole.log("channelId undefined or null...");
     setTimeout(initializeWebSocket, 1000);
     return;
   }
@@ -208,7 +196,6 @@ function createNewWebSocket(channelId) {
   currentWebSocket = ws;
 
   ws.onopen = function open() {
-    edgeConsole.log("Connected to the WebSocket server");
     SetShoppingAIStatus("Connected!");
 
     // Reset manual switch flag once new connection is established
@@ -240,9 +227,6 @@ function createNewWebSocket(channelId) {
           currentChannelId &&
           data.channel_id !== currentChannelId
         ) {
-          edgeConsole.log(
-            `Filtering out product from different channel: ${data.channel_id} vs current ${currentChannelId}`
-          );
           return;
         }
 
@@ -255,17 +239,11 @@ function createNewWebSocket(channelId) {
   };
 
   ws.onclose = function close() {
-    edgeConsole.log("Disconnected from the WebSocket server.");
-
     // Only attempt to reconnect if this wasn't a manual channel switch
     if (!isManualChannelSwitch) {
-      edgeConsole.log("Attempting to reconnect...");
       currentWebSocket = null;
       setTimeout(initializeWebSocket, 5000);
     } else {
-      edgeConsole.log(
-        "Manual channel switch detected, not attempting to reconnect."
-      );
       currentWebSocket = null;
       // Keep the flag set for a bit longer to prevent race conditions
       setTimeout(() => {
@@ -377,9 +355,6 @@ function UpdateProductViaDataRole(i, time = null) {
 
   // Validate product image before dispatching (like original legacy code)
   if (product.image && !isValidImageUrl(product.image)) {
-    edgeConsole.log(
-      'Product image contains "noimage" or is invalid, skipping update.'
-    );
     return;
   }
 
@@ -448,7 +423,6 @@ function applyInitialVoteStyles() {
 
 // --- Main Initialization Function ---
 function initializeApp() {
-  edgeConsole.log("DOM ready, initializing application...");
   initProductsFeature();
   initFacesFeature();
   initAuthFeature();
@@ -465,7 +439,6 @@ export function initProductsFeature() {
   if (!channelChangeListenerAdded) {
     const channelChangeHandler = (event) => {
       const { channelId } = event.detail;
-      edgeConsole.log("Channel changed to:", channelId);
 
       if (channelId) {
         // Clear products from previous channel
@@ -483,7 +456,6 @@ export function initProductsFeature() {
           currentWebSocket &&
           currentWebSocket.readyState === WebSocket.OPEN
         ) {
-          edgeConsole.log("Closing WebSocket connection - channel cleared");
           currentWebSocket.close();
           currentWebSocket = null;
         }

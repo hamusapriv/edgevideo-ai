@@ -28,8 +28,6 @@ export default function DemoPage() {
 
   // Handle channel selection by updating URL parameters
   const handleSelectChannel = (c) => {
-    console.log("Selecting channel:", c.name, "ID:", c.id);
-
     // Check for known problematic URLs
     if (c.streamUrl && c.streamUrl.includes("junk.m3u8")) {
       console.warn("Warning: This channel has a test/invalid stream URL");
@@ -37,7 +35,6 @@ export default function DemoPage() {
 
     // Immediately clear any existing products when switching channels
     setLiveProducts([]);
-    console.log("DemoPage: Cleared products for channel switch");
 
     // Navigate to the demo page with the channel ID as URL parameter
     navigate(`/demo?channelId=${c.id}`);
@@ -65,21 +62,8 @@ export default function DemoPage() {
         product.channel_id &&
         product.channel_id !== currentChannel.id
       ) {
-        console.log(
-          "DemoPage: Ignoring product from different channel:",
-          product.channel_id,
-          "vs current:",
-          currentChannel.id
-        );
         return;
       }
-
-      console.log(
-        "DemoPage: Adding product for channel:",
-        currentChannel?.id,
-        "Product:",
-        product.id
-      );
 
       setLiveProducts((prev) => {
         // Check if product already exists
@@ -103,16 +87,6 @@ export default function DemoPage() {
         // Add new product to the beginning, keep max 10 products
         const updated = [product, ...prev].slice(0, 10);
 
-        // Log the addition for debugging
-        console.log(
-          "DemoPage: Added product:",
-          product.id,
-          "for channel:",
-          currentChannel?.id,
-          "Total products:",
-          updated.length
-        );
-
         return updated;
       });
 
@@ -123,9 +97,6 @@ export default function DemoPage() {
     }
 
     function handleChannelChanged(event) {
-      console.log(
-        "DemoPage: Channel changed event received, clearing products"
-      );
       setLiveProducts([]);
     }
 
@@ -149,7 +120,6 @@ export default function DemoPage() {
   useEffect(() => {
     // Clear any products from previous sessions immediately
     setLiveProducts([]);
-    console.log("DemoPage: Cleared products on component mount");
 
     // Clear non-channelId URL params on mount
     const params = new URLSearchParams(window.location.search);
@@ -179,30 +149,21 @@ export default function DemoPage() {
       setChannelId(null);
       // Clear products when leaving
       setLiveProducts([]);
-      console.log("DemoPage: Cleanup - cleared channel and products");
     };
   }, []);
 
   // Handle URL-based channel changes
   useEffect(() => {
-    console.log(
-      "DemoPage: URL channel change detected, urlChannelId:",
-      urlChannelId
-    );
-
     if (urlChannelId) {
       // Channel selected via URL - set it in the legacy system
-      console.log("Setting channel from URL:", urlChannelId);
 
       // Clear products immediately before setting new channel
       setLiveProducts([]);
-      console.log("DemoPage: Cleared products before setting new channel");
 
       // Set the channel in the legacy system (this will trigger WebSocket reconnection)
       setChannelId(urlChannelId);
     } else {
       // No channel in URL - clear the channel
-      console.log("DemoPage: No channel in URL, clearing channel and products");
       setChannelId(null);
       setLiveProducts([]);
     }
@@ -212,8 +173,6 @@ export default function DemoPage() {
     if (!currentChannel) return;
     const video = videoRef.current;
     if (!video) return;
-
-    console.log("Loading video for channel:", currentChannel.name);
 
     setVideoLoading(true);
     setVideoError(null);

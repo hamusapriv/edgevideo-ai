@@ -11,7 +11,6 @@ export default function GoogleSignInButton() {
       className="gsi-material-button"
       style={{ display: "flex" }}
       onClick={() => {
-        console.log("GOOGLE SIGNIN CLICK");
         login();
       }}
     >

@@ -56,9 +56,6 @@ export default function ChannelLogo({
 
     // For problematic channels, skip API call and use fallback immediately
     if (problematicChannels.includes(channel)) {
-      console.log(
-        `ChannelLogo: Using immediate fallback for known problematic channel: ${channel}`
-      );
       const fallback = fallbackLogos[channel] || fallbackLogos.default;
       setLogoUrl(fallback);
       setLoading(false);

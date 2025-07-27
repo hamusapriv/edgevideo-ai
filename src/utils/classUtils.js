@@ -7,32 +7,16 @@
  * @param {string} className - The CSS class name to add
  */
 export function addClassToAll(element, className) {
-  console.log(`🔧 addClassToAll called with className: ${className}`);
-  console.log("🔧 Element:", element);
-  console.log("🔧 Element tagName:", element?.tagName);
-  console.log("🔧 Element className BEFORE:", element?.className);
-
   if (element && element.classList) {
     // Add to main element FIRST
-    console.log(`🔧 Adding ${className} to MAIN element...`);
     element.classList.add(className);
-    console.log(`🔧 MAIN element classes AFTER adding:`, element.className);
-    console.log(
-      `🔧 Contains ${className}?`,
-      element.classList.contains(className)
-    );
 
     // Add to all children
     const children = element.querySelectorAll("*");
-    console.log(`🔧 Found ${children.length} children to add ${className} to`);
 
-    children.forEach((child, index) => {
+    children.forEach((child) => {
       if (child.classList) {
-        const beforeClasses = child.className;
         child.classList.add(className);
-        console.log(
-          `🔧 Child ${index} (${child.tagName}): ${beforeClasses} → ${child.className}`
-        );
       }
     });
   } else {
@@ -47,31 +31,16 @@ export function addClassToAll(element, className) {
  * @param {string} className - The CSS class name to remove
  */
 export function removeClassFromAll(element, className) {
-  console.log(`removeClassFromAll called with className: ${className}`);
-  console.log("Element:", element);
-
   if (element && element.classList) {
     // Remove from main element
     element.classList.remove(className);
-    console.log(
-      `Removed ${className} from main element. Classes now:`,
-      element.className
-    );
 
     // Remove from all children
     const children = element.querySelectorAll("*");
-    console.log(
-      `Found ${children.length} children to remove ${className} from`
-    );
 
-    children.forEach((child, index) => {
+    children.forEach((child) => {
       if (child.classList) {
         child.classList.remove(className);
-        console.log(
-          `Removed ${className} from child ${index}:`,
-          child.tagName,
-          child.className
-        );
       }
     });
   } else {
@@ -89,16 +58,13 @@ export function applyProductTypeStyles(itemContainer, productType) {
   if (!itemContainer) return;
 
   if (productType === "ticket") {
-    console.log("Ticket type found - applying ticket-style");
     removeClassFromAll(itemContainer, "coupon-style"); // Ensure coupon style is removed
     addClassToAll(itemContainer, "ticket-style");
   } else if (productType === "deal") {
-    console.log("Deal type found - applying coupon-style");
     removeClassFromAll(itemContainer, "ticket-style"); // Ensure ticket style is removed
     addClassToAll(itemContainer, "coupon-style");
   } else {
     // Otherwise, treat as a standard product (remove specific styles)
-    console.log("Product type found - removing special styles");
     removeClassFromAll(itemContainer, "ticket-style");
     removeClassFromAll(itemContainer, "coupon-style");
   }
