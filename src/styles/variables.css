@@ -31,6 +31,8 @@
   --color-purple-light: rgb(137, 0, 201);
   --color-purple-dark: rgb(44, 0, 85);
   --color-red: rgba(255, 0, 0);
+  --ticket-color: #4caf50; /* Green */
+  --ticket-color-light: #a5d6a7; /* Light Green */
 
   /* Typography */
   --font-sans: "Inter", system-ui, sans-serif;

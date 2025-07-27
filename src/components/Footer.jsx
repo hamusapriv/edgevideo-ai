@@ -10,9 +10,15 @@ export default function Footer() {
         <div className="footer-content">
           <div className="footer-logo">
             <Link to="/home" className="logo">
-              <img src={Logo} alt="Edge Video AI Logo" style={{ height: "40px" }} />
+              <img
+                src={Logo}
+                alt="Edge Video AI Logo"
+                style={{ height: "40px" }}
+              />
               <div>
-                <p style={{ position: "relative", margin: 0, lineHeight: "1.2" }}>
+                <p
+                  style={{ position: "relative", margin: 0, lineHeight: "1.2" }}
+                >
                   Edge
                   <br /> &nbsp; Video
                   <span
@@ -33,8 +39,8 @@ export default function Footer() {
           </div>
           <div className="footer-links">
             <a href="mailto:developers@edgevideo.ai">Reach Out</a>
-            <Link to="/privacy">Privacy Policy</Link>
-            <Link to="/terms">Terms of Service</Link>
+            <Link to="/privacy-policy">Privacy Policy</Link>
+            <Link to="/terms-and-service">Terms of Service</Link>
             <a href="#cookies">Cookies Settings</a>
           </div>
         </div>

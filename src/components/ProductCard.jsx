@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import LikeButton from "./buttons/LikeButton";
 import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
@@ -7,6 +7,11 @@ import {
   handleImageErrorWithPlaceholder,
   isValidImageUrl,
 } from "../utils/imageValidation";
+import {
+  applyProductTypeStyles,
+  addClassToAll,
+  removeClassFromAll,
+} from "../utils/classUtils";
 
 export default function ProductCard({
   product,
@@ -15,7 +20,76 @@ export default function ProductCard({
   extraClass = "",
   onMouseEnter,
 }) {
+  const itemContainerRef = useRef(null);
+
   if (!product) return null;
+
+  // Apply product type styling when component mounts or product changes
+  useEffect(() => {
+    console.log("=== ProductCard useEffect START ===");
+    console.log("Product data received:", product);
+    console.log("Product type:", product?.type);
+    console.log("Product type typeof:", typeof product?.type);
+    console.log('Product type === "ticket":', product?.type === "ticket");
+    console.log('Product type === "deal":', product?.type === "deal");
+
+    const itemContainer = itemContainerRef.current;
+    console.log("itemContainer ref:", itemContainer);
+    console.log("itemContainer tagName:", itemContainer?.tagName);
+    console.log("itemContainer className before:", itemContainer?.className);
+
+    if (!itemContainer) {
+      console.error("❌ itemContainer ref is null - cannot apply styling");
+      return;
+    }
+
+    if (!product || !product.type) {
+      console.warn("❌ No product or product.type - cannot apply styling");
+      return;
+    }
+
+    console.log("✅ About to apply product type styling to CHILDREN only...");
+
+    // Apply styling based on product type (to children only, since main class is handled by React)
+    if ("type" in product && product.type === "ticket") {
+      console.log("🎫 TICKET TYPE FOUND - applying ticket-style to children");
+
+      // Apply to all child elements only
+      const children = itemContainer.querySelectorAll("*");
+      children.forEach((child) => {
+        child.classList.remove("coupon-style");
+        child.classList.add("ticket-style");
+      });
+
+      console.log("Applied ticket-style to", children.length, "children");
+    } else if ("type" in product && product.type === "deal") {
+      console.log("🏷️ DEAL TYPE FOUND - applying coupon-style to children");
+
+      // Apply to all child elements only
+      const children = itemContainer.querySelectorAll("*");
+      children.forEach((child) => {
+        child.classList.remove("ticket-style");
+        child.classList.add("coupon-style");
+      });
+
+      console.log("Applied coupon-style to", children.length, "children");
+    } else {
+      console.log(
+        "📦 STANDARD PRODUCT - removing special styles from children"
+      );
+
+      // Remove from all child elements
+      const children = itemContainer.querySelectorAll("*");
+      children.forEach((child) => {
+        child.classList.remove("ticket-style");
+        child.classList.remove("coupon-style");
+      });
+
+      console.log("Removed special styles from", children.length, "children");
+    }
+
+    console.log("=== ProductCard useEffect END ===");
+  }, [product.type, product.id]);
 
   const hidden = showDetails ? {} : { display: "none" };
   const itemTypeName =
@@ -46,9 +120,19 @@ export default function ProductCard({
     e.target.style.display = "none";
   };
 
+  // Determine the product type class for the main container
+  const getProductTypeClass = () => {
+    if (product?.type === "ticket") return "ticket-style";
+    if (product?.type === "deal") return "coupon-style";
+    return "";
+  };
+
   return (
     <div
-      className={`item-container ${focused ? "focused" : ""} ${extraClass}`}
+      ref={itemContainerRef}
+      className={`item-container ${
+        focused ? "focused" : ""
+      } ${getProductTypeClass()} ${extraClass}`}
       data-product-id={product.id}
       onMouseEnter={onMouseEnter}
     >

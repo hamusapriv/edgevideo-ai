@@ -5,7 +5,65 @@
    ─────────────────────────────────────────────────────────────────────────────
 */
 
-/* ─── Tabs (main navigation at bottom) ───────────────────────────────────────── */
+/* ─── Tabs (main navigation at bottom)/* ─────── "Focused" card: scale + shadow ─────── */
+.item-container.focused {
+  transform: scale(1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+  opacity: 1;
+}
+
+/* ─────── Product Type Styles (from legacy script) ─────── */
+/* Ticket style - for event tickets and experiences */
+
+.live-image-container.ticket-style::before {
+  content: "Tours & Tickets 🎫";
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  font-size: 18px;
+  z-index: 2;
+
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  padding: 4px 6px;
+  background: var(--ticket-color);
+}
+
+.item-container.ticket-style .card-details {
+  border-bottom: 2px solid var(--ticket-color);
+  border-top: 2px solid var(--ticket-color);
+}
+
+/* Deal/Coupon style - for deals and promotions */
+
+.live-image-container.coupon-style::before {
+  content: "Deals & Promotions 🏷️";
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  font-size: 18px;
+  z-index: 2;
+
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  padding: 4px 6px;
+  background: rgba(255, 152, 0, 0.9);
+}
+
+.item-container.coupon-style .card-details {
+  border-top: 2px solid rgba(255, 152, 0, 0.3);
+  border-bottom: 2px solid rgba(255, 152, 0, 0.3);
+}
+
 .tabs {
   top: auto;
   display: flex;
