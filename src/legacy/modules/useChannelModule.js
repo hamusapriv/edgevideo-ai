@@ -1,16 +1,6 @@
 // Cache to avoid repeated initialization and logging
 let cachedChannelId = null;
-/**
- * Gets the cached channel ID, initializing if necessary
- * This is now a lightweight operation after first initialization
- */
-export function getChannelId() {
-  if (isInitialized) {
-    return cachedChannelId; // This can be null, which is valid
-  }
-  return initializeChannelId();
-}
-tialized = false;
+let isInitialized = false;
 
 /**
  * Initializes the channel ID once and caches it
