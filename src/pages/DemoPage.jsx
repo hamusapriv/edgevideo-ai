@@ -35,8 +35,9 @@ export default function DemoPage() {
       console.warn("Warning: This channel has a test/invalid stream URL");
     }
 
-    // Clear any existing products when switching channels
+    // Immediately clear any existing products when switching channels
     setLiveProducts([]);
+    console.log("DemoPage: Cleared products for channel switch");
 
     // Navigate to the demo page with the channel ID as URL parameter
     navigate(`/demo?channelId=${c.id}`);
@@ -65,20 +66,53 @@ export default function DemoPage() {
         product.channel_id !== currentChannel.id
       ) {
         console.log(
-          "Ignoring product from different channel:",
+          "DemoPage: Ignoring product from different channel:",
           product.channel_id,
-          "vs",
+          "vs current:",
           currentChannel.id
         );
         return;
       }
 
+      console.log(
+        "DemoPage: Adding product for channel:",
+        currentChannel?.id,
+        "Product:",
+        product.id
+      );
+
       setLiveProducts((prev) => {
         // Check if product already exists
         if (prev.some((p) => p.id === product.id)) return prev;
 
+        // Double-check channel filtering before adding
+        if (
+          currentChannel &&
+          product.channel_id &&
+          product.channel_id !== currentChannel.id
+        ) {
+          console.warn(
+            "DemoPage: Blocking product with mismatched channel_id:",
+            product.channel_id,
+            "vs",
+            currentChannel.id
+          );
+          return prev;
+        }
+
         // Add new product to the beginning, keep max 10 products
         const updated = [product, ...prev].slice(0, 10);
+
+        // Log the addition for debugging
+        console.log(
+          "DemoPage: Added product:",
+          product.id,
+          "for channel:",
+          currentChannel?.id,
+          "Total products:",
+          updated.length
+        );
+
         return updated;
       });
 
@@ -88,8 +122,16 @@ export default function DemoPage() {
       }
     }
 
-    // Add event listener for new products
+    function handleChannelChanged(event) {
+      console.log(
+        "DemoPage: Channel changed event received, clearing products"
+      );
+      setLiveProducts([]);
+    }
+
+    // Add event listeners
     window.addEventListener("new-product", handleNewProduct);
+    window.addEventListener("channel-changed", handleChannelChanged);
 
     // Show widget after a short delay for demo purposes
     const timer = setTimeout(() => {
@@ -98,12 +140,17 @@ export default function DemoPage() {
 
     return () => {
       window.removeEventListener("new-product", handleNewProduct);
+      window.removeEventListener("channel-changed", handleChannelChanged);
       clearTimeout(timer);
     };
   }, [isWidgetVisible, currentChannel]);
 
   // Clean up URL parameters and initialize WebSocket system on component mount
   useEffect(() => {
+    // Clear any products from previous sessions immediately
+    setLiveProducts([]);
+    console.log("DemoPage: Cleared products on component mount");
+
     // Clear non-channelId URL params on mount
     const params = new URLSearchParams(window.location.search);
     const channelId = params.get("channelId"); // Preserve channelId
@@ -130,18 +177,32 @@ export default function DemoPage() {
     return () => {
       // Clear channel ID when leaving demo page
       setChannelId(null);
+      // Clear products when leaving
+      setLiveProducts([]);
+      console.log("DemoPage: Cleanup - cleared channel and products");
     };
   }, []);
 
   // Handle URL-based channel changes
   useEffect(() => {
+    console.log(
+      "DemoPage: URL channel change detected, urlChannelId:",
+      urlChannelId
+    );
+
     if (urlChannelId) {
       // Channel selected via URL - set it in the legacy system
       console.log("Setting channel from URL:", urlChannelId);
+
+      // Clear products immediately before setting new channel
+      setLiveProducts([]);
+      console.log("DemoPage: Cleared products before setting new channel");
+
+      // Set the channel in the legacy system (this will trigger WebSocket reconnection)
       setChannelId(urlChannelId);
-      setLiveProducts([]); // Clear products when channel changes
     } else {
       // No channel in URL - clear the channel
+      console.log("DemoPage: No channel in URL, clearing channel and products");
       setChannelId(null);
       setLiveProducts([]);
     }

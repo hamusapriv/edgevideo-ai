@@ -227,6 +227,21 @@ function createNewWebSocket(channelId) {
       } else if ("face" in data) {
         addToFaceDataQueue(data.face);
       } else if ("id" in data) {
+        // Add channel filtering here to prevent products from wrong channels
+        const currentChannelId = getChannelId();
+
+        // Only process products that match the current channel
+        if (
+          data.channel_id &&
+          currentChannelId &&
+          data.channel_id !== currentChannelId
+        ) {
+          edgeConsole.log(
+            `Filtering out product from different channel: ${data.channel_id} vs current ${currentChannelId}`
+          );
+          return;
+        }
+
         addToProductDataQueue(data);
         processProductDataQueue();
       }
