@@ -1,21 +1,32 @@
 // Cache to avoid repeated initialization and logging
 let cachedChannelId = null;
-let isInitialized = false;
+/**
+ * Gets the cached channel ID, initializing if necessary
+ * This is now a lightweight operation after first initialization
+ */
+export function getChannelId() {
+  if (isInitialized) {
+    return cachedChannelId; // This can be null, which is valid
+  }
+  return initializeChannelId();
+}
+tialized = false;
 
 /**
  * Initializes the channel ID once and caches it
  * This should be called when the app starts or when channel changes
  */
 function initializeChannelId(forceRefresh = false) {
-  if (isInitialized && !forceRefresh && cachedChannelId) {
+  if (isInitialized && !forceRefresh && cachedChannelId !== undefined) {
     return cachedChannelId;
   }
 
   const DEFAULT_CHANNEL_ID =
     window.DEFAULT_CHANNEL_ID || "3d8c4c38-2d6e-483c-bdc5-e1eeeadd155e";
 
-  // Priority order: URL params > window.channelId > localStorage > default
-  let id;
+  // Priority order: URL params > window.channelId > localStorage
+  // NOTE: We removed the default fallback to prevent unwanted products
+  let id = null;
 
   // First, check URL parameters (for /app route compatibility)
   const params = new URLSearchParams(window.location.search);
@@ -31,8 +42,8 @@ function initializeChannelId(forceRefresh = false) {
     id = window.channelId;
     console.log("Using window.channelId:", id);
   }
-  // Then check localStorage
-  else {
+  // Then check localStorage (only if we're in /app route context)
+  else if (window.location.pathname.startsWith("/app")) {
     try {
       const stored = localStorage.getItem("channelId");
       if (stored) {
@@ -42,21 +53,35 @@ function initializeChannelId(forceRefresh = false) {
     } catch {
       /* ignore read errors */
     }
+
+    // For /app route, fall back to default if nothing found
+    if (!id) {
+      id = DEFAULT_CHANNEL_ID;
+      console.log("Using default channelId for /app route:", id);
+    }
+  }
+  // For demo page and other routes, don't fall back to default
+  else {
+    console.log("No channelId found for demo page - returning null");
   }
 
-  // Fallback to default if nothing found
-  if (!id) {
-    id = DEFAULT_CHANNEL_ID;
-    console.log("Using default channelId:", id);
+  // Update both window and localStorage only if we have a valid ID
+  if (id) {
+    try {
+      localStorage.setItem("channelId", id);
+    } catch {
+      /* ignore write errors */
+    }
+    window.channelId = id;
+  } else {
+    // Clear any stored channel ID when id is null
+    try {
+      localStorage.removeItem("channelId");
+    } catch {
+      /* ignore write errors */
+    }
+    window.channelId = null;
   }
-
-  // Update both window and localStorage
-  try {
-    localStorage.setItem("channelId", id);
-  } catch {
-    /* ignore write errors */
-  }
-  window.channelId = id;
 
   // Cache the result
   cachedChannelId = id;

@@ -155,6 +155,7 @@ function SetShoppingAIStatus(messageText) {
 async function getCachedProducts() {
   const channelId = getChannelId();
   if (typeof channelId !== "undefined" && channelId !== null) {
+    console.log("getCachedProducts: Fetching for channel:", channelId);
     let cachedProductResponse = await fetch(
       `https://fastapi.edgevideo.ai/product_search/recent_products/${channelId}/1`
     );
@@ -163,7 +164,10 @@ async function getCachedProducts() {
       addToProductDataQueue(cachedProduct);
     processProductDataQueue();
   } else {
-    setTimeout(getCachedProducts, 100);
+    console.log(
+      "getCachedProducts: No channel ID available, skipping cached products"
+    );
+    // Don't retry if there's no channel - this is expected for demo page without selection
   }
 }
 
