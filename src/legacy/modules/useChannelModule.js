@@ -11,11 +11,8 @@ function initializeChannelId(forceRefresh = false) {
     return cachedChannelId;
   }
 
-  const DEFAULT_CHANNEL_ID =
-    window.DEFAULT_CHANNEL_ID || "3d8c4c38-2d6e-483c-bdc5-e1eeeadd155e";
-
   // Priority order: URL params > window.channelId > localStorage
-  // NOTE: We removed the default fallback to prevent unwanted products
+  // NOTE: We removed the default fallback to prevent unwanted products on demo page
   let id = null;
 
   // First, check URL parameters (for /app route compatibility)
@@ -46,6 +43,8 @@ function initializeChannelId(forceRefresh = false) {
 
     // For /app route, fall back to default if nothing found
     if (!id) {
+      const DEFAULT_CHANNEL_ID =
+        window.DEFAULT_CHANNEL_ID || "3d8c4c38-2d6e-483c-bdc5-e1eeeadd155e";
       id = DEFAULT_CHANNEL_ID;
       console.log("Using default channelId for /app route:", id);
     }
