@@ -15,7 +15,9 @@
 
 /* ─────── Product Type Styles (from legacy script) ─────── */
 /* Ticket style - for event tickets and experiences */
-
+.live-image-container.ticket-style {
+  box-shadow: 0 0 5px green;
+}
 .live-image-container.ticket-style::before {
   content: "Tours & Tickets 🎫";
   position: absolute;
@@ -37,6 +39,7 @@
 .item-container.ticket-style .card-details {
   border-bottom: 2px solid var(--ticket-color);
   border-top: 2px solid var(--ticket-color);
+  box-shadow: 0 0 5px green;
 }
 
 /* Deal/Coupon style - for deals and promotions */
@@ -313,6 +316,7 @@ section {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .product-count {
@@ -491,6 +495,7 @@ section {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .product-cta {
@@ -562,6 +567,7 @@ section {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   white-space: normal;
 }
 

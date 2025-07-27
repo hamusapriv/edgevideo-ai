@@ -10,6 +10,7 @@ const AppPage = lazy(() => import("./pages/AppPage"));
 const InTravelLivestorePage = lazy(() =>
   import("./pages/InTravelLivestorePage")
 );
+const InTravelRedirectPage = lazy(() => import("./pages/InTravelRedirectPage"));
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 const TermsPage = lazy(() => import("./pages/TermsPage"));
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -50,6 +51,7 @@ export default function App() {
             path="/intravel-livestore"
             element={<InTravelLivestorePage />}
           />
+          <Route path="/intravel-redirect" element={<InTravelRedirectPage />} />
           <Route path="/privacy-policy" element={<PrivacyPage />} />
           <Route path="/terms-and-services" element={<TermsPage />} />
           <Route path="/home" element={<HomePage />} />

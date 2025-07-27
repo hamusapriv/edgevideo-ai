@@ -12,6 +12,10 @@ import {
   addClassToAll,
   removeClassFromAll,
 } from "../utils/classUtils";
+import {
+  transformToGeniusLink,
+  trackOutboundLink,
+} from "../utils/linkTransform";
 
 export default function ProductCard({
   product,
@@ -189,9 +193,16 @@ export default function ProductCard({
           {product.link && (
             <a
               data-role="product-link"
-              href={product.link}
+              href={transformToGeniusLink(product.link)}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => {
+                // Prevent default to allow tracking before navigation
+                e.preventDefault();
+                const transformedLink = transformToGeniusLink(product.link);
+                trackOutboundLink(transformedLink, itemTypeName);
+                window.open(transformedLink, "_blank");
+              }}
               style={{
                 ...hidden,
                 display: "flex",
