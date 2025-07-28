@@ -16,9 +16,8 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm run build:staging
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EDGEVIDEO_AI_8753A }}
-          projectId: edgevideo-ai-8753a
-          target: edgevideo-staging
+      - name: Deploy to Firebase Hosting (Staging)
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_EDGEVIDEO_AI_8753A }}" > firebase-service-account.json
+          export GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account.json
+          npx firebase-tools deploy --only hosting:edgevideo-staging --project edgevideo-ai-8753a
