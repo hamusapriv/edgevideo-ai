@@ -1,94 +1,112 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import "../styles/HomePage.css";
 import HeroImg2 from "/assets/hero-image-2.png";
 import HeroVideoMp4 from "/assets/hero-video-min.mp4";
 import HeroVideoWebm from "/assets/hero-video.webm";
 import useIsMobile from "../hooks/useIsMobile";
-import AnimatedStat from "../components/AnimatedStat";
-import TelegramIcon from "../components/svgs/TelegramIcon";
-import TwitterIcon from "../components/svgs/TwitterIcon";
-import LinkedInIcon from "../components/svgs/LinkedInIcon";
-import YouTubeIcon from "../components/svgs/YouTubeIcon";
-import MediumIcon from "../components/svgs/MediumIcon";
-import FastSetupIcon from "../components/svgs/FastSetupIcon";
-import GamificationIcon from "../components/svgs/GamificationIcon";
-import RewardsIcon from "../components/svgs/RewardsIcon";
-import AnalyticsIcon from "../components/svgs/AnalyticsIcon";
-import VideoAnalyticsIcon from "../components/svgs/VideoAnalyticsIcon";
-import RevenueStreamIcon from "../components/svgs/RevenueStreamIcon";
-import ViewerEngagementIcon from "../components/svgs/ViewerEngagementIcon";
-import ScrollToTopButton from "../components/ScrollToTopButton";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
-const examplePairs = [
-  {
-    frame: "/assets/frame-product-pairs/Frame-Image-1.png",
-    product: "/assets/frame-product-pairs/product-1.png",
-    frameAlt: "Frame 1",
-    productAlt: "Product 1",
-  },
-  {
-    frame: "/assets/frame-product-pairs/Frame-Image-2.png",
-    product: "/assets/frame-product-pairs/product-2.png",
-    frameAlt: "Frame 2",
-    productAlt: "Product 2",
-  },
-  {
-    frame: "/assets/frame-product-pairs/Frame-Image-3.png",
-    product: "/assets/frame-product-pairs/product-3.png",
-    frameAlt: "Frame 3",
-    productAlt: "Product 3",
-  },
-  {
-    frame: "/assets/frame-product-pairs/Frame-Image-4.png",
-    product: "/assets/frame-product-pairs/product-4.png",
-    frameAlt: "Frame 4",
-    productAlt: "Product 4",
-  },
-  {
-    frame: "/assets/frame-product-pairs/Frame-Image-5.png",
-    product: "/assets/frame-product-pairs/product-5.png",
-    frameAlt: "Frame 5",
-    productAlt: "Product 5",
-  },
-  {
-    frame: "/assets/frame-product-pairs/Frame-Image-6.png",
-    product: "/assets/frame-product-pairs/product-6.png",
-    frameAlt: "Frame 6",
-    productAlt: "Product 6",
-  },
-  {
-    frame: "/assets/frame-product-pairs/Frame-Image-7.png",
-    product: "/assets/frame-product-pairs/product-7.png",
-    frameAlt: "Frame 7",
-    productAlt: "Product 7",
-  },
-  {
-    frame: "/assets/frame-product-pairs/Frame-Image-8.png",
-    product: "/assets/frame-product-pairs/product-8.png",
-    frameAlt: "Frame 8",
-    productAlt: "Product 8",
-  },
-  {
-    frame: "/assets/frame-product-pairs/Frame-Image-9.png",
-    product: "/assets/frame-product-pairs/product-9.png",
-    frameAlt: "Frame 9",
-    productAlt: "Product 9",
-  },
-  {
-    frame: "/assets/frame-product-pairs/Frame-Image-10.png",
-    product: "/assets/frame-product-pairs/product-10.png",
-    frameAlt: "Frame 10",
-    productAlt: "Product 10",
-  },
-  {
-    frame: "/assets/frame-product-pairs/Frame-Image-11.png",
-    product: "/assets/frame-product-pairs/product-11.png",
-    frameAlt: "Frame 11",
-    productAlt: "Product 11",
-  },
-];
+// Lazy load heavy components
+const AnimatedStat = lazy(() => import("../components/AnimatedStat"));
+const ScrollToTopButton = lazy(() => import("../components/ScrollToTopButton"));
+const Footer = lazy(() => import("../components/Footer"));
+
+// Lazy load SVG icons
+const TelegramIcon = lazy(() => import("../components/svgs/TelegramIcon"));
+const TwitterIcon = lazy(() => import("../components/svgs/TwitterIcon"));
+const LinkedInIcon = lazy(() => import("../components/svgs/LinkedInIcon"));
+const YouTubeIcon = lazy(() => import("../components/svgs/YouTubeIcon"));
+const MediumIcon = lazy(() => import("../components/svgs/MediumIcon"));
+const FastSetupIcon = lazy(() => import("../components/svgs/FastSetupIcon"));
+const GamificationIcon = lazy(() =>
+  import("../components/svgs/GamificationIcon")
+);
+const RewardsIcon = lazy(() => import("../components/svgs/RewardsIcon"));
+const AnalyticsIcon = lazy(() => import("../components/svgs/AnalyticsIcon"));
+const VideoAnalyticsIcon = lazy(() =>
+  import("../components/svgs/VideoAnalyticsIcon")
+);
+const RevenueStreamIcon = lazy(() =>
+  import("../components/svgs/RevenueStreamIcon")
+);
+const ViewerEngagementIcon = lazy(() =>
+  import("../components/svgs/ViewerEngagementIcon")
+);
+
+// Keep critical components as regular imports
+import Navbar from "../components/Navbar";
+import LazyImage from "../components/LazyImage";
+
+// Lazy load example pairs only when needed
+const loadExamplePairs = () => {
+  return [
+    {
+      frame: "/assets/frame-product-pairs/Frame-Image-1.png",
+      product: "/assets/frame-product-pairs/product-1.png",
+      frameAlt: "Frame 1",
+      productAlt: "Product 1",
+    },
+    {
+      frame: "/assets/frame-product-pairs/Frame-Image-2.png",
+      product: "/assets/frame-product-pairs/product-2.png",
+      frameAlt: "Frame 2",
+      productAlt: "Product 2",
+    },
+    {
+      frame: "/assets/frame-product-pairs/Frame-Image-3.png",
+      product: "/assets/frame-product-pairs/product-3.png",
+      frameAlt: "Frame 3",
+      productAlt: "Product 3",
+    },
+    {
+      frame: "/assets/frame-product-pairs/Frame-Image-4.png",
+      product: "/assets/frame-product-pairs/product-4.png",
+      frameAlt: "Frame 4",
+      productAlt: "Product 4",
+    },
+    {
+      frame: "/assets/frame-product-pairs/Frame-Image-5.png",
+      product: "/assets/frame-product-pairs/product-5.png",
+      frameAlt: "Frame 5",
+      productAlt: "Product 5",
+    },
+    {
+      frame: "/assets/frame-product-pairs/Frame-Image-6.png",
+      product: "/assets/frame-product-pairs/product-6.png",
+      frameAlt: "Frame 6",
+      productAlt: "Product 6",
+    },
+    {
+      frame: "/assets/frame-product-pairs/Frame-Image-7.png",
+      product: "/assets/frame-product-pairs/product-7.png",
+      frameAlt: "Frame 7",
+      productAlt: "Product 7",
+    },
+    {
+      frame: "/assets/frame-product-pairs/Frame-Image-8.png",
+      product: "/assets/frame-product-pairs/product-8.png",
+      frameAlt: "Frame 8",
+      productAlt: "Product 8",
+    },
+    {
+      frame: "/assets/frame-product-pairs/Frame-Image-9.png",
+      product: "/assets/frame-product-pairs/product-9.png",
+      frameAlt: "Frame 9",
+      productAlt: "Product 9",
+    },
+    {
+      frame: "/assets/frame-product-pairs/Frame-Image-10.png",
+      product: "/assets/frame-product-pairs/product-10.png",
+      frameAlt: "Frame 10",
+      productAlt: "Product 10",
+    },
+    {
+      frame: "/assets/frame-product-pairs/Frame-Image-11.png",
+      product: "/assets/frame-product-pairs/product-11.png",
+      frameAlt: "Frame 11",
+      productAlt: "Product 11",
+    },
+  ];
+};
 
 const testimonials = [
   {
@@ -135,10 +153,64 @@ export default function HomePage() {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState(false);
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+  const [examplePairs, setExamplePairs] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const isMobile = useIsMobile();
   const fullText = "The man in the video is wearing a royal blue t-shirt";
+
+  // Load testimonials lazily
+  useEffect(() => {
+    const loadTestimonials = () => [
+      {
+        quote:
+          "Edge Video's AI is revolutionizing Shoppable TV, letting you buy what you see on-screen instantly. It's transforming ads into instant shopping experiences, making them super effective by connecting you with what you want, right when you want it.",
+        author: "Ralf Jacob",
+        role: "EVP Broadcast Operations & Technology for TelevisaUnivision",
+      },
+      {
+        quote:
+          "Edge Video's new AI-powered interactive TV is changing the game, turning passive watching into an engaging experience. It's all about getting viewers involved, boosting their happiness and loyalty. Edge Video is at the forefront, with AI making TV way more interactive and fun.",
+        author: "Alex Duka",
+        role: "Advisor and Board Member, former Managing Director, Citigroup",
+      },
+      {
+        quote:
+          "Edge-AI is the most exciting product for video, since the drone.",
+        author: "Joshua Elmore",
+        role: "Sr. Director Content Operations, The Weather Channel",
+      },
+      {
+        quote:
+          "Edge Video blends web2 and web3 to transform shopping and gaming with interactive streams, boosting engagement and pioneering in digital entertainment. Their use of blockchain enhances the user experience, setting new standards in the online world.",
+        author: "Neil Wolfson",
+        role:
+          "Active Board Member and Venture Investor, Former Partner at KPMG and Former President of Wilmington Trust Investment Management",
+      },
+      {
+        quote:
+          "Edge Video's Web3 rewards are revolutionizing viewer loyalty with a blend of blockchain and AI, making rewards secure, transparent, and trustworthy. This fresh take is transforming how viewers engage and trust in the digital era.",
+        author: "Richard Entrup",
+        role: "Managing Director, Enterprise Innovation @ KPMG US",
+      },
+      {
+        quote:
+          "Edge Video's AI is flipping the script on streaming, turning your screen time into shopping time. Now, watching TV also means you can shop directly from your couch, opening up cool new earning avenues for creators and brands. It's like making your lazy TV time a shopping adventure!",
+        author: "Jeffrey Hayzlett",
+        role:
+          "Chairman, C-Suite Network Primetime Television & Podcast Host, Former CMO, Kodak",
+      },
+    ];
+
+    // Load data after a short delay to prioritize initial render
+    const timer = setTimeout(() => {
+      setTestimonials(loadTestimonials());
+      setExamplePairs(loadExamplePairs());
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Intersection Observer for lazy loading
   useEffect(() => {
@@ -280,7 +352,11 @@ export default function HomePage() {
           <div className="simple-content">
             <div className="simple-item">
               <div className="simple-icon">
-                <VideoAnalyticsIcon size={64} color="#617afa" />
+                <Suspense
+                  fallback={<div style={{ width: "64px", height: "64px" }} />}
+                >
+                  <VideoAnalyticsIcon size={64} color="#617afa" />
+                </Suspense>
               </div>
               <p>
                 Our advanced AI solution identifies products and tickets within
@@ -290,7 +366,11 @@ export default function HomePage() {
             </div>
             <div className="simple-item">
               <div className="simple-icon">
-                <RevenueStreamIcon size={64} color="#617afa" />
+                <Suspense
+                  fallback={<div style={{ width: "64px", height: "64px" }} />}
+                >
+                  <RevenueStreamIcon size={64} color="#617afa" />
+                </Suspense>
               </div>
               <p>
                 Each product sold based on your stream earns you a commission.
@@ -300,7 +380,11 @@ export default function HomePage() {
             </div>
             <div className="simple-item">
               <div className="simple-icon">
-                <ViewerEngagementIcon size={64} color="#617afa" />
+                <Suspense
+                  fallback={<div style={{ width: "64px", height: "64px" }} />}
+                >
+                  <ViewerEngagementIcon size={64} color="#617afa" />
+                </Suspense>
               </div>
               <p>
                 Finally get to know your viewers - and reward them for shopping
@@ -347,7 +431,7 @@ export default function HomePage() {
                         overflow: "hidden",
                       }}
                     >
-                      <img
+                      <LazyImage
                         src="/assets/stream.png"
                         alt="TV Screen"
                         className="tv-screen"
@@ -383,7 +467,7 @@ export default function HomePage() {
                 </div>
                 <div className="step-visual">
                   <div className="qr-container">
-                    <img
+                    <LazyImage
                       src="/assets/scan-qr-code.png"
                       alt="QR Code Scan"
                       className="qr-image"
@@ -512,11 +596,11 @@ export default function HomePage() {
                   {examplePairs.concat(examplePairs).map((item, index) => (
                     <div key={index} className="example-pair">
                       <div className="example-frame">
-                        <img src={item.frame} alt={item.frameAlt} />
+                        <LazyImage src={item.frame} alt={item.frameAlt} />
                       </div>
                       <div className="example-arrow">→</div>
                       <div className="example-product">
-                        <img src={item.product} alt={item.productAlt} />
+                        <LazyImage src={item.product} alt={item.productAlt} />
                       </div>
                     </div>
                   ))}
@@ -550,7 +634,11 @@ export default function HomePage() {
             <div className="features-wrapper">
               <div className="feature-card feature-1">
                 <div className="feature-icon">
-                  <FastSetupIcon size={48} />
+                  <Suspense
+                    fallback={<div style={{ width: "48px", height: "48px" }} />}
+                  >
+                    <FastSetupIcon size={48} />
+                  </Suspense>
                 </div>
                 <h3>
                   Fast, easy set-up at no cost. We just require your feed.
@@ -558,7 +646,11 @@ export default function HomePage() {
               </div>
               <div className="feature-card feature-2">
                 <div className="feature-icon">
-                  <GamificationIcon size={48} />
+                  <Suspense
+                    fallback={<div style={{ width: "48px", height: "48px" }} />}
+                  >
+                    <GamificationIcon size={48} />
+                  </Suspense>
                 </div>
                 <h3>
                   Gamification adds additional "stickiness" to your content.
@@ -582,13 +674,21 @@ export default function HomePage() {
             <div className="features-wrapper">
               <div className="feature-card feature-3">
                 <div className="feature-icon">
-                  <RewardsIcon size={48} />
+                  <Suspense
+                    fallback={<div style={{ width: "48px", height: "48px" }} />}
+                  >
+                    <RewardsIcon size={48} />
+                  </Suspense>
                 </div>
                 <h3>Reward your viewers for interacting with your content.</h3>
               </div>
               <div className="feature-card feature-4">
                 <div className="feature-icon">
-                  <AnalyticsIcon size={48} />
+                  <Suspense
+                    fallback={<div style={{ width: "48px", height: "48px" }} />}
+                  >
+                    <AnalyticsIcon size={48} />
+                  </Suspense>
                 </div>
                 <h3>
                   We provide data insights of your viewers to help your ad
@@ -619,9 +719,24 @@ export default function HomePage() {
         <section className="stats container">
           <h2>Edge Video AI in Numbers.</h2>
           <div className="stats-grid">
-            <AnimatedStat number={12} label="Channels" delay={0} />
-            <AnimatedStat number={21527} label="Vendors" delay={200} />
-            <AnimatedStat number={17415854} label="Products" delay={400} />
+            <Suspense
+              fallback={
+                <div
+                  style={{
+                    height: "80px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  Loading...
+                </div>
+              }
+            >
+              <AnimatedStat number={12} label="Channels" delay={0} />
+              <AnimatedStat number={21527} label="Vendors" delay={200} />
+              <AnimatedStat number={17415854} label="Products" delay={400} />
+            </Suspense>
           </div>
           <p className="stats-date">Per June 2025</p>
         </section>
@@ -648,7 +763,11 @@ export default function HomePage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <TelegramIcon size={24} color="white" />
+                <Suspense
+                  fallback={<div style={{ width: "24px", height: "24px" }} />}
+                >
+                  <TelegramIcon size={24} color="white" />
+                </Suspense>
               </a>
             </li>
             <li className="social__item">
@@ -657,7 +776,11 @@ export default function HomePage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <TwitterIcon size={24} color="white" />
+                <Suspense
+                  fallback={<div style={{ width: "24px", height: "24px" }} />}
+                >
+                  <TwitterIcon size={24} color="white" />
+                </Suspense>
               </a>
             </li>
             <li className="social__item">
@@ -666,7 +789,11 @@ export default function HomePage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <LinkedInIcon size={24} color="white" />
+                <Suspense
+                  fallback={<div style={{ width: "24px", height: "24px" }} />}
+                >
+                  <LinkedInIcon size={24} color="white" />
+                </Suspense>
               </a>
             </li>
             <li className="social__item">
@@ -675,7 +802,11 @@ export default function HomePage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <YouTubeIcon size={24} color="white" />
+                <Suspense
+                  fallback={<div style={{ width: "24px", height: "24px" }} />}
+                >
+                  <YouTubeIcon size={24} color="white" />
+                </Suspense>
               </a>
             </li>
             <li className="social__item">
@@ -684,14 +815,22 @@ export default function HomePage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <MediumIcon size={24} color="white" />
+                <Suspense
+                  fallback={<div style={{ width: "24px", height: "24px" }} />}
+                >
+                  <MediumIcon size={24} color="white" />
+                </Suspense>
               </a>
             </li>
           </ul>
         </section>
       </main>
-      <Footer />
-      <ScrollToTopButton />
+      <Suspense fallback={<div style={{ height: "200px" }} />}>
+        <Footer />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ScrollToTopButton />
+      </Suspense>
     </div>
   );
 }

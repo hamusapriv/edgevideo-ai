@@ -12,7 +12,7 @@ export default function Tabs({
   const avatarSeed = user ? user.avatarSeed : "guest";
   const avatarUrl = `https://api.dicebear.com/9.x/bottts/svg?seed=${avatarSeed}`;
   return (
-    <footer className="footer">
+    <footer className="app-footer">
       {/* (j) AFFILIATE FOOTER */}
 
       <nav className="tabs">

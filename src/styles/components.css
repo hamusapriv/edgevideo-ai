@@ -166,8 +166,8 @@
   margin-bottom: var(--spacing-md);
 }
 
-/* Footer */
-.footer {
+/* App Footer */
+.app-footer {
   backdrop-filter: blur(20px);
   background-color: var(--color-black-01);
   font-size: 0.875rem;
@@ -176,12 +176,12 @@
   position: relative;
 }
 
-.footer__inner {
+.app-footer__inner {
   padding-top: var(--spacing);
   padding-bottom: var(--spacing);
 }
 
-.footer a {
+.app-footer a {
   color: var(--color-grey);
   margin: 0 var(--spacing-xs);
 }
