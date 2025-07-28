@@ -37,11 +37,6 @@ export default function ProductCard({
       return;
     }
 
-    if (!product || !product.type) {
-      console.warn("❌ No product or product.type - cannot apply styling");
-      return;
-    }
-
     // Apply styling based on product type (to children only, since main class is handled by React)
     if ("type" in product && product.type === "ticket") {
       // Apply to all child elements only

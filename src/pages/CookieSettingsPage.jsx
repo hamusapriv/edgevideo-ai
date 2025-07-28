@@ -63,8 +63,8 @@ export default function CookieSettingsPage() {
     <div className="cookie-settings-page">
       <main className="cookie-settings-main">
         <div className="container">
-          <Link to="/" className="back-btn">
-            ← Back to Home
+          <Link to="/app" className="back-btn">
+            ← Back to App
           </Link>
 
           <div className="header-section">
@@ -229,7 +229,7 @@ export default function CookieSettingsPage() {
               <p>
                 If you have any questions about our cookie practices, please
                 contact us at{" "}
-                <a href="mailto:privacy@edgevideo.ai">privacy@edgevideo.ai</a>
+                <a href="mailto:support@edgevideo.ai">support@edgevideo.ai</a>
               </p>
             </div>
           </div>
