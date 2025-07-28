@@ -46,7 +46,19 @@ export default defineConfig(({ mode }) => {
   // Staging mode: unminified builds with source maps for debugging
   // Production mode: minified builds without source maps for performance
   const isStaging = mode === "staging";
-  const buildInfo = getBuildInfo();
+
+  // Get build info - in dev mode, provide simpler fallbacks
+  let buildInfo;
+  if (mode === "development") {
+    buildInfo = {
+      version: JSON.parse(fs.readFileSync("package.json", "utf8")).version,
+      commitHash: "dev",
+      branch: "main",
+      buildTime: new Date().toISOString(),
+    };
+  } else {
+    buildInfo = getBuildInfo();
+  }
 
   return {
     plugins: [react()],

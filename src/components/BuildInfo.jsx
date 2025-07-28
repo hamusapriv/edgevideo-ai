@@ -2,11 +2,15 @@
 import React from "react";
 
 export default function BuildInfo() {
-  // Access build-time constants injected by Vite
-  const version = __VERSION__;
-  const commitHash = __COMMIT_HASH__;
-  const branch = __BRANCH__;
-  const buildTime = __BUILD_TIME__;
+  // Access build-time constants injected by Vite with safe fallbacks
+  const version = typeof __VERSION__ !== "undefined" ? __VERSION__ : "0.0.0";
+  const commitHash =
+    typeof __COMMIT_HASH__ !== "undefined" ? __COMMIT_HASH__ : "dev";
+  const branch = typeof __BRANCH__ !== "undefined" ? __BRANCH__ : "main";
+  const buildTime =
+    typeof __BUILD_TIME__ !== "undefined"
+      ? __BUILD_TIME__
+      : new Date().toISOString();
 
   // Format build time to show relative time or short format
   const formatBuildTime = (isoString) => {

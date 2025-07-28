@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Auto-bump patch version on commit
+npm run version:patch
+git add package.json package-lock.json
