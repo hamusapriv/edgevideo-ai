@@ -2,6 +2,33 @@
 import React from "react";
 
 export default function BuildInfo() {
+  // Access build-time constants injected by Vite
+  const version = __VERSION__;
+  const commitHash = __COMMIT_HASH__;
+  const branch = __BRANCH__;
+  const buildTime = __BUILD_TIME__;
+
+  // Format build time to show relative time or short format
+  const formatBuildTime = (isoString) => {
+    try {
+      const buildDate = new Date(isoString);
+      const now = new Date();
+      const diffMs = now - buildDate;
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffDays = Math.floor(diffHours / 24);
+
+      if (diffDays > 0) {
+        return `${diffDays}d ago`;
+      } else if (diffHours > 0) {
+        return `${diffHours}h ago`;
+      } else {
+        return "now";
+      }
+    } catch {
+      return "unknown";
+    }
+  };
+
   return (
     <div
       style={{
@@ -13,9 +40,11 @@ export default function BuildInfo() {
         backgroundColor: "rgba(0,0,0,0.6)",
         color: "#fff",
         zIndex: 9999,
+        fontFamily: "monospace",
       }}
+      title={`Build: ${buildTime}\nBranch: ${branch}\nCommit: ${commitHash}`}
     >
-      v0.0.6 - - 0.5721
+      v{version} - {commitHash} - {formatBuildTime(buildTime)}
     </div>
   );
 }

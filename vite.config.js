@@ -1,17 +1,62 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { execSync } from "child_process";
+import fs from "fs";
 /* global process */
+
+// Get build info
+function getBuildInfo() {
+  try {
+    // Get package.json version
+    const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
+    const version = packageJson.version;
+
+    // Get git commit hash (short)
+    const commitHash = execSync("git rev-parse --short HEAD", {
+      encoding: "utf8",
+    }).trim();
+
+    // Get git branch
+    const branch = execSync("git rev-parse --abbrev-ref HEAD", {
+      encoding: "utf8",
+    }).trim();
+
+    // Get build timestamp
+    const buildTime = new Date().toISOString();
+
+    return {
+      version,
+      commitHash,
+      branch,
+      buildTime,
+    };
+  } catch (error) {
+    console.warn("Could not get git info:", error.message);
+    return {
+      version: "unknown",
+      commitHash: "unknown",
+      branch: "unknown",
+      buildTime: new Date().toISOString(),
+    };
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   // Staging mode: unminified builds with source maps for debugging
   // Production mode: minified builds without source maps for performance
   const isStaging = mode === "staging";
+  const buildInfo = getBuildInfo();
 
   return {
     plugins: [react()],
     define: {
-      __COMMIT_HASH__: JSON.stringify(process.env.COMMIT_HASH || ""),
+      __COMMIT_HASH__: JSON.stringify(
+        process.env.COMMIT_HASH || buildInfo.commitHash
+      ),
+      __VERSION__: JSON.stringify(buildInfo.version),
+      __BUILD_TIME__: JSON.stringify(buildInfo.buildTime),
+      __BRANCH__: JSON.stringify(buildInfo.branch),
     },
     build: {
       // Disable minification and enable source maps for staging
