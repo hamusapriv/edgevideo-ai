@@ -41,7 +41,7 @@ export default function Footer() {
             <a href="mailto:developers@edgevideo.ai">Reach Out</a>
             <Link to="/privacy-policy">Privacy Policy</Link>
             <Link to="/terms-and-service">Terms of Service</Link>
-            <a href="#cookies">Cookies Settings</a>
+            <Link to="/cookie-settings">Cookies Settings</Link>
           </div>
         </div>
         <p className="footer-copyright">Copyright © 2025 Edge Video B.V.</p>

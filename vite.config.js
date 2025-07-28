@@ -47,6 +47,9 @@ export default defineConfig(({ mode }) => {
   // Production mode: minified builds without source maps for performance
   const isStaging = mode === "staging";
 
+  // Google Analytics ID based on environment
+  const GA_ID = isStaging ? "G-STAGING-ID" : "G-3GZF6H0L3V";
+
   // Get build info - in dev mode, provide simpler fallbacks
   let buildInfo;
   if (mode === "development") {
@@ -69,6 +72,7 @@ export default defineConfig(({ mode }) => {
       __VERSION__: JSON.stringify(buildInfo.version),
       __BUILD_TIME__: JSON.stringify(buildInfo.buildTime),
       __BRANCH__: JSON.stringify(buildInfo.branch),
+      __GA_ID__: JSON.stringify(GA_ID),
     },
     build: {
       // Disable minification and enable source maps for staging

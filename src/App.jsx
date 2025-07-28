@@ -4,6 +4,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import ProfileSidebar from "./components/ProfileSidebar";
 import { useSidebar } from "./contexts/SidebarContext";
 import LoadingOverlay from "./components/LoadingOverlay";
+import CookieConsent from "./components/CookieConsent";
 
 // Page components
 const AppPage = lazy(() => import("./pages/AppPage"));
@@ -18,6 +19,7 @@ const DemoPage = lazy(() => import("./pages/DemoPage"));
 const ChannelsPage = lazy(() => import("./pages/ChannelsPage"));
 const BrandsPage = lazy(() => import("./pages/BrandsPage"));
 const ViewersPage = lazy(() => import("./pages/ViewersPage"));
+const CookieSettingsPage = lazy(() => import("./pages/CookieSettingsPage"));
 import BuildInfo from "./components/BuildInfo";
 
 // OAuth callback
@@ -54,6 +56,7 @@ export default function App() {
           <Route path="/intravel-redirect" element={<InTravelRedirectPage />} />
           <Route path="/privacy-policy" element={<PrivacyPage />} />
           <Route path="/terms-and-services" element={<TermsPage />} />
+          <Route path="/cookie-settings" element={<CookieSettingsPage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/demo" element={<DemoPage />} />
           <Route path="/for-channels" element={<ChannelsPage />} />
@@ -64,6 +67,8 @@ export default function App() {
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </Suspense>
+
+      <CookieConsent />
       <BuildInfo />
     </>
   );
