@@ -7,7 +7,7 @@ import { useProductAIStatus } from "../hooks/useProductAIStatus";
 import FrameGallery from "./FrameGallery";
 import useIsMobile from "../hooks/useIsMobile";
 import AIStatusDisplay from "./AIStatusDisplay";
-import { preloadImages } from "../utils/imageValidation";
+import { preloadImages, validateProductImages } from "../utils/imageValidation";
 
 export default function LiveShopping() {
   const { products, addProduct } = useProducts();
@@ -56,14 +56,25 @@ export default function LiveShopping() {
       const processedProduct = await processProductWithAIStatus(p);
 
       if (processedProduct) {
-        addProduct(processedProduct);
-        setSelectedId((cur) => cur || String(processedProduct.id));
+        // Validate product image before adding to display
+        const validProducts = await validateProductImages([processedProduct]);
+
+        if (validProducts.length === 0) {
+          console.warn(
+            `Product ${processedProduct.id} excluded from Live Shopping due to invalid image`
+          );
+          return;
+        }
+
+        const validProduct = validProducts[0];
+        addProduct(validProduct);
+        setSelectedId((cur) => cur || String(validProduct.id));
 
         setDisplayProducts((prev) => {
-          if (prev.some((it) => it.id === processedProduct.id)) return prev;
-          return [{ ...processedProduct, _status: "enter" }, ...prev];
+          if (prev.some((it) => it.id === validProduct.id)) return prev;
+          return [{ ...validProduct, _status: "enter" }, ...prev];
         });
-        scheduleEnterRemoval(processedProduct.id);
+        scheduleEnterRemoval(validProduct.id);
       }
     }
 
@@ -78,14 +89,25 @@ export default function LiveShopping() {
       const processedProduct = await processProductWithAIStatus(product);
 
       if (processedProduct) {
-        addProduct(processedProduct);
-        setSelectedId((cur) => cur || String(processedProduct.id));
+        // Validate product image before adding to display
+        const validProducts = await validateProductImages([processedProduct]);
+
+        if (validProducts.length === 0) {
+          console.warn(
+            `Product ${processedProduct.id} excluded from Live Shopping due to invalid image`
+          );
+          return;
+        }
+
+        const validProduct = validProducts[0];
+        addProduct(validProduct);
+        setSelectedId((cur) => cur || String(validProduct.id));
 
         setDisplayProducts((prev) => {
-          if (prev.some((it) => it.id === processedProduct.id)) return prev;
-          return [{ ...processedProduct, _status: "enter" }, ...prev];
+          if (prev.some((it) => it.id === validProduct.id)) return prev;
+          return [{ ...validProduct, _status: "enter" }, ...prev];
         });
-        scheduleEnterRemoval(processedProduct.id);
+        scheduleEnterRemoval(validProduct.id);
       }
     }
 

@@ -69,6 +69,39 @@ export function preloadImages(imageUrls) {
 }
 
 /**
+ * Validates multiple products by checking their images
+ * @param {Array} products - Array of product objects with image property
+ * @returns {Promise<Array>} - Promise that resolves to array of products with valid images
+ */
+export async function validateProductImages(products) {
+  if (!Array.isArray(products)) {
+    return [];
+  }
+
+  const validationPromises = products.map(async (product) => {
+    if (!product.image) {
+      console.warn(
+        `Product ${product.id} has no image, excluding from display`
+      );
+      return null;
+    }
+
+    const isValid = await preloadImage(product.image);
+    if (!isValid) {
+      console.warn(
+        `Product ${product.id} has invalid image (${product.image}), excluding from display`
+      );
+      return null;
+    }
+
+    return product;
+  });
+
+  const results = await Promise.all(validationPromises);
+  return results.filter((product) => product !== null);
+}
+
+/**
  * Standard image error handler for React components
  * @param {Event} e - The error event
  * @param {string} imageUrl - The image URL that failed to load
@@ -97,11 +130,16 @@ export function handleImageErrorWithPlaceholder(
 ) {
   console.warn(`Failed to load image: ${imageUrl}`);
 
-  if (placeholderUrl) {
+  // If we have a local placeholder, use it
+  if (
+    placeholderUrl &&
+    (placeholderUrl.startsWith("/") || placeholderUrl.startsWith("./assets/"))
+  ) {
     e.target.src = placeholderUrl;
+    e.target.style.display = "block";
     e.target.style.backgroundColor = "#f0f0f0";
   } else {
-    // Use a default placeholder or hide
+    // Hide the broken image if no valid local placeholder
     e.target.style.display = "none";
   }
 }

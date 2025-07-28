@@ -83,7 +83,7 @@ export default function ProductCard({
     handleImageErrorWithPlaceholder(
       e,
       product.image,
-      "https://via.placeholder.com/150x150?text=No+Image"
+      "/assets/placeholder-image.svg" // Use local placeholder
     );
   };
 
