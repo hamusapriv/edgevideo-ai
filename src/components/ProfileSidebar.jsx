@@ -7,6 +7,7 @@ import GoogleSignInButton from "../auth/GoogleSignInButton";
 import Socials from "./Socials";
 import FAQ from "./FAQ";
 import { useState } from "react";
+import { showCookieConsent } from "../utils/cookieManager";
 
 export default function ProfileSidebar({ isOpen, onClose }) {
   const { user } = useAuth();
@@ -160,6 +161,26 @@ export default function ProfileSidebar({ isOpen, onClose }) {
                 <span>Privacy Policy</span>
                 <ArrowIcon />
               </Link>
+              <Link
+                to="/cookie-settings"
+                className="list-row"
+                onClick={onClose}
+              >
+                <span>Cookie Settings</span>
+                <ArrowIcon />
+              </Link>
+
+              <button
+                type="button"
+                className="list-row"
+                onClick={() => {
+                  showCookieConsent();
+                  onClose();
+                }}
+              >
+                <span>Reset Cookie Preferences</span>
+                <ArrowIcon />
+              </button>
             </div>
 
             <button className="btn--secondary">Contact us</button>
@@ -221,6 +242,27 @@ export default function ProfileSidebar({ isOpen, onClose }) {
                 <span>Privacy Policy</span>
                 <ArrowIcon />
               </Link>
+
+              <Link
+                to="/cookie-settings"
+                className="list-row"
+                onClick={onClose}
+              >
+                <span>Cookie Settings</span>
+                <ArrowIcon />
+              </Link>
+
+              <button
+                type="button"
+                className="list-row"
+                onClick={() => {
+                  showCookieConsent();
+                  onClose();
+                }}
+              >
+                <span>Reset Cookie Preferences</span>
+                <ArrowIcon />
+              </button>
             </div>
 
             <button className="contact-btn btn--secondary">Contact us</button>

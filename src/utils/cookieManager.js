@@ -1,5 +1,5 @@
 // src/utils/cookieManager.js
-import { applyGAConsent } from "./analytics";
+import { applyGAConsent, clearGACookies } from "./analytics";
 
 // Cookie consent utilities
 export const getCookieConsent = () => {
@@ -14,6 +14,8 @@ export const setCookieConsent = (preferences) => {
 
 export const clearCookieConsent = () => {
   localStorage.removeItem("cookie-consent");
+  // Clear all non-necessary cookies when consent is removed
+  clearAllOptionalCookies();
 };
 
 export const hasGivenConsent = () => {
@@ -27,21 +29,99 @@ export const applyConsent = (preferences) => {
 
   // Marketing cookies
   if (preferences.marketing) {
-    // Enable marketing tracking
-    console.log("Marketing cookies enabled");
+    enableMarketingCookies();
   } else {
-    // Disable marketing tracking
-    console.log("Marketing cookies disabled");
+    disableMarketingCookies();
   }
 
   // Functional cookies
   if (preferences.functional) {
-    // Enable functional features
-    console.log("Functional cookies enabled");
+    enableFunctionalCookies();
   } else {
-    // Limit functional features
-    console.log("Functional cookies disabled");
+    disableFunctionalCookies();
   }
+};
+
+// Marketing cookies management
+const enableMarketingCookies = () => {
+  console.log("Marketing cookies enabled");
+  // Add your marketing tracking here
+  // Examples:
+  // - Facebook Pixel
+  // - LinkedIn Insight Tag
+  // - Twitter conversion tracking
+  // - TikTok Pixel
+};
+
+const disableMarketingCookies = () => {
+  console.log("Marketing cookies disabled");
+  clearMarketingCookies();
+};
+
+const clearMarketingCookies = () => {
+  // Clear common marketing cookies
+  const marketingCookies = [
+    "_fbp",
+    "_fbc",
+    "fr", // Facebook
+    "bcookie",
+    "lidc", // LinkedIn
+    "personalization_id", // Twitter
+    "_ttp", // TikTok
+  ];
+
+  clearCookiesByNames(marketingCookies);
+  console.log("Marketing cookies cleared");
+};
+
+// Functional cookies management
+const enableFunctionalCookies = () => {
+  console.log("Functional cookies enabled");
+  // Enable functional features like:
+  // - User preferences
+  // - Theme settings
+  // - Language preferences
+  // - Recent searches
+};
+
+const disableFunctionalCookies = () => {
+  console.log("Functional cookies disabled");
+  clearFunctionalCookies();
+};
+
+const clearFunctionalCookies = () => {
+  // Clear functional cookies
+  const functionalCookies = [
+    "theme",
+    "language",
+    "user-preferences",
+    "recent-searches",
+    "view-mode",
+  ];
+
+  clearCookiesByNames(functionalCookies);
+  console.log("Functional cookies cleared");
+};
+
+// Utility function to clear cookies by names
+const clearCookiesByNames = (cookieNames) => {
+  cookieNames.forEach((cookieName) => {
+    // Clear for current domain
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    // Clear for parent domain
+    const domain = window.location.hostname.replace(/^www\./, "");
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+    // Clear for subdomain
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain};`;
+  });
+};
+
+// Clear all optional cookies (used when consent is revoked)
+const clearAllOptionalCookies = () => {
+  clearGACookies();
+  clearMarketingCookies();
+  clearFunctionalCookies();
+  console.log("All optional cookies cleared");
 };
 
 // Show cookie consent banner programmatically
@@ -64,4 +144,19 @@ export const isGDPRRegion = () => {
   // This could be enhanced with actual geolocation detection
   // For now, assume all users need consent
   return true;
+};
+
+// Initialize consent system on app start
+export const initializeCookieConsent = () => {
+  const consent = getCookieConsent();
+
+  if (consent) {
+    // Apply existing consent preferences
+    applyConsent(consent);
+    console.log("Applied existing cookie consent:", consent);
+  } else {
+    // No consent given - disable all optional cookies
+    clearAllOptionalCookies();
+    console.log("No cookie consent found - optional cookies disabled");
+  }
 };

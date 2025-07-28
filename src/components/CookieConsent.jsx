@@ -1,6 +1,6 @@
 // src/components/CookieConsent.jsx
 import React, { useState, useEffect } from "react";
-import { applyGAConsent } from "../utils/analytics";
+import { applyConsent } from "../utils/cookieManager";
 import "../styles/cookieConsent.css";
 
 export default function CookieConsent() {
@@ -22,20 +22,6 @@ export default function CookieConsent() {
       applyConsent(savedPreferences);
     }
   }, []);
-
-  const applyConsent = (prefs) => {
-    // Google Analytics
-    applyGAConsent(prefs.analytics);
-
-    // Add other cookie controls here
-    if (prefs.marketing) {
-      // Enable marketing cookies
-    }
-
-    if (prefs.functional) {
-      // Enable functional cookies
-    }
-  };
 
   const acceptAll = () => {
     const allAccepted = {

@@ -1,10 +1,12 @@
 // src/App.jsx
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import ProfileSidebar from "./components/ProfileSidebar";
 import { useSidebar } from "./contexts/SidebarContext";
 import LoadingOverlay from "./components/LoadingOverlay";
 import CookieConsent from "./components/CookieConsent";
+import { initializeCookieConsent } from "./utils/cookieManager";
+import { initializeGA } from "./utils/analytics";
 
 // Page components
 const AppPage = lazy(() => import("./pages/AppPage"));
@@ -28,6 +30,15 @@ import OAuthCallback from "./auth/OAuthCallback";
 export default function App() {
   const { isOpen: sidebarOpen, closeSidebar } = useSidebar();
   const { pathname } = useLocation();
+
+  // Initialize cookie consent system on app start
+  useEffect(() => {
+    // Initialize cookie consent system
+    initializeCookieConsent();
+
+    // Initialize Google Analytics with consent-aware setup
+    initializeGA();
+  }, []);
 
   // Only show the profile sidebar on /app routes
   const showSidebar = pathname.startsWith("/app");
