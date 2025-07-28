@@ -1,4 +1,6 @@
 /* Cookie Consent Banner Styles */
+@import "./variables.css";
+
 .cookie-consent-overlay {
   position: fixed;
   top: 0;
