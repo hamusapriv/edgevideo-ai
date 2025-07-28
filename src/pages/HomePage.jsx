@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../styles/HomePage.css";
 import HeroImg2 from "/assets/hero-image-2.png";
 import HeroVideoMp4 from "/assets/hero-video-min.mp4";
 import HeroVideoWebm from "/assets/hero-video.webm";
+import useIsMobile from "../hooks/useIsMobile";
 import AnimatedStat from "../components/AnimatedStat";
 import TelegramIcon from "../components/svgs/TelegramIcon";
 import TwitterIcon from "../components/svgs/TwitterIcon";
@@ -131,20 +132,53 @@ const testimonials = [
 
 export default function HomePage() {
   const [typedText, setTypedText] = useState("");
-  const [isMobile, setIsMobile] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+  const videoRef = useRef(null);
+  const containerRef = useRef(null);
+  const isMobile = useIsMobile();
   const fullText = "The man in the video is wearing a royal blue t-shirt";
 
-  // Mobile detection
+  // Intersection Observer for lazy loading
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setShouldLoadVideo(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
 
-    return () => window.removeEventListener("resize", checkMobile);
+    return () => observer.disconnect();
   }, []);
+
+  // Video loading handlers
+  const handleVideoLoad = () => {
+    setVideoLoaded(true);
+    setVideoError(false);
+  };
+
+  const handleVideoError = () => {
+    setVideoError(true);
+    setVideoLoaded(false);
+  };
+
+  const retryVideoLoad = () => {
+    setVideoError(false);
+    setShouldLoadVideo(true);
+    if (videoRef.current) {
+      videoRef.current.load();
+    }
+  };
 
   useEffect(() => {
     let index = 0;
@@ -191,20 +225,42 @@ export default function HomePage() {
               </div>
             </div>
             {/*           <img src={HeroImg2} className="hero__image" /> */}
-            <div className="hero-video-container">
-              <video
-                className="hero-video"
-                autoPlay
-                muted
-                loop
-                playsInline
-                poster={HeroImg2}
-                preload={isMobile ? "metadata" : "auto"}
-              >
-                <source src={HeroVideoWebm} type="video/webm" />
-                <source src={HeroVideoMp4} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+            <div className="hero-video-container" ref={containerRef}>
+              {!videoLoaded && !videoError && (
+                <div className="video-loading">
+                  <img src={HeroImg2} alt="Loading..." className="video-poster" />
+                  {shouldLoadVideo && <div className="video-loading-spinner"></div>}
+                </div>
+              )}
+              
+              {videoError && (
+                <div className="video-error">
+                  <img src={HeroImg2} alt="Video unavailable" className="video-poster" />
+                  <button onClick={retryVideoLoad} className="video-retry-btn">
+                    Retry Video
+                  </button>
+                </div>
+              )}
+
+              {shouldLoadVideo && (
+                <video
+                  ref={videoRef}
+                  className={`hero-video ${videoLoaded ? 'loaded' : ''}`}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  poster={HeroImg2}
+                  preload={isMobile ? "none" : "metadata"}
+                  onLoadedData={handleVideoLoad}
+                  onError={handleVideoError}
+                  style={{ opacity: videoLoaded ? 1 : 0 }}
+                >
+                  <source src={HeroVideoWebm} type="video/webm" />
+                  <source src={HeroVideoMp4} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              )}
             </div>
           </div>
         </section>
