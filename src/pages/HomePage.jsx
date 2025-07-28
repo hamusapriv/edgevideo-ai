@@ -228,14 +228,24 @@ export default function HomePage() {
             <div className="hero-video-container" ref={containerRef}>
               {!videoLoaded && !videoError && (
                 <div className="video-loading">
-                  <img src={HeroImg2} alt="Loading..." className="video-poster" />
-                  {shouldLoadVideo && <div className="video-loading-spinner"></div>}
+                  <img
+                    src={HeroImg2}
+                    alt="Loading..."
+                    className="video-poster"
+                  />
+                  {shouldLoadVideo && (
+                    <div className="video-loading-spinner"></div>
+                  )}
                 </div>
               )}
-              
+
               {videoError && (
                 <div className="video-error">
-                  <img src={HeroImg2} alt="Video unavailable" className="video-poster" />
+                  <img
+                    src={HeroImg2}
+                    alt="Video unavailable"
+                    className="video-poster"
+                  />
                   <button onClick={retryVideoLoad} className="video-retry-btn">
                     Retry Video
                   </button>
@@ -245,7 +255,7 @@ export default function HomePage() {
               {shouldLoadVideo && (
                 <video
                   ref={videoRef}
-                  className={`hero-video ${videoLoaded ? 'loaded' : ''}`}
+                  className={`hero-video ${videoLoaded ? "loaded" : ""}`}
                   autoPlay
                   muted
                   loop

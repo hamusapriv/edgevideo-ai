@@ -20,5 +20,5 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EDGEVIDEO_AI_8753A }}
-          channelId: staging
           projectId: edgevideo-ai-8753a
+          target: edgevideo-staging
