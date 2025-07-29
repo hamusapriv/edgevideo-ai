@@ -35,6 +35,22 @@
       gtag("config", "G-3GZF6H0L3V");
     </script>
 
+    <!-- Geniuslink Affiliate Link Conversion -->
+    <script src="//geniuslinkcdn.com/snippet.min.js" defer></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Your TSID from Geniuslink dashboard
+        const tsid = 397101;
+        // Your Geniuslink domain
+        const domain = "https://buy.geni.us";
+
+        // Convert all Amazon links on the page
+        if (typeof Genius !== "undefined" && Genius.amazon) {
+          Genius.amazon.convertLinks(tsid, true, domain);
+        }
+      });
+    </script>
+
     <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body>

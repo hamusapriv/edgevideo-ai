@@ -78,6 +78,17 @@ export default function ProductCard({
     ? `https://s2.googleusercontent.com/s2/favicons?domain=${product.domain_url}&sz=64`
     : product.logo_url || "";
 
+  // Handle product link clicks
+  const handleProductClick = (e) => {
+    if (!product.link) return;
+
+    // Prevent default to allow tracking before navigation
+    e.preventDefault();
+    const transformedLink = transformToGeniusLink(product.link);
+    trackOutboundLink(transformedLink, itemTypeName);
+    window.open(transformedLink, "_blank");
+  };
+
   // Image error handlers using your utility
   const handleProductImageError = (e) => {
     handleImageErrorWithPlaceholder(
@@ -109,13 +120,36 @@ export default function ProductCard({
     >
       <div className="live-image-container">
         {isValidImageUrl(product.image) ? (
-          <img
-            data-role="product-image"
-            src={product.image}
-            alt={product.title}
-            loading="lazy"
-            onError={handleProductImageError}
-          />
+          product.link ? (
+            <a
+              href={transformToGeniusLink(product.link)}
+              onClick={handleProductClick}
+              aria-label={`View product: ${product.title}`}
+              style={{
+                display: "block",
+                width: "100%",
+                height: "100%",
+                cursor: "pointer",
+              }}
+            >
+              <img
+                data-role="product-image"
+                src={product.image}
+                alt={product.title}
+                loading="lazy"
+                onError={handleProductImageError}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            </a>
+          ) : (
+            <img
+              data-role="product-image"
+              src={product.image}
+              alt={product.title}
+              loading="lazy"
+              onError={handleProductImageError}
+            />
+          )
         ) : (
           <div
             style={{
@@ -156,7 +190,23 @@ export default function ProductCard({
         style={showDetails ? {} : { display: "none" }}
       >
         <div data-role="product-name" style={hidden}>
-          {product.title}
+          {product.link ? (
+            <a
+              href={transformToGeniusLink(product.link)}
+              onClick={handleProductClick}
+              aria-label={`View product: ${product.title}`}
+              style={{
+                color: "inherit",
+                textDecoration: "none",
+                cursor: "pointer",
+                display: "block",
+              }}
+            >
+              {product.title}
+            </a>
+          ) : (
+            product.title
+          )}
         </div>
         {price && (
           <p
