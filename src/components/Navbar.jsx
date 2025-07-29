@@ -70,24 +70,52 @@ export default function Navbar() {
         </button>
 
         <div className={`nav-items ${navOpen ? "nav-items--open" : ""}`}>
-          <Link to="/for-channels" className="nav-item" data-tooltip="For Channels" onClick={closeNav}>
+          <Link
+            to="/channels"
+            className="nav-item"
+            data-tooltip="For Channels"
+            onClick={closeNav}
+          >
             <span className="nav-item-text">Channels</span>
           </Link>
-          <Link to="/for-brands" className="nav-item" data-tooltip="For Brands" onClick={closeNav}>
+          <Link
+            to="/brands"
+            className="nav-item"
+            data-tooltip="For Brands"
+            onClick={closeNav}
+          >
             <span className="nav-item-text">Brands</span>
           </Link>
-          <Link to="/for-viewers" className="nav-item" data-tooltip="For Viewers" onClick={closeNav}>
+          <Link
+            to="/viewers"
+            className="nav-item"
+            data-tooltip="For Viewers"
+            onClick={closeNav}
+          >
             <span className="nav-item-text">Viewers</span>
           </Link>
-          <Link to="/app" className="nav-item nav-item--primary" data-tooltip="Open App" onClick={closeNav}>
+          <Link
+            to="/app"
+            className="nav-item nav-item--primary"
+            data-tooltip="Open App"
+            onClick={closeNav}
+          >
             <span className="nav-item-text">Open App</span>
           </Link>
-          <a href="mailto:info@edgevideo.ai" className="nav-item" data-tooltip="Contact Us" onClick={closeNav}>
+          <a
+            href="mailto:info@edgevideo.ai"
+            className="nav-item"
+            data-tooltip="Contact Us"
+            onClick={closeNav}
+          >
             <span className="nav-item-text">Contact</span>
           </a>
         </div>
 
-        <div className={`nav-overlay ${navOpen ? "nav-overlay--open" : ""}`} onClick={toggleNav}></div>
+        <div
+          className={`nav-overlay ${navOpen ? "nav-overlay--open" : ""}`}
+          onClick={toggleNav}
+        ></div>
       </nav>
     </>
   );

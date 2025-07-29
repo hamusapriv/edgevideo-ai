@@ -16,56 +16,62 @@ export function transformToGeniusLink(originalUrl) {
 /**
  * Track outbound link clicks for analytics
  */
-export function trackOutboundLink(url, productName = "Unknown Product") {
+export function trackOutboundLink(
+  url,
+  clickTypeName = "product",
+  itemId = null
+) {
   try {
     // Log the click for debugging
     console.log("Outbound link clicked:", {
       url,
-      product: productName,
+      clickTypeName,
+      itemId,
       timestamp: new Date().toISOString(),
     });
 
-    // Track with Google Analytics if available
-    if (typeof gtag !== "undefined") {
-      gtag("event", "click", {
-        event_category: "outbound",
-        event_label: url,
-        transport_type: "beacon",
-      });
-    }
-
-    return true;
-  } catch (err) {
-    console.error("Error tracking outbound link:", err);
-    return false;
-  }
-}
-
-/**
- * Tracks outbound link clicks
- */
-export function trackOutboundLink(url, itemType = "product") {
-  try {
     // Implement Google Analytics tracking if available
     if (window.gtag) {
       window.gtag("event", "click", {
         event_category: "outbound",
         event_label: url,
-        item_type: itemType,
+        click_type: clickTypeName,
+        item_id: itemId,
       });
     }
 
-    // Also track to internal analytics API
+    // Track to internal analytics API with correct field names
     const trackingUrl = "https://fastapi.edgevideo.ai/tracking/click";
+    const payload = {
+      url: url,
+      clickTypeName: clickTypeName, // API expects this field name
+      itemId: itemId, // API expects this field name
+      timestamp: new Date().toISOString(),
+      user_agent: navigator.userAgent,
+    };
+
     fetch(trackingUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url, item_type: itemType }),
-      // Use no-cors to avoid CORS issues with tracking
-      mode: "no-cors",
-    }).catch(() => {
-      // Silently fail tracking to not interrupt user experience
-    });
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          console.warn(
+            `Tracking API returned ${response.status}: ${response.statusText}`
+          );
+        }
+        return response.text(); // Use text() instead of json() to handle any response format
+      })
+      .then((data) => {
+        console.log("Tracking successful:", data);
+      })
+      .catch((error) => {
+        console.warn("Tracking failed (non-critical):", error.message);
+      });
   } catch (err) {
     // Silently fail to not interrupt user experience
     console.error("Error tracking outbound link:", err);

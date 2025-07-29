@@ -85,7 +85,7 @@ export default function ProductCard({
     // Prevent default to allow tracking before navigation
     e.preventDefault();
     const transformedLink = transformToGeniusLink(product.link);
-    trackOutboundLink(transformedLink, itemTypeName);
+    trackOutboundLink(transformedLink, itemTypeName, product.id);
     window.open(transformedLink, "_blank");
   };
 
@@ -245,7 +245,7 @@ export default function ProductCard({
                 // Prevent default to allow tracking before navigation
                 e.preventDefault();
                 const transformedLink = transformToGeniusLink(product.link);
-                trackOutboundLink(transformedLink, itemTypeName);
+                trackOutboundLink(transformedLink, itemTypeName, product.id);
                 window.open(transformedLink, "_blank");
               }}
               style={{

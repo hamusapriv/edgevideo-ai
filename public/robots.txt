@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.edgevideo.ai/sitemap.xml
+
+# Disallow admin/private pages
+Disallow: /oauth2callback
+Disallow: /app/oauth2callback
+Disallow: /intravel-redirect
+
+# Allow important pages
+Allow: /app
+Allow: /demo  
+Allow: /home
+Allow: /channels
+Allow: /brands
+Allow: /viewers
+Allow: /privacy
+Allow: /terms
+
+# Crawl delay (optional - adjust as needed)
+Crawl-delay: 1

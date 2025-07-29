@@ -43,7 +43,7 @@ const FAQ_DATA = [
       <>
         We value everyone’s privacy. Please find our Data Privacy{" "}
         <a
-          href="https://www.edgevideo.ai/privacy-policy"
+          href="https://www.edgevideo.ai/privacy"
           target="_blank"
           rel="noopener noreferrer"
         >

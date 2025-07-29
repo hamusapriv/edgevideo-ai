@@ -221,8 +221,8 @@ export default function CookieSettingsPage() {
             <h2>Need More Information?</h2>
             <p>
               For more details about how we collect, use, and protect your data,
-              please read our <Link to="/privacy-policy">Privacy Policy</Link>{" "}
-              and <Link to="/terms-and-service">Terms of Service</Link>.
+              please read our <Link to="/privacy">Privacy Policy</Link> and{" "}
+              <Link to="/terms">Terms of Service</Link>.
             </p>
 
             <div className="contact-info">

@@ -149,23 +149,15 @@ export default function ProfileSidebar({ isOpen, onClose }) {
                 <ArrowIcon />
               </button>
 
-              <Link
-                to="/terms-and-services"
-                className="list-row"
-                onClick={onClose}
-              >
+              <Link to="/terms" className="list-row" onClick={onClose}>
                 <span>Terms &amp; conditions</span>
                 <ArrowIcon />
               </Link>
-              <Link to="/privacy-policy" className="list-row" onClick={onClose}>
+              <Link to="/privacy" className="list-row" onClick={onClose}>
                 <span>Privacy Policy</span>
                 <ArrowIcon />
               </Link>
-              <Link
-                to="/cookie-settings"
-                className="list-row"
-                onClick={onClose}
-              >
+              <Link to="/cookies" className="list-row" onClick={onClose}>
                 <span>Cookie Settings</span>
                 <ArrowIcon />
               </Link>
@@ -222,7 +214,7 @@ export default function ProfileSidebar({ isOpen, onClose }) {
               </button>
 
               <Link
-                to="/terms-and-services"
+                to="/terms"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="list-row"
@@ -233,7 +225,7 @@ export default function ProfileSidebar({ isOpen, onClose }) {
               </Link>
 
               <Link
-                to="/privacy-policy"
+                to="/privacy"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="list-row"
@@ -243,11 +235,7 @@ export default function ProfileSidebar({ isOpen, onClose }) {
                 <ArrowIcon />
               </Link>
 
-              <Link
-                to="/cookie-settings"
-                className="list-row"
-                onClick={onClose}
-              >
+              <Link to="/cookies" className="list-row" onClick={onClose}>
                 <span>Cookie Settings</span>
                 <ArrowIcon />
               </Link>
