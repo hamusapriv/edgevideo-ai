@@ -334,11 +334,16 @@ export default function HomePage() {
                   muted
                   loop
                   playsInline
+                  webkit-playsinline="true"
                   poster={HeroImg2}
                   preload={isMobile ? "none" : "metadata"}
                   onLoadedData={handleVideoLoad}
                   onError={handleVideoError}
-                  style={{ opacity: videoLoaded ? 1 : 0 }}
+                  style={{
+                    opacity: videoLoaded ? 1 : 0,
+                    background: "transparent",
+                    backgroundColor: "transparent",
+                  }}
                 >
                   <source src={HeroVideoWebm} type="video/webm" />
                   <source src={HeroVideoMp4} type="video/mp4" />

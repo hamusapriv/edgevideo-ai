@@ -631,6 +631,79 @@ h6,
   background: transparent;
 }
 
+/* iOS-specific video fixes */
+.hero-video {
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Force transparent background on iOS Safari */
+@supports (-webkit-appearance: none) {
+  .hero-video-container {
+    background: transparent !important;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+  }
+
+  .hero-video {
+    background: transparent !important;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+  }
+
+  .video-loading,
+  .video-error {
+    background: transparent !important;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+  }
+}
+
+/* iOS-specific fixes for video background issues */
+@media screen and (-webkit-min-device-pixel-ratio: 1) {
+  .hero-video-container {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  .hero-video {
+    background: transparent !important;
+    background-color: transparent !important;
+    object-fit: contain;
+    border-radius: 0;
+  }
+
+  .hero-video::before,
+  .hero-video::after {
+    display: none !important;
+  }
+
+  .video-loading,
+  .video-error {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  .video-poster {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+}
+
+/* Additional iOS Safari specific targeting */
+@supports (-webkit-touch-callout: none) {
+  .hero-video-container,
+  .hero-video,
+  .video-loading,
+  .video-error,
+  .video-poster {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+}
+
 .hero-video.loaded {
   opacity: 1;
 }
@@ -1472,7 +1545,7 @@ h6,
 .example-frame img,
 .example-product img {
   height: 150px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 8px;
 }
 
@@ -1966,6 +2039,21 @@ h6,
     height: 50vh;
     order: -1;
     margin-left: 0;
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  .hero-video {
+    background: transparent !important;
+    background-color: transparent !important;
+    object-fit: contain;
+  }
+
+  .video-loading,
+  .video-error,
+  .video-poster {
+    background: transparent !important;
+    background-color: transparent !important;
   }
 
   .how-it-works-header {
@@ -2015,15 +2103,25 @@ h6,
   .hero-video-container {
     height: 40vh;
     max-height: 300px;
-    background: transparent;
+    background: transparent !important;
+    background-color: transparent !important;
   }
 
   .hero-video {
-    background: transparent;
+    background: transparent !important;
+    background-color: transparent !important;
+    object-fit: contain;
+  }
+
+  .video-loading,
+  .video-error {
+    background: transparent !important;
+    background-color: transparent !important;
   }
 
   .video-poster {
-    background: transparent;
+    background: transparent !important;
+    background-color: transparent !important;
   }
 
   .floating-logo {
@@ -2717,5 +2815,34 @@ h6,
   .stats-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
+  }
+}
+
+/* Ultra-specific iOS targeting for video background fix */
+@supports (-webkit-touch-callout: none) and (-webkit-appearance: none) {
+  .hero-video-container {
+    background: transparent !important;
+    background-color: transparent !important;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+
+  .hero-video {
+    background: transparent !important;
+    background-color: transparent !important;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    object-fit: cover !important;
+  }
+
+  .video-loading,
+  .video-error {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  .video-poster {
+    background: transparent !important;
+    background-color: transparent !important;
   }
 }
