@@ -15,6 +15,7 @@ export default function ChannelLogo({
   const [logoUrl, setLogoUrl] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showPlaceholder, setShowPlaceholder] = useState(false);
 
   // Determine which channelId to use
   const channel = propChannelId || window.channelId;
@@ -167,6 +168,27 @@ export default function ChannelLogo({
     );
   }
 
+  if (showPlaceholder) {
+    return (
+      <div
+        style={{
+          width: "40px",
+          height: "40px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#333",
+          borderRadius: "6px",
+          color: "#999",
+          fontSize: "12px",
+        }}
+        className={className}
+      >
+        Logo
+      </div>
+    );
+  }
+
   return (
     <img
       id="channelLogo"
@@ -179,13 +201,8 @@ export default function ChannelLogo({
         if (e.target.src !== fallbackLogos.default) {
           e.target.src = fallbackLogos.default;
         } else {
-          // Hide image and show text placeholder
-          e.target.style.display = "none";
-          const placeholder = document.createElement("div");
-          placeholder.style.cssText =
-            "width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: #333; border-radius: 6px; color: #999; font-size: 12px;";
-          placeholder.textContent = "Logo";
-          e.target.parentNode.replaceChild(placeholder, e.target);
+          // Show text placeholder using React state
+          setShowPlaceholder(true);
         }
       }}
       {...imgProps}

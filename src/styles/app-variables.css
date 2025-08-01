@@ -1,0 +1,133 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   app-variables.css
+   Dedicated Variables for App Route - Dark Theme by Default
+   ─────────────────────────────────────────────────────────────────────────────
+*/
+
+:root {
+  /* ═══════════════════════════════════════════════════════════════════════════
+     LAYOUT & RESPONSIVE BREAKPOINTS
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --bp-sm: 640px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --container-max: 1200px;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     TYPOGRAPHY
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-heading: "Inter", system-ui, sans-serif;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     SPACING SYSTEM
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 4rem;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     BRAND COLORS (Theme Independent)
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --brand-primary: #617afa;
+  --brand-primary-hover: #4f67d4;
+  --brand-secondary: #21284a;
+  --brand-success: #4caf50;
+  --brand-success-light: #a5d6a7;
+  --brand-danger: #f44336;
+  --brand-warning: #ff9800;
+  --brand-info: #2196f3;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     APP DARK THEME - Fixed Dark Appearance
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  /* ─── SEMANTIC COLORS ─────────────────────────────────────────────────────── */
+  --color: #f8fafc; /* Primary text color */
+  --color-muted: #cbd5e1; /* Secondary text color */
+  --color-subtle: #94a3b8; /* Tertiary text color */
+  --color-inverse: #1e293b; /* Text on light backgrounds */
+
+  /* ─── BACKGROUND SYSTEM ──────────────────────────────────────────────────── */
+  --background: #0f172a; /* Main page background */
+  --background-secondary: #1e293b; /* Card/section backgrounds */
+  --background-tertiary: #334155; /* Hover states, disabled elements */
+  --background-overlay: rgba(0, 0, 0, 0.3); /* Darker overlays */
+
+  /* ─── SURFACE COLORS ─────────────────────────────────────────────────────── */
+  --surface: #1e293b; /* Card backgrounds */
+  --surface-hover: #334155; /* Hover states */
+  --surface-active: #475569; /* Active states */
+  --surface-disabled: #334155; /* Disabled elements */
+
+  /* ─── BORDER SYSTEM ──────────────────────────────────────────────────────── */
+  --border: #475569; /* Default borders */
+  --border-light: #334155; /* Subtle borders */
+  --border-strong: #64748b; /* Prominent borders */
+  --border-focus: var(--brand-primary); /* Focus outlines */
+
+  /* ─── SHADOW SYSTEM ──────────────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4),
+    0 2px 4px -1px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4),
+    0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4),
+    0 10px 10px -5px rgba(0, 0, 0, 0.15);
+
+  /* ─── SVG & ICON COLORS ──────────────────────────────────────────────────── */
+  --fill: currentColor; /* SVG fill color */
+  --stroke: currentColor; /* SVG stroke color */
+  --icon-color: var(--color); /* Icon color */
+  --icon-color-muted: var(--color-muted);
+
+  /* ─── COMPONENT SPECIFIC ─────────────────────────────────────────────────── */
+  --nav-background: rgba(30, 41, 59, 0.95);
+  --nav-border: var(--border-light);
+  --card-background: var(--surface);
+  --card-border: var(--border);
+  --button-background: var(--surface);
+  --button-color: var(--color);
+  --input-background: var(--surface);
+  --input-border: var(--border);
+  --input-focus-border: var(--border-focus);
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     APP-SPECIFIC COLORS (Original App Styling)
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --app-bg: #0f172a;
+  --app-surface: #1e293b;
+  --app-surface-hover: #334155;
+  --app-text: #f8fafc;
+  --app-text-muted: #cbd5e1;
+  --app-border: #475569;
+  --app-accent: #617afa;
+
+  /* Legacy color variables that might be used in app components */
+  --color-primary: var(--brand-primary);
+  --color-secondary: var(--brand-secondary);
+  --color-success: var(--brand-success);
+  --color-danger: var(--brand-danger);
+  --color-warning: var(--brand-warning);
+  --color-info: var(--brand-info);
+
+  /* Common dark theme colors that app might use */
+  --color-black: #000000;
+  --color-black-01: rgba(0, 0, 0, 0.1);
+  --color-black-02: rgba(0, 0, 0, 0.2);
+  --color-black-03: rgba(0, 0, 0, 0.3);
+  --color-black-04: rgba(0, 0, 0, 0.4);
+  --color-black-05: rgba(0, 0, 0, 0.5);
+  --color-white: #ffffff;
+  --color-white-01: rgba(255, 255, 255, 0.1);
+  --color-white-02: rgba(255, 255, 255, 0.2);
+  --color-white-03: rgba(255, 255, 255, 0.3);
+  --color-white-04: rgba(255, 255, 255, 0.4);
+  --color-white-05: rgba(255, 255, 255, 0.5);
+}

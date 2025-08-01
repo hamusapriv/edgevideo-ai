@@ -1,16 +1,18 @@
 import React from "react";
 import "../styles/HomePage.css";
+import "../styles/marketing-theme.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import JoinUsSection from "../components/JoinUsSection";
 import ViewersSvg1 from "../components/svgs/ViewersSvg1";
 import ViewersSvg2 from "../components/svgs/ViewersSvg2";
 import ViewersSvg3 from "../components/svgs/ViewersSvg3";
+import MarketingBG from "../components/MarketingBG";
 
 export default function ViewersPage() {
   return (
-    <div className="home">
-      <div className="home-bg"></div>
+    <div className="home marketing-page">
+      <MarketingBG />
       <Navbar />
 
       <main className="home-main">

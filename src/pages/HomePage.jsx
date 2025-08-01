@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import "../styles/HomePage.css";
+import "../styles/marketing-theme.css";
 import HeroImg2 from "/assets/hero-image-2.png";
 import HeroVideoMp4 from "/assets/hero-video-min.mp4";
 import HeroVideoWebm from "/assets/hero-video.webm";
 import useIsMobile from "../hooks/useIsMobile";
+import MarketingBG from "../components/MarketingBG";
 
 // Lazy load heavy components
 const AnimatedStat = lazy(() => import("../components/AnimatedStat"));
@@ -270,8 +272,8 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="home">
-      <div className="home-bg"></div>
+    <div className="home marketing-page">
+      <MarketingBG />
       <Navbar />
 
       <main className="home-main">
@@ -635,9 +637,9 @@ export default function HomePage() {
               <div className="feature-card feature-1">
                 <div className="feature-icon">
                   <Suspense
-                    fallback={<div style={{ width: "48px", height: "48px" }} />}
+                    fallback={<div style={{ width: "96px", height: "96px" }} />}
                   >
-                    <FastSetupIcon size={48} />
+                    <FastSetupIcon size={96} />
                   </Suspense>
                 </div>
                 <h3>
@@ -647,9 +649,9 @@ export default function HomePage() {
               <div className="feature-card feature-2">
                 <div className="feature-icon">
                   <Suspense
-                    fallback={<div style={{ width: "48px", height: "48px" }} />}
+                    fallback={<div style={{ width: "96px", height: "96px" }} />}
                   >
-                    <GamificationIcon size={48} />
+                    <GamificationIcon size={96} />
                   </Suspense>
                 </div>
                 <h3>
@@ -675,9 +677,9 @@ export default function HomePage() {
               <div className="feature-card feature-3">
                 <div className="feature-icon">
                   <Suspense
-                    fallback={<div style={{ width: "48px", height: "48px" }} />}
+                    fallback={<div style={{ width: "96px", height: "96px" }} />}
                   >
-                    <RewardsIcon size={48} />
+                    <RewardsIcon size={96} />
                   </Suspense>
                 </div>
                 <h3>Reward your viewers for interacting with your content.</h3>
@@ -685,9 +687,9 @@ export default function HomePage() {
               <div className="feature-card feature-4">
                 <div className="feature-icon">
                   <Suspense
-                    fallback={<div style={{ width: "48px", height: "48px" }} />}
+                    fallback={<div style={{ width: "96px", height: "96px" }} />}
                   >
-                    <AnalyticsIcon size={48} />
+                    <AnalyticsIcon size={96} />
                   </Suspense>
                 </div>
                 <h3>

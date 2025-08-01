@@ -98,3 +98,34 @@
     opacity: 0.5;
   }
 }
+
+/* Tab content transitions - replace JavaScript DOM manipulation with CSS */
+.tab-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+  transform: translateX(100%);
+}
+
+.tab-content-active {
+  transform: translateX(0);
+  z-index: 2;
+}
+
+.tab-content-inactive {
+  z-index: 1;
+}
+
+/* First tab (shopping) starts at 0 when inactive, moves left when not active */
+.tab-content[data-tab-index="0"].tab-content-inactive {
+  transform: translateX(-100%);
+}
+
+/* Other tabs start from right when inactive */
+.tab-content[data-tab-index="1"].tab-content-inactive,
+.tab-content[data-tab-index="2"].tab-content-inactive {
+  transform: translateX(100%);
+}

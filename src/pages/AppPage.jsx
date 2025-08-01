@@ -80,51 +80,18 @@ function AppPage() {
     );
   }
 
-  // initial positioning
+  // initial positioning - use CSS classes instead of direct DOM manipulation
   useEffect(() => {
-    tabConfig.forEach((_, i) => {
-      const el = panelRefs.current[i].current;
-      if (!el) return;
-      Object.assign(el.style, {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        transition: "transform 0.3s ease",
-        transform: i === 0 ? "translateX(0)" : "translateX(100%)",
-      });
-    });
+    // Force a re-render to ensure proper CSS classes are applied
+    const timer = setTimeout(() => {
+      setActiveTab((currentTab) => currentTab);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [tabConfig]);
 
-  // animate on tab change
+  // animate on tab change - use CSS classes instead of direct style manipulation
   useEffect(() => {
     const newIndex = tabConfig.findIndex((t) => t.key === activeTab);
-    const oldIndex = prevIndexRef.current;
-    if (newIndex === oldIndex || newIndex < 0) {
-      prevIndexRef.current = newIndex;
-      return;
-    }
-
-    const newEl = panelRefs.current[newIndex].current;
-    const oldEl = panelRefs.current[oldIndex].current;
-    if (!newEl || !oldEl) {
-      prevIndexRef.current = newIndex;
-      return;
-    }
-
-    newEl.style.transition = "none";
-    newEl.style.transform =
-      newIndex > oldIndex ? "translateX(100%)" : "translateX(-100%)";
-    newEl.offsetWidth; // force reflow
-
-    oldEl.style.transition = "transform 0.3s ease";
-    oldEl.style.transform =
-      newIndex > oldIndex ? "translateX(-100%)" : "translateX(100%)";
-
-    newEl.style.transition = "transform 0.3s ease";
-    newEl.style.transform = "translateX(0)";
-
     prevIndexRef.current = newIndex;
   }, [activeTab, tabConfig]);
 
@@ -153,11 +120,17 @@ function AppPage() {
           void TabComponent;
           // Use a key that depends on both tab and channelId to avoid DOM errors
           const panelKey = channelId ? `${key}-${channelId}` : key;
+          const currentIndex = tabConfig.findIndex((t) => t.key === activeTab);
+          const isActive = i === currentIndex;
+
           return (
             <div
               key={panelKey}
-              className="tab-content"
+              className={`tab-content ${
+                isActive ? "tab-content-active" : "tab-content-inactive"
+              }`}
               ref={panelRefs.current[i]}
+              data-tab-index={i}
             >
               {key === "shopping" ? (
                 <TabComponent openProfileSidebar={openSidebar} />

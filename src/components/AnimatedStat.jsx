@@ -52,7 +52,7 @@ const AnimatedStat = ({ number, label, delay = 0 }) => {
   return (
     <div ref={ref} className="animated-stat">
       <div className="stat-number">{formatNumber(currentNumber)}</div>
-      <div className="stat-label">{label}</div>
+      <h3 className="stat-label">{label}</h3>
     </div>
   );
 };

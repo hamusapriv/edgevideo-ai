@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/HomePage.css";
+import "../styles/marketing-theme.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import JoinUsSection from "../components/JoinUsSection";
@@ -7,11 +8,12 @@ import ChannelsSvg1 from "../components/svgs/ChannelsSvg1";
 import ChannelsSvg2 from "../components/svgs/ChannelsSvg2";
 import ChannelsSvg3 from "../components/svgs/ChannelsSvg3";
 import ChannelsSvg4 from "../components/svgs/ChannelsSvg4";
+import MarketingBG from "../components/MarketingBG";
 
 export default function ChannelsPage() {
   return (
-    <div className="home">
-      <div className="home-bg"></div>
+    <div className="home marketing-page">
+      <MarketingBG />
       <Navbar />
 
       <main className="home-main">

@@ -10,7 +10,12 @@ body {
   flex-direction: column;
   height: 100dvh;
   color: var(--color-white);
-  background: var(--bg-dark-blue);
+  background: var(--bg-dark-blue); /* Default dark background for app */
+}
+
+/* Ensure app pages always have dark background regardless of marketing theme */
+body:not(:has(.marketing-page)) {
+  background: var(--bg-dark-blue) !important;
 }
 
 a {

@@ -1,0 +1,336 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   marketing-theme.css
+   Dark/Light Theme System - ONLY for Marketing Pages
+   (/home, /channels, /brands, /viewers)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Light Theme Variables (Default) */
+:root {
+  --marketing-bg: #ffffff;
+  --marketing-surface: #f8fafc;
+  --marketing-text: #1e293b;
+  --marketing-text-muted: #64748b;
+  --marketing-border: #e2e8f0;
+  --marketing-accent: #617afa;
+}
+
+/* Dark Theme Variables - Only applied when data-marketing-theme="dark" */
+[data-marketing-theme="dark"] {
+  --marketing-bg: #0f172a;
+  --marketing-surface: #1e293b;
+  --marketing-text: #f8fafc;
+  --marketing-text-muted: #cbd5e1;
+  --marketing-border: #475569;
+  --marketing-accent: #617afa;
+}
+
+/* Apply theme to body ONLY when on marketing pages */
+body:has(.marketing-page) {
+  background: var(--marketing-bg) !important;
+  transition: background-color 0.3s ease;
+}
+
+/* Apply theme ONLY to marketing page containers */
+.marketing-page {
+  color: var(--marketing-text);
+  transition: color 0.3s ease;
+  min-height: 100vh; /* Ensure full height coverage */
+}
+
+.marketing-page h1,
+.marketing-page h2,
+.marketing-page h3,
+.marketing-page h4,
+.marketing-page h5,
+.marketing-page h6 {
+  color: var(--marketing-text);
+}
+
+.marketing-page p {
+  color: var(--marketing-text);
+}
+
+.marketing-page .card,
+.marketing-page .surface {
+  background: var(--marketing-surface);
+  color: var(--marketing-text);
+  border: 1px solid var(--marketing-border);
+}
+
+/* Navigation theming for marketing pages */
+.marketing-page .nav-orb {
+  background: var(--marketing-surface);
+  border: 1px solid var(--marketing-border);
+}
+
+.marketing-page .nav-items {
+  background: var(--marketing-surface);
+  border: 1px solid var(--marketing-border);
+}
+
+.marketing-page .nav-item {
+  color: var(--marketing-text);
+}
+
+.marketing-page .nav-item:hover {
+  background: var(--marketing-border);
+}
+
+/* Fix hamburger lines visibility in light mode */
+.marketing-page .orb-lines span {
+  background: var(--marketing-text);
+}
+
+/* Fix specific Join Us section SVGs - more targeted approach */
+.marketing-page .join-us svg path,
+.marketing-page .join-us-section svg path,
+.marketing-page .social-section svg path,
+.marketing-page .social svg path,
+.marketing-page .social__list svg path,
+.marketing-page .social-a-wrap svg path,
+.marketing-page .toggle-svg path {
+  fill: var(--marketing-text) !important;
+}
+
+/* Alternative: target common white fills in SVGs */
+.marketing-page svg path[fill="white"],
+.marketing-page svg path[fill="#ffffff"],
+.marketing-page svg path[fill="#FFFFFF"] {
+  fill: var(--marketing-text) !important;
+}
+
+/* Additional targeting for social media icons in Join Us section */
+.marketing-page .social svg,
+.marketing-page .social__item svg,
+.marketing-page .social-a-wrap svg {
+  color: var(--marketing-text) !important;
+}
+
+.marketing-page .social svg path,
+.marketing-page .social__item svg path,
+.marketing-page .social-a-wrap svg path {
+  fill: var(--marketing-text) !important;
+  stroke: var(--marketing-text) !important;
+}
+
+/* Theme toggle button */
+.marketing-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: var(--marketing-surface);
+  border: 2px solid var(--marketing-border);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 18px;
+  height: 50px;
+  justify-content: center;
+}
+
+.marketing-theme-toggle:hover {
+  background: var(--marketing-border);
+  transform: scale(1.05);
+}
+
+/* Remove fixed positioning when in navbar */
+.nav-theme-toggle .marketing-theme-toggle {
+  position: static;
+  height: 40px;
+  font-size: 16px;
+}
+
+/* Navbar theme toggle styling */
+.nav-theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: none !important;
+  background: transparent !important;
+}
+
+.nav-theme-toggle:hover {
+  background: transparent !important;
+}
+
+/* Responsive theme toggle in navbar */
+@media (max-width: 768px) {
+  .nav-theme-toggle {
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--marketing-border);
+    padding-top: 1rem;
+  }
+}
+
+.marketing-theme-toggle svg {
+  height: 40px;
+  fill: var(--marketing-text);
+}
+
+/* Improve button text visibility - keep gradient backgrounds */
+.marketing-page .btn,
+.marketing-page .btn--primary {
+  color: white !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+}
+
+.marketing-page .btn--secondary {
+  color: var(--marketing-text) !important;
+  font-weight: 600;
+  border: 2px solid var(--marketing-text) !important;
+}
+
+.marketing-page .btn:hover,
+.marketing-page .btn--primary:hover,
+.marketing-page .btn--secondary:hover {
+  color: white !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Ensure all sections have consistent background - no transitions */
+.marketing-page .hero,
+.marketing-page .simple-section,
+.marketing-page section {
+  background: transparent !important;
+}
+
+/* Make sure the main content area is also transparent */
+.marketing-page .home-main {
+  background: transparent !important;
+}
+
+/* Define RGB values for better transparency control */
+:root {
+  --marketing-text-rgb: 30, 41, 59; /* #1e293b */
+}
+
+[data-marketing-theme="dark"] {
+  --marketing-text-rgb: 248, 250, 252; /* #f8fafc */
+}
+
+/* Footer theme override - fixes harsh transition at bottom */
+.marketing-page .footer {
+  border-top: 1px solid rgba(var(--marketing-text-rgb), 0.15);
+}
+
+.marketing-page .footer-copyright {
+  border-top: 1px solid rgba(var(--marketing-text-rgb), 0.15);
+}
+
+/* Override any hardcoded dark backgrounds that cause transitions - but exclude MarketingBG and nav-overlay */
+.marketing-page [style*="background: rgba(0, 0, 0"]:not(.marketing-bg-overlay),
+.marketing-page
+  [style*="background-color: rgba(0, 0, 0"]:not(.marketing-bg-overlay),
+.marketing-page
+  [class*="overlay"]:not(.marketing-bg-overlay):not(.nav-overlay) {
+  background: rgba(var(--marketing-text-rgb), 0.1) !important;
+}
+
+/* Specific nav-overlay handling for marketing pages */
+/* Light mode: keep default dark overlay */
+.marketing-page .nav-overlay {
+  background: rgba(248, 250, 252, 0.1);
+}
+
+/* Dark mode: use light overlay */
+[data-marketing-theme="dark"] .marketing-page .nav-overlay {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Specific elements that cause harsh transitions */
+.marketing-page .home {
+  background-color: transparent !important;
+}
+
+.marketing-page .home-bg::before {
+  background-color: rgba(var(--marketing-text-rgb), 0.1) !important;
+}
+
+.marketing-page .floating-logo {
+  border: 1px solid rgba(var(--marketing-text-rgb), 0.2) !important;
+}
+
+/* Additional comprehensive background overrides to prevent any transitions */
+.marketing-page *[class*="bg"]::before,
+.marketing-page *[class*="bg"]::after,
+.marketing-page *[class*="background"]::before,
+.marketing-page *[class*="background"]::after {
+  background: rgba(var(--marketing-text-rgb), 0.05) !important;
+}
+
+/* Ensure main content areas are transparent */
+.marketing-page main,
+.marketing-page .main-content,
+.marketing-page .content-wrapper {
+  background: transparent !important;
+}
+
+.marketing-page .simple-icon {
+  background: #0d153c !important;
+}
+
+[data-marketing-theme="dark"] .marketing-page .simple-icon {
+  background: #0d153c !important;
+}
+.marketing-page .simple-item {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-marketing-theme="dark"] .marketing-page .simple-item {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+.marketing-page .step-showcase {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-marketing-theme="dark"] .marketing-page .step-showcase {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+.marketing-page .example-pair {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-marketing-theme="dark"] .marketing-page .example-pair {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+.marketing-page .testimonial {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-marketing-theme="dark"] .marketing-page .testimonial {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+.marketing-page .feature-card {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-marketing-theme="dark"] .marketing-page .feature-card {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+.marketing-page .social__item a:hover {
+  background: #ffffff !important;
+}
+
+[data-marketing-theme="dark"] .marketing-page .social__item a:hover {
+  background: #617afa !important;
+}
+.marketing-page .hero-content {
+  background: #ffffff3d !important;
+}
+
+[data-marketing-theme="dark"] .marketing-page .hero-content {
+  background: #00000045 !important;
+}
+
+.marketing-page .hero-content {
+  border: none !important;
+}
+
+.channels-benefit-icon {
+  background: #ffffff5f !important;
+}
+
+[data-marketing-theme="dark"] .marketing-page .channels-benefit-icon {
+  background: rgba(0, 195, 255, 0.08) !important;
+}

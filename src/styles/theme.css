@@ -1,0 +1,248 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Professional Dark/Light Mode System
+   Universal Theme Application - Scoped to avoid affecting app routes
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── HTML FOUNDATION - Only for marketing pages ────────────────────────── */
+html {
+  background: var(--background);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  background: transparent; /* Let html handle the background */
+  font-family: var(--font-sans);
+}
+
+/* ─── SCOPED TYPOGRAPHY SYSTEM - Only apply to marketing pages ──────────── */
+body[data-route^="/home"] h1,
+body[data-route^="/home"] .h1,
+body[data-route^="/channels"] h1,
+body[data-route^="/channels"] .h1,
+body[data-route^="/brands"] h1,
+body[data-route^="/brands"] .h1,
+body[data-route^="/viewers"] h1,
+body[data-route^="/viewers"] .h1,
+.home h1,
+.home .h1,
+.home h2,
+.home .h2,
+.home h3,
+.home .h3,
+.home h4,
+.home .h4,
+.home h5,
+.home .h5,
+.home h6,
+.home .h6 {
+  color: var(--color);
+  font-family: var(--font-heading);
+}
+
+body[data-route^="/home"] p,
+body[data-route^="/channels"] p,
+body[data-route^="/brands"] p,
+body[data-route^="/viewers"] p,
+.home p {
+  color: var(--color);
+}
+
+/* Text Variations - Scoped */
+.home .text-muted {
+  color: var(--color-muted);
+}
+
+.home .text-subtle {
+  color: var(--color-subtle);
+}
+
+.home .text-inverse {
+  color: var(--color-inverse);
+}
+
+/* ─── LINKS - Scoped to marketing pages ─────────────────────────────────── */
+.home a {
+  color: var(--brand-primary);
+  transition: color 0.2s ease;
+}
+
+.home a:hover {
+  color: var(--brand-primary-hover);
+}
+
+/* ─── BUTTONS - Scoped to marketing pages ───────────────────────────────── */
+.home button,
+.home .btn {
+  background: var(--button-background);
+  color: var(--button-color);
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+.home button:hover,
+.home .btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+.home .btn--primary {
+  background: var(--brand-primary);
+  color: var(--color-inverse);
+  border-color: var(--brand-primary);
+}
+
+.home .btn--primary:hover {
+  background: var(--brand-primary-hover);
+  border-color: var(--brand-primary-hover);
+}
+
+/* ─── FORMS - Scoped to marketing pages ─────────────────────────────────── */
+.home input,
+.home textarea,
+.home select {
+  background: var(--input-background);
+  color: var(--color);
+  border: 1px solid var(--input-border);
+  transition: all 0.2s ease;
+}
+
+.home input:focus,
+.home textarea:focus,
+.home select:focus {
+  border-color: var(--input-focus-border);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(97, 122, 250, 0.1);
+}
+
+.home input::placeholder,
+.home textarea::placeholder {
+  color: var(--color-muted);
+}
+
+/* ─── CARDS & SURFACES - Scoped to marketing pages ─────────────────────── */
+.home .card,
+.home .surface {
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  color: var(--color);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.home .card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* ─── SVG & ICON SYSTEM - Scoped to marketing pages ────────────────────── */
+.home svg {
+  fill: var(--fill);
+  color: var(--icon-color);
+  transition: fill 0.2s ease, color 0.2s ease;
+}
+
+.home svg path,
+.home svg circle,
+.home svg rect,
+.home svg polygon,
+.home svg ellipse,
+.home svg line,
+.home svg polyline {
+  fill: inherit;
+  stroke: var(--stroke);
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+/* Icon containers - Scoped */
+.home .icon,
+.home [class*="icon"],
+.home [class*="Icon"] {
+  color: var(--icon-color);
+}
+
+.home .icon svg,
+.home [class*="icon"] svg,
+.home [class*="Icon"] svg {
+  fill: currentColor;
+  color: inherit;
+}
+
+/* Muted icons - Scoped */
+.home .icon--muted {
+  color: var(--icon-color-muted);
+}
+
+/* ─── BORDERS & DIVIDERS - Scoped to marketing pages ───────────────────── */
+.home hr,
+.home .divider {
+  border-color: var(--border);
+  background: var(--border);
+}
+
+.home .border {
+  border-color: var(--border);
+}
+
+.home .border-light {
+  border-color: var(--border-light);
+}
+
+.home .border-strong {
+  border-color: var(--border-strong);
+}
+
+/* ─── SHADOWS - Scoped to marketing pages ──────────────────────────────── */
+.home .shadow-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.home .shadow {
+  box-shadow: var(--shadow);
+}
+
+.home .shadow-md {
+  box-shadow: var(--shadow-md);
+}
+
+.home .shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+.home .shadow-xl {
+  box-shadow: var(--shadow-xl);
+}
+
+/* ─── UTILITY CLASSES - Scoped to marketing pages ──────────────────────── */
+.home .bg-surface {
+  background: var(--surface);
+}
+
+.home .bg-surface-hover {
+  background: var(--surface-hover);
+}
+
+.home .bg-surface-active {
+  background: var(--surface-active);
+}
+
+.home .bg-overlay {
+  background: var(--background-overlay);
+}
+
+/* ─── ACCESSIBILITY - Keep global for all components ────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* ─── SMOOTH TRANSITIONS - Apply only to marketing pages ───────────────── */
+.home * {
+  transition-property: background-color, border-color, color, fill, stroke,
+    opacity, box-shadow, transform;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+}
+
+/* Disable transitions during theme change to prevent flashing */
+.theme-transitioning .home * {
+  transition: none !important;
+}

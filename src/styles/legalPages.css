@@ -1,12 +1,17 @@
-/* Cookie Settings Page Styles */
+/* Shared Legal Pages Styles */
 @import "./variables.css";
 @import "./reset.css";
 @import "./base.css";
 
-.cookie-settings-page {
+.legal-page {
   background: #0a0e1a;
   color: white;
   padding: 2rem;
+}
+
+.legal-container {
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .back-btn {
@@ -44,27 +49,74 @@
   margin: 0 auto;
 }
 
-.cookie-info-section,
-.cookie-categories-section,
-.additional-info {
-  margin-bottom: 3rem;
+.legal-content {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
 }
 
-.cookie-info-section h2,
-.cookie-categories-section h2,
-.additional-info h2 {
+.legal-content h2 {
   color: white;
   font-size: 1.5rem;
+  margin-top: 2rem;
   margin-bottom: 1rem;
   border-bottom: 2px solid var(--color-primary);
   padding-bottom: 0.5rem;
 }
 
-.cookie-info-section p,
-.additional-info p {
+.legal-content h2:first-child {
+  margin-top: 0;
+}
+
+.legal-content p {
   color: #e6e6e6;
   line-height: 1.6;
   margin-bottom: 1rem;
+}
+
+.legal-content ul {
+  list-style: disc inside;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.legal-content ul li {
+  color: #e6e6e6;
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.legal-content ul li strong {
+  color: white;
+}
+
+.legal-content a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.legal-content a:hover {
+  text-decoration: underline;
+}
+
+.cookie-settings-section {
+  margin-bottom: 3rem;
+}
+
+.cookie-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.cookie-categories-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .category-card {
@@ -72,7 +124,6 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 2rem;
-  margin-bottom: 1.5rem;
   transition: all 0.3s ease;
 }
 
@@ -229,6 +280,21 @@
   border-radius: 12px;
   padding: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 2rem;
+}
+
+.additional-info h2 {
+  color: white;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: 0.5rem;
+}
+
+.additional-info p {
+  color: #e6e6e6;
+  line-height: 1.6;
+  margin-bottom: 1rem;
 }
 
 .additional-info a {
@@ -255,10 +321,52 @@
   text-decoration: underline;
 }
 
+/* Privacy Page Specific Styles */
+.privacy-content {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  min-height: 600px;
+}
+
+/* Override Enzuzo SVG fill colors to use current color */
+.privacy-content svg {
+  fill: currentColor !important;
+}
+
+.privacy-content svg path {
+  fill: currentColor !important;
+}
+
+.privacy-content svg rect {
+  fill: currentColor !important;
+}
+
+.privacy-content svg circle {
+  fill: currentColor !important;
+}
+
+.privacy-content svg polygon {
+  fill: currentColor !important;
+}
+
+/* Ensure icons inherit text color */
+.privacy-content .icon,
+.privacy-content [class*="icon"] {
+  color: inherit;
+}
+
+.privacy-content .icon svg,
+.privacy-content [class*="icon"] svg {
+  fill: currentColor !important;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
-  .container {
-    padding: 0 1rem;
+  .legal-page {
+    padding: 1rem;
   }
 
   .header-section h1 {
@@ -282,23 +390,12 @@
     max-width: 300px;
   }
 
-  .category-card {
+  .category-card,
+  .legal-content,
+  .additional-info,
+  .privacy-content {
     padding: 1.5rem;
   }
-}
-
-/* Success message */
-.success-message {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: var(--color-primary);
-  color: white;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  z-index: 10001;
-  animation: slideIn 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* Success animation */

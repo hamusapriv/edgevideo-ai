@@ -140,9 +140,14 @@ async function fetchVotedProducts() {
 }
 
 function SetShoppingAIStatus(messageText) {
-  let elm = document.getElementById("aiStatusTextShopping");
-  if (elm != null) {
-    elm.innerText = messageText;
+  // Add defensive check to prevent React DOM conflicts
+  try {
+    let elm = document.getElementById("aiStatusTextShopping");
+    if (elm != null && elm.isConnected) {
+      elm.innerText = messageText;
+    }
+  } catch (error) {
+    edgeConsole.warn("Failed to update AI status:", error);
   }
 }
 
@@ -379,46 +384,59 @@ window.trackClick = trackClick;
 
 // Vote button styles helper for React components to use
 function updateVoteButtonStyles(productId, voteType) {
-  if (voteType === 1 || voteType === "1") voteType = "upvote";
-  else if (voteType === -1 || voteType === "-1") voteType = "downvote";
+  try {
+    if (voteType === 1 || voteType === "1") voteType = "upvote";
+    else if (voteType === -1 || voteType === "-1") voteType = "downvote";
 
-  const likeButtons = document.querySelectorAll(
-    `[data-role="like"][data-product-id="${productId}"], ` +
-      `.like-button[data-product-id="${productId}"], ` +
-      `.item-container[data-product-id="${productId}"] .like-button`
-  );
-  const dislikeButtons = document.querySelectorAll(
-    `[data-role="dislike"][data-product-id="${productId}"], ` +
-      `.dislike-button[data-product-id="${productId}"], ` +
-      `.item-container[data-product-id="${productId}"] .dislike-button`
-  );
+    const likeButtons = document.querySelectorAll(
+      `[data-role="like"][data-product-id="${productId}"], ` +
+        `.like-button[data-product-id="${productId}"], ` +
+        `.item-container[data-product-id="${productId}"] .like-button`
+    );
+    const dislikeButtons = document.querySelectorAll(
+      `[data-role="dislike"][data-product-id="${productId}"], ` +
+        `.dislike-button[data-product-id="${productId}"], ` +
+        `.item-container[data-product-id="${productId}"] .dislike-button`
+    );
 
-  likeButtons.forEach((btn) => {
-    btn.classList.toggle("clicked", voteType === "upvote");
-  });
-  dislikeButtons.forEach((btn) => {
-    btn.classList.toggle("clicked", voteType === "downvote");
-  });
+    likeButtons.forEach((btn) => {
+      if (btn && btn.isConnected) {
+        btn.classList.toggle("clicked", voteType === "upvote");
+      }
+    });
+    dislikeButtons.forEach((btn) => {
+      if (btn && btn.isConnected) {
+        btn.classList.toggle("clicked", voteType === "downvote");
+      }
+    });
+  } catch (error) {
+    edgeConsole.warn("Failed to update vote button styles:", error);
+  }
 }
 window.updateVoteButtonStyles = updateVoteButtonStyles;
 
 function applyInitialVoteStyles() {
-  if (!votedProducts.length) return;
-  const containers = document.querySelectorAll(
-    ".item-container[data-product-id]"
-  );
-  containers.forEach((c) => {
-    const id = c.getAttribute("data-product-id");
-    const vote = votedProducts.find((v) => String(v.item_id) === String(id));
-    const vt = vote
-      ? vote.vote_type === 1
-        ? "upvote"
-        : vote.vote_type === -1
-        ? "downvote"
-        : "none"
-      : "none";
-    updateVoteButtonStyles(id, vt);
-  });
+  try {
+    if (!votedProducts.length) return;
+    const containers = document.querySelectorAll(
+      ".item-container[data-product-id]"
+    );
+    containers.forEach((c) => {
+      if (!c || !c.isConnected) return;
+      const id = c.getAttribute("data-product-id");
+      const vote = votedProducts.find((v) => String(v.item_id) === String(id));
+      const vt = vote
+        ? vote.vote_type === 1
+          ? "upvote"
+          : vote.vote_type === -1
+          ? "downvote"
+          : "none"
+        : "none";
+      updateVoteButtonStyles(id, vt);
+    });
+  } catch (error) {
+    edgeConsole.warn("Failed to apply initial vote styles:", error);
+  }
 }
 
 // --- Main Initialization Function ---

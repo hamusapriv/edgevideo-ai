@@ -85,21 +85,21 @@ h6,
 .channels-testimonial blockquote {
   font-size: 1.35rem;
   line-height: 1.6;
-  color: #fff;
+  color: var(--marketing-text);
   margin-bottom: 2.5rem;
   font-weight: 400;
   quotes: "\201C""\201D";
 }
 .channels-testimonial-author {
   font-size: 1.1rem;
-  color: #e6e6e6;
+  color: var(--marketing-text);
   font-weight: 500;
   margin-top: auto;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 1px solid var(--marketing-text);
   padding-bottom: 0.5rem;
 }
 .channels-testimonial-author strong {
-  color: #fff;
+  color: var(--marketing-text);
   font-weight: 700;
   font-size: 1.15rem;
 } /* Channels Benefits Section (Why work with us?) */
@@ -250,7 +250,6 @@ h6,
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #00000050;
 }
 
 /* Background */
@@ -277,19 +276,19 @@ h6,
 /* Top Banner */
 .top-banner {
   background: linear-gradient(90deg, var(--color-primary), #8b5cf6);
-  padding: 8px 16px;
+  padding: 6px 6px;
+  border-radius: 10px;
   text-align: center;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
   font-size: 14px;
   font-weight: 500;
 }
 
 .banner-link {
-  color: white;
   text-decoration: none;
   margin-left: 8px;
   font-weight: 600;
@@ -344,7 +343,6 @@ h6,
 }
 
 .logo-ai {
-  color: var(--color-primary);
   font-size: 10px;
   opacity: 0.7;
   position: absolute;
@@ -499,8 +497,8 @@ h6,
   justify-content: flex-start;
   padding: 0 2rem;
   margin-top: 30px;
-  overflow: hidden;
   position: relative;
+  overflow: hidden;
 }
 
 .hero-container {
@@ -524,7 +522,7 @@ h6,
   padding: 2rem;
   background: rgba(0, 0, 0, 0.4);
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
@@ -1101,8 +1099,8 @@ h6,
 
 .scan-hint {
   margin-top: 1rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9rem;
+  color: var(--marketing-text);
+  font-size: 1rem;
 }
 
 .ai-demo-container {
@@ -1281,7 +1279,7 @@ h6,
 
 .match-label {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--marketing-text);
   margin-bottom: 0.5rem;
 }
 
@@ -1632,7 +1630,6 @@ h6,
 
 .testimonials h2 {
   margin-bottom: 4rem;
-  color: white;
   padding: 0 1rem;
 }
 
@@ -1688,20 +1685,20 @@ h6,
 .testimonial blockquote {
   font-size: 1.1rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--marketing-text);
   margin-bottom: 1.5rem;
   font-style: italic;
 }
 
 .testimonial-author strong {
-  color: white;
+  color: var(--marketing-text);
   font-weight: 600;
   display: block;
   margin-bottom: 0.5rem;
 }
 
 .testimonial-author span {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--marketing-text);
   font-size: 0.9rem;
 }
 
@@ -1791,12 +1788,9 @@ h6,
 }
 
 .stat-label {
-  font-size: clamp(0.9rem, 2vw, 1.1rem);
-  color: white;
-  font-weight: 500;
+  color: var(--marketing-text);
   text-transform: uppercase;
   letter-spacing: 1px;
-  line-height: 1.2;
 }
 
 /* Scroll to Top Button */
@@ -1960,7 +1954,7 @@ h6,
     margin-right: 0;
     text-align: center;
     position: absolute;
-    bottom: 20px;
+    bottom: 55px;
     gap: 0.5rem;
   }
 
@@ -2023,13 +2017,13 @@ h6,
 
   .floating-logo {
     left: 10px;
-    top: 45px;
-    padding: 12px 24px 12px 16px;
+    top: 10px;
+    padding: 12px 22px 12px 12px;
   }
 
   .floating-nav {
     right: 10px;
-    top: 45px;
+    top: 10px;
   }
 
   .nav-orb {
@@ -2195,7 +2189,6 @@ h6,
 
   /* Features Mobile */
   .features {
-    overflow-x: hidden;
     padding-top: 50px;
   }
 
@@ -2274,10 +2267,6 @@ h6,
 
   .stat-number {
     font-size: 2.5rem;
-  }
-
-  .stat-label {
-    font-size: 1rem;
   }
 
   /* CTA Mobile */
@@ -2420,13 +2409,13 @@ h6,
 
   .floating-logo {
     left: 5px;
-    top: 40px;
-    padding: 6px 10px;
+    top: 10px;
+    padding: 6px 16px 6px 6px;
   }
 
   .floating-nav {
     right: 5px;
-    top: 40px;
+    top: 10px;
   }
 
   .nav-orb {
@@ -2510,10 +2499,6 @@ h6,
     font-size: 2rem;
   }
 
-  .stat-label {
-    font-size: 0.9rem;
-  }
-
   .btn--large {
     padding: 16px 32px;
     font-size: 1rem;
@@ -2572,9 +2557,6 @@ h6,
 /* Mobile Touch Improvements */
 @media (max-width: 768px) {
   .features-center {
-    /* 
-    margin-bottom: 2rem; */
-    transform: scale(1.3);
     position: relative;
     z-index: -1;
     opacity: 0.5;
@@ -2639,8 +2621,12 @@ h6,
 
   /* Better spacing for mobile */
   .top-banner {
-    padding: 12px 16px;
-    font-size: 13px;
+    position: absolute;
+    top: 100vh;
+    bottom: auto;
+    transform: translate(-50%, -110%);
+    left: 50%;
+    right: auto;
   }
 
   .banner-link {

@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/HomePage.css";
+import "../styles/marketing-theme.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import JoinUsSection from "../components/JoinUsSection";
@@ -7,11 +8,12 @@ import BrandSlider from "../components/BrandSlider";
 import BrandsSvg1 from "../components/svgs/BrandsSvg1";
 import BrandsSvg2 from "../components/svgs/BrandsSvg2";
 import BrandsSvg3 from "../components/svgs/BrandsSvg3";
+import MarketingBG from "../components/MarketingBG";
 
 export default function BrandsPage() {
   return (
-    <div className="home">
-      <div className="home-bg"></div>
+    <div className="home marketing-page">
+      <MarketingBG />
       <Navbar />
 
       <main className="home-main">

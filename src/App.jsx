@@ -13,6 +13,7 @@ import {
 } from "./components/StructuredData";
 import { initializeCookieConsent } from "./utils/cookieManager";
 import { initializeGA } from "./utils/analytics";
+import { MarketingThemeProvider } from "./contexts/MarketingThemeContext";
 
 // Page components
 const AppPage = lazy(() => import("./pages/AppPage"));
@@ -50,7 +51,7 @@ export default function App() {
   const showSidebar = pathname.startsWith("/app");
 
   return (
-    <>
+    <MarketingThemeProvider>
       {/* Dynamic SEO based on current route */}
       <DynamicSEO />
 
@@ -120,6 +121,6 @@ export default function App() {
 
       <CookieConsent />
       <BuildInfo />
-    </>
+    </MarketingThemeProvider>
   );
 }

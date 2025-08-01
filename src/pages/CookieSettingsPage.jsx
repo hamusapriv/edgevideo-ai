@@ -11,6 +11,7 @@ export default function CookieSettingsPage() {
     marketing: false,
     functional: false,
   });
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   useEffect(() => {
     const consent = localStorage.getItem("cookie-consent");
@@ -18,6 +19,22 @@ export default function CookieSettingsPage() {
       setPreferences(JSON.parse(consent));
     }
   }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    let timeoutId;
+    if (showSuccessMessage) {
+      timeoutId = setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 3000);
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [showSuccessMessage]);
 
   const applyConsent = (prefs) => {
     // Google Analytics
@@ -28,25 +45,8 @@ export default function CookieSettingsPage() {
     localStorage.setItem("cookie-consent", JSON.stringify(preferences));
     applyConsent(preferences);
 
-    // Show success message
-    const successMsg = document.createElement("div");
-    successMsg.textContent = "Cookie preferences saved successfully!";
-    successMsg.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: var(--color-primary);
-      color: white;
-      padding: 1rem 2rem;
-      border-radius: 8px;
-      z-index: 10001;
-      animation: slideIn 0.3s ease;
-    `;
-    document.body.appendChild(successMsg);
-
-    setTimeout(() => {
-      successMsg.remove();
-    }, 3000);
+    // Show success message using React state
+    setShowSuccessMessage(true);
   };
 
   const resetToDefaults = () => {
@@ -61,6 +61,13 @@ export default function CookieSettingsPage() {
 
   return (
     <div className="cookie-settings-page">
+      {/* Success message */}
+      {showSuccessMessage && (
+        <div key="success-message" className="success-message">
+          Cookie preferences saved successfully!
+        </div>
+      )}
+
       <main className="cookie-settings-main">
         <div className="container">
           <Link to="/app" className="back-btn">

@@ -17,7 +17,12 @@ export default function Footer() {
               />
               <div>
                 <p
-                  style={{ position: "relative", margin: 0, lineHeight: "1.2" }}
+                  style={{
+                    position: "relative",
+                    margin: 0,
+                    lineHeight: "1.2",
+                    color: "#fff",
+                  }}
                 >
                   Edge
                   <br /> &nbsp; Video
@@ -44,7 +49,9 @@ export default function Footer() {
             <Link to="/cookies">Cookies Settings</Link>
           </div>
         </div>
-        <p className="footer-copyright">Copyright © 2025 Edge Video B.V.</p>
+        <p className="footer-copyright" style={{ color: "#fff" }}>
+          Copyright © 2025 Edge Video B.V.
+        </p>
       </div>
     </footer>
   );

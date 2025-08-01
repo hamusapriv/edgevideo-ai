@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Logo from "/assets/logo.png";
 import "../styles/HomePage.css";
+import MarketingThemeToggle from "./MarketingThemeToggle";
 
 export default function Navbar() {
   const [navOpen, setNavOpen] = useState(false);
@@ -33,14 +34,37 @@ export default function Navbar() {
   return (
     <>
       <div className="top-banner">
-        <span>Shoppable TV is NOW LIVE!</span>
+        {" "}
         <a
           href="https://www.in.tv/shoppable-tv"
           target="_blank"
           rel="noopener noreferrer"
           className="banner-link"
+          style={{
+            textDecoration: "none",
+            color: "#fff",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "10px",
+          }}
         >
-          Try It 👉
+          <p style={{ whiteSpace: "nowrap", color: "white" }}>
+            Shoppable TV is NOW LIVE!
+          </p>
+          <p
+            style={{
+              fontWeight: "bold",
+              padding: "10px",
+              background: "var(--color-primary)",
+              borderRadius: "4px",
+              color: "#fff",
+              whiteSpace: "nowrap",
+              textDecoration: "none",
+            }}
+          >
+            Try It
+          </p>
         </a>
       </div>
       <div className="floating-logo">
@@ -110,6 +134,9 @@ export default function Navbar() {
           >
             <span className="nav-item-text">Contact</span>
           </a>
+          <div className="nav-item nav-theme-toggle">
+            <MarketingThemeToggle />
+          </div>
         </div>
 
         <div

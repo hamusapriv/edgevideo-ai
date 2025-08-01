@@ -3,8 +3,8 @@ import React from "react";
 const FastSetupIcon = ({ size = 24, color = "currentColor" }) => {
   return (
     <svg
-      width="48"
-      height="48"
+      width={size}
+      height={size}
       viewBox="0 0 124 87"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
