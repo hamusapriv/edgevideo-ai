@@ -620,6 +620,7 @@ h6,
   align-items: center;
   justify-content: center;
   margin-left: -10%;
+  background: transparent;
 }
 
 .hero-video {
@@ -627,6 +628,7 @@ h6,
   height: 100%;
   object-fit: contain;
   transition: opacity 0.3s ease-in-out;
+  background: transparent;
 }
 
 .hero-video.loaded {
@@ -644,7 +646,7 @@ h6,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.1);
+  background: transparent;
 }
 
 .video-poster {
@@ -1954,7 +1956,7 @@ h6,
     margin-right: 0;
     text-align: center;
     position: absolute;
-    bottom: 55px;
+    bottom: 60px;
     gap: 0.5rem;
   }
 
@@ -2013,6 +2015,15 @@ h6,
   .hero-video-container {
     height: 40vh;
     max-height: 300px;
+    background: transparent;
+  }
+
+  .hero-video {
+    background: transparent;
+  }
+
+  .video-poster {
+    background: transparent;
   }
 
   .floating-logo {
@@ -2622,7 +2633,7 @@ h6,
   /* Better spacing for mobile */
   .top-banner {
     position: absolute;
-    top: 100vh;
+    top: 100dvh;
     bottom: auto;
     transform: translate(-50%, -110%);
     left: 50%;
@@ -2678,6 +2689,16 @@ h6,
 
   .hero-video-container {
     height: 60vh;
+    background: transparent !important;
+  }
+
+  .hero-video {
+    background: transparent !important;
+  }
+
+  .video-loading,
+  .video-error {
+    background: transparent !important;
   }
 
   .steps-showcase {
