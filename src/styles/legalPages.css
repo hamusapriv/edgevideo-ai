@@ -101,6 +101,165 @@
   text-decoration: underline;
 }
 
+/* Enzuzo Privacy Policy Content Styling */
+.legal-content #__enzuzo-root {
+  /* Remove any default styling conflicts */
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* Style injected Enzuzo content to match our theme */
+.legal-content #__enzuzo-root h1,
+.legal-content #__enzuzo-root h2,
+.legal-content #__enzuzo-root h3,
+.legal-content #__enzuzo-root h4,
+.legal-content #__enzuzo-root h5,
+.legal-content #__enzuzo-root h6 {
+  color: white !important;
+  border-bottom: 2px solid var(--color-primary) !important;
+  padding-bottom: 0.5rem !important;
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.legal-content #__enzuzo-root h1:first-child,
+.legal-content #__enzuzo-root h2:first-child {
+  margin-top: 0 !important;
+}
+
+.legal-content #__enzuzo-root p,
+.legal-content #__enzuzo-root li,
+.legal-content #__enzuzo-root td,
+.legal-content #__enzuzo-root span,
+.legal-content #__enzuzo-root div {
+  color: #e6e6e6 !important;
+  line-height: 1.6 !important;
+}
+
+.legal-content #__enzuzo-root a {
+  color: var(--color-primary) !important;
+}
+
+.legal-content #__enzuzo-root a:hover {
+  text-decoration: underline !important;
+}
+
+.legal-content #__enzuzo-root ul,
+.legal-content #__enzuzo-root ol {
+  padding-left: 1.5rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.legal-content #__enzuzo-root table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin-bottom: 1rem !important;
+}
+
+.legal-content #__enzuzo-root th,
+.legal-content #__enzuzo-root td {
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  padding: 0.5rem !important;
+}
+
+.legal-content #__enzuzo-root th {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  font-weight: bold !important;
+}
+
+/* Make all SVG icons white and visible on dark background */
+.legal-content #__enzuzo-root svg {
+  fill: white !important;
+  color: white !important;
+}
+
+.legal-content #__enzuzo-root svg path {
+  fill: white !important;
+  stroke: white !important;
+}
+
+.legal-content #__enzuzo-root svg rect,
+.legal-content #__enzuzo-root svg circle,
+.legal-content #__enzuzo-root svg polygon,
+.legal-content #__enzuzo-root svg line,
+.legal-content #__enzuzo-root svg polyline {
+  fill: white !important;
+  stroke: white !important;
+}
+
+/* Make sure icons in headings are also white */
+.legal-content #__enzuzo-root h1 svg,
+.legal-content #__enzuzo-root h2 svg,
+.legal-content #__enzuzo-root h3 svg,
+.legal-content #__enzuzo-root h4 svg,
+.legal-content #__enzuzo-root h5 svg,
+.legal-content #__enzuzo-root h6 svg {
+  fill: white !important;
+  color: white !important;
+}
+
+.legal-content #__enzuzo-root h1 svg path,
+.legal-content #__enzuzo-root h2 svg path,
+.legal-content #__enzuzo-root h3 svg path,
+.legal-content #__enzuzo-root h4 svg path,
+.legal-content #__enzuzo-root h5 svg path,
+.legal-content #__enzuzo-root h6 svg path {
+  fill: white !important;
+  stroke: white !important;
+}
+
+/* Style any buttons or interactive elements */
+.legal-content #__enzuzo-root button,
+.legal-content #__enzuzo-root input[type="button"],
+.legal-content #__enzuzo-root input[type="submit"] {
+  background: var(--color-primary) !important;
+  color: white !important;
+  border: 1px solid var(--color-primary) !important;
+  border-radius: 4px !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.legal-content #__enzuzo-root button:hover,
+.legal-content #__enzuzo-root input[type="button"]:hover,
+.legal-content #__enzuzo-root input[type="submit"]:hover {
+  background: rgba(0, 195, 255, 0.8) !important;
+}
+
+/* Force any dark backgrounds to be transparent or light */
+.legal-content #__enzuzo-root [style*="background-color: rgb(0, 0, 0)"],
+.legal-content #__enzuzo-root [style*="background-color:#000"],
+.legal-content #__enzuzo-root [style*="background: rgb(0, 0, 0)"],
+.legal-content #__enzuzo-root [style*="background:#000"] {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Make sure any icon containers are visible */
+.legal-content #__enzuzo-root .icon,
+.legal-content #__enzuzo-root [class*="icon"],
+.legal-content #__enzuzo-root [class*="Icon"] {
+  color: white !important;
+  fill: white !important;
+}
+
+/* Override any inline styles that might make content invisible */
+.legal-content #__enzuzo-root * {
+  /* Remove any potential black text on dark background */
+  color: #e6e6e6 !important;
+}
+
+.legal-content #__enzuzo-root h1,
+.legal-content #__enzuzo-root h2,
+.legal-content #__enzuzo-root h3,
+.legal-content #__enzuzo-root h4,
+.legal-content #__enzuzo-root h5,
+.legal-content #__enzuzo-root h6,
+.legal-content #__enzuzo-root strong,
+.legal-content #__enzuzo-root b {
+  color: white !important;
+}
+
 .cookie-settings-section {
   margin-bottom: 3rem;
 }

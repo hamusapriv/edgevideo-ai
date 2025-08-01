@@ -1,5 +1,7 @@
 // src/pages/PrivacyPage.jsx
 import React, { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import "../styles/legalPages.css";
 
 export default function PrivacyPage() {
   const containerRef = useRef(null);
@@ -30,15 +32,31 @@ export default function PrivacyPage() {
     };
   }, []);
 
-  // This div lives inside your React <div id="root">,
-  // so everything Enzuzo injects will stay in React's tree.
   return (
-    <div
-      ref={containerRef}
-      id="__enzuzo-root"
-      data-enzuzo-mode="csr"
-      data-enzuzo-type="privacy"
-      style={{ padding: "2rem" }}
-    />
+    <div className="legal-page">
+      <div className="legal-container">
+        <Link to="/" className="back-btn">
+          ← Back
+        </Link>
+
+        <div className="header-section">
+          <h1>Privacy Policy</h1>
+          <p className="subtitle">
+            Learn how we collect, use, and protect your personal information.
+          </p>
+        </div>
+
+        <div className="legal-content">
+          {/* This div lives inside your React <div id="root">,
+              so everything Enzuzo injects will stay in React's tree. */}
+          <div
+            ref={containerRef}
+            id="__enzuzo-root"
+            data-enzuzo-mode="csr"
+            data-enzuzo-type="privacy"
+          />
+        </div>
+      </div>
+    </div>
   );
 }
