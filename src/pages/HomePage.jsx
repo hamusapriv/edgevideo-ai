@@ -345,6 +345,8 @@ export default function HomePage() {
                     opacity: videoLoaded ? 1 : 0,
                     background: "transparent",
                     backgroundColor: "transparent",
+                    borderRadius: "12px",
+                    overflow: "hidden",
                   }}
                 >
                   <source src={HeroVideoWebm} type="video/webm" />
