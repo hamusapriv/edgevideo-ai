@@ -335,6 +335,8 @@ export default function HomePage() {
                   loop
                   playsInline
                   webkit-playsinline="true"
+                  disablePictureInPicture
+                  controlsList="nodownload nofullscreen noremoteplayback"
                   poster={HeroImg2}
                   preload={isMobile ? "none" : "metadata"}
                   onLoadedData={handleVideoLoad}

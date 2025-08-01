@@ -620,7 +620,19 @@ h6,
   align-items: center;
   justify-content: center;
   margin-left: -10%;
-  background: transparent;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Ensure no black backgrounds anywhere in the video container */
+.hero-video-container::before,
+.hero-video-container::after {
+  display: none !important;
+}
+
+.hero-video-container * {
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 .hero-video {
@@ -628,7 +640,21 @@ h6,
   height: 100%;
   object-fit: contain;
   transition: opacity 0.3s ease-in-out;
-  background: transparent;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Force video to never show black background */
+.hero-video::-webkit-media-controls {
+  display: none !important;
+}
+
+.hero-video::-webkit-media-controls-panel {
+  display: none !important;
+}
+
+.hero-video::-webkit-media-controls-start-playback-button {
+  display: none !important;
 }
 
 /* iOS-specific video fixes */
@@ -2832,7 +2858,24 @@ h6,
     background-color: transparent !important;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
-    object-fit: cover !important;
+    /* Remove any video controls that might show black backgrounds */
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* Hide all video controls on iOS to prevent black backgrounds */
+  .hero-video::-webkit-media-controls,
+  .hero-video::-webkit-media-controls-panel,
+  .hero-video::-webkit-media-controls-play-button,
+  .hero-video::-webkit-media-controls-start-playback-button,
+  .hero-video::-webkit-media-controls-fullscreen-button,
+  .hero-video::-webkit-media-controls-timeline,
+  .hero-video::-webkit-media-controls-current-time-display,
+  .hero-video::-webkit-media-controls-time-remaining-display,
+  .hero-video::-webkit-media-controls-mute-button,
+  .hero-video::-webkit-media-controls-volume-slider {
+    display: none !important;
+    background: transparent !important;
   }
 
   .video-loading,
