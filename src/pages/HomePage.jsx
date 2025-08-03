@@ -3,7 +3,7 @@ import "../styles/HomePage.css";
 import "../styles/marketing-theme.css";
 import HeroImg2 from "/assets/hero-image-2.png";
 import HeroVideoMp4 from "/assets/hero-video-min.mp4";
-import HeroVideoWebm from "/assets/output-alpha.webm";
+import HeroVideoWebm from "/assets/output_alpha.webm";
 import useIsMobile from "../hooks/useIsMobile";
 import MarketingBG from "../components/MarketingBG";
 
