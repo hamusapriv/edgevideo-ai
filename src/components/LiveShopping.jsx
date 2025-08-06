@@ -7,6 +7,7 @@ import { useProductAIStatus } from "../hooks/useProductAIStatus";
 import FrameGallery from "./FrameGallery";
 import useIsMobile from "../hooks/useIsMobile";
 import AIStatusDisplay from "./AIStatusDisplay";
+import SafeComponent from "./SafeComponent";
 import { preloadImages, validateProductImages } from "../utils/imageValidation";
 
 export default function LiveShopping() {
@@ -290,7 +291,9 @@ export default function LiveShopping() {
         items={displayProducts}
       />
       <div id="absolute-container" ref={scrollRef}>
-        <AIStatusDisplay />
+        <SafeComponent fallback="AI Status Loading...">
+          <AIStatusDisplay />
+        </SafeComponent>
         <div id="itemContent" ref={beltRef} style={{ display: "flex" }}>
           {displayProducts.map((p) => (
             <ProductCard

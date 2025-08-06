@@ -20,8 +20,11 @@ import "../styles/app.css";
 import "../utils/testAIStatus";
 
 function AppPage() {
+  console.log("[DOM DEBUG] AppPage render");
+
   // Use custom hook to get channelId from context or localStorage
   const channelId = useChannelId();
+  console.log("[DOM DEBUG] AppPage channelId:", channelId);
 
   // Use global sidebar state instead of local state
   const { isOpen: isSidebarOpen, openSidebar, closeSidebar } = useSidebar();
@@ -122,6 +125,14 @@ function AppPage() {
           const panelKey = channelId ? `${key}-${channelId}` : key;
           const currentIndex = tabConfig.findIndex((t) => t.key === activeTab);
           const isActive = i === currentIndex;
+
+          console.log("[DOM DEBUG] AppPage rendering tab:", {
+            key,
+            panelKey,
+            isActive,
+            index: i,
+            channelId,
+          });
 
           return (
             <div

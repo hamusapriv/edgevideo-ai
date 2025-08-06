@@ -564,6 +564,52 @@ section {
   stroke: var(--color-black);
 }
 
+/* Loading and error states for vote buttons */
+.product-cta.loading {
+  opacity: 0.8;
+  cursor: wait;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.product-cta.error {
+  border-color: var(--color-red);
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+}
+
+.product-cta:disabled {
+  cursor: not-allowed;
+}
+
+/* Pulse animation for loading state */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+}
+
+/* Loading spinner animation (keeping for legacy support) */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  display: inline-block;
+}
+
 .socials-ul {
   display: flex;
   justify-content: space-between;

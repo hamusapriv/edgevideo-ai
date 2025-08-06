@@ -11,6 +11,8 @@ export default function LikeButton({ itemId, itemTypeName, onSuccess }) {
   const { openSidebar } = useSidebar();
   const { favorites, fetchFavorites } = useFavorites();
   const [active, setActive] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const btnRef = useRef(null);
 
   useEffect(() => {
@@ -25,7 +27,8 @@ export default function LikeButton({ itemId, itemTypeName, onSuccess }) {
 
   function inferItemTypeName(card) {
     const url =
-      card?.querySelector("[data-role='product-link']")?.href?.toLowerCase() || "";
+      card?.querySelector("[data-role='product-link']")?.href?.toLowerCase() ||
+      "";
     if (card?.classList.contains("ticket-style")) {
       return url.includes("viator") ? "Viator Ticket" : "DB Ticket";
     }
@@ -37,6 +40,10 @@ export default function LikeButton({ itemId, itemTypeName, onSuccess }) {
 
   const handleClick = async (e) => {
     e.stopPropagation();
+
+    // Clear any previous error
+    setError(null);
+
     if (!user) return openSidebar();
 
     let id = itemId;
@@ -50,19 +57,56 @@ export default function LikeButton({ itemId, itemTypeName, onSuccess }) {
 
     if (!id) return;
 
-    await upvoteProduct(id, typeName);
+    // Prevent multiple clicks while loading
+    if (isLoading) return;
+
+    // Optimistically update UI
     setActive(true);
-    fetchFavorites();
-    onSuccess?.();
+    setIsLoading(true);
+
+    try {
+      await upvoteProduct(id, typeName);
+      // Refresh favorites in background (don't wait for it)
+      fetchFavorites().catch((err) =>
+        console.warn("Failed to refresh favorites:", err)
+      );
+      onSuccess?.();
+    } catch (error) {
+      console.error("Vote failed:", error);
+
+      // Revert optimistic update
+      setActive(false);
+
+      // Set user-friendly error message
+      if (error.message.includes("No auth token")) {
+        setError("Please log in to vote");
+        openSidebar();
+      } else if (error.message.includes("500")) {
+        setError("Server error. Please try again.");
+      } else if (error.message.includes("fetch")) {
+        setError("Network error. Check your connection.");
+      } else {
+        setError("Vote failed. Please try again.");
+      }
+
+      // Clear error after 3 seconds
+      setTimeout(() => setError(null), 3000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <button
       ref={btnRef}
-      className={`product-cta like-button${active ? " clicked" : ""}`}
+      className={`product-cta like-button${active ? " clicked" : ""}${
+        isLoading ? " loading" : ""
+      }${error ? " error" : ""}`}
       data-role="like"
       data-product-id={itemId}
       onClick={handleClick}
+      disabled={isLoading}
+      title={error || (isLoading ? "Voting..." : active ? "Liked" : "Like")}
     >
       <SvgLike />
     </button>

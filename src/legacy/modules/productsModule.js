@@ -41,12 +41,22 @@ export function processProductDataQueue() {
   if (productDataQueue.length > 0 && !productsPaused) {
     let data = productDataQueue.shift();
     data.time = Date.now();
+
+    // CONSOLIDATED: Use React context for product management instead of duplicate arrays
+    // Dispatch event for React ProductsContext to handle
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("add-product", { detail: data }));
+    }
+
+    // Keep legacy products array in sync for backward compatibility
     const existingIndex = products.findIndex(
       (product) => product.id === data.id
     );
     if (existingIndex === -1) {
       products.push(data);
       if (products.length > 10) products.shift();
+
+      // Legacy event for backward compatibility
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent("new-product", { detail: data }));
       }

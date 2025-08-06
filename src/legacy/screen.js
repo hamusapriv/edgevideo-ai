@@ -124,7 +124,8 @@ async function fetchVotedProducts() {
     // Update the global array with the combined results
     votedProducts = combinedVotes;
 
-    applyInitialVoteStyles();
+    // DEPRECATED: Vote styling is now handled by React components
+    // applyInitialVoteStyles();
 
     if (encounteredError) {
       edgeConsole.warn(
@@ -140,28 +141,116 @@ async function fetchVotedProducts() {
 }
 
 function SetShoppingAIStatus(messageText) {
-  // Add defensive check to prevent React DOM conflicts
+  // CONSOLIDATED: Dispatch event for React AIStatusContext to handle
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(
+      new CustomEvent("ai-status-update", {
+        detail: { status: messageText },
+      })
+    );
+  }
+
+  // Keep legacy DOM manipulation for backward compatibility
   try {
-    let elm = document.getElementById("aiStatusTextShopping");
-    if (elm != null && elm.isConnected) {
-      elm.innerText = messageText;
-    }
+    // Give React a small window to complete any pending updates
+    setTimeout(() => {
+      let elm = document.getElementById("aiStatusTextShopping");
+      if (elm && elm.isConnected && elm.parentNode) {
+        // Double-check the element is still properly connected to DOM
+        // and not in the middle of React's reconciliation process
+        if (document.body.contains(elm)) {
+          elm.innerText = messageText;
+        } else {
+          console.warn(
+            "[DOM DEBUG] aiStatusTextShopping element not in document body"
+          );
+        }
+      } else {
+        console.warn(
+          "[DOM DEBUG] aiStatusTextShopping element not found or not connected"
+        );
+      }
+    }, 10); // Small delay to avoid race conditions with React
   } catch (error) {
-    edgeConsole.warn("Failed to update AI status:", error);
+    console.warn("[DOM DEBUG] Failed to update AI status:", error);
   }
 }
 
 async function getCachedProducts() {
+  console.log("[DOM DEBUG] getCachedProducts called");
   const channelId = getChannelId();
+  console.log("[DOM DEBUG] Channel ID:", channelId);
+
   if (typeof channelId !== "undefined" && channelId !== null) {
-    let cachedProductResponse = await fetch(
-      `https://fastapi.edgevideo.ai/product_search/recent_products/${channelId}/1`
-    );
-    let cachedProductData = await cachedProductResponse.json();
-    for (let cachedProduct of cachedProductData)
-      addToProductDataQueue(cachedProduct);
-    processProductDataQueue();
+    try {
+      console.log("[DOM DEBUG] Fetching cached products from API");
+      let cachedProductResponse = await fetch(
+        `https://fastapi.edgevideo.ai/product_search/recent_products/${channelId}/1`
+      );
+
+      if (!cachedProductResponse.ok) {
+        console.error(
+          "[DOM DEBUG] API response not ok:",
+          cachedProductResponse.status
+        );
+        return;
+      }
+
+      let cachedProductData = await cachedProductResponse.json();
+      console.log("[DOM DEBUG] Cached product data received:", {
+        type: typeof cachedProductData,
+        isArray: Array.isArray(cachedProductData),
+        length: cachedProductData?.length,
+        data: cachedProductData,
+      });
+
+      // Check if data is iterable before trying to iterate
+      if (!Array.isArray(cachedProductData)) {
+        console.error(
+          "[DOM DEBUG] cachedProductData is not an array:",
+          cachedProductData
+        );
+        // Try to handle different response formats
+        if (cachedProductData && typeof cachedProductData === "object") {
+          if (
+            cachedProductData.products &&
+            Array.isArray(cachedProductData.products)
+          ) {
+            console.log("[DOM DEBUG] Found products array in response object");
+            cachedProductData = cachedProductData.products;
+          } else if (
+            cachedProductData.data &&
+            Array.isArray(cachedProductData.data)
+          ) {
+            console.log("[DOM DEBUG] Found data array in response object");
+            cachedProductData = cachedProductData.data;
+          } else {
+            console.error("[DOM DEBUG] No valid array found in response");
+            return;
+          }
+        } else {
+          console.error("[DOM DEBUG] Response is not a valid object");
+          return;
+        }
+      }
+
+      console.log(
+        "[DOM DEBUG] Processing",
+        cachedProductData.length,
+        "cached products"
+      );
+      for (let cachedProduct of cachedProductData) {
+        console.log("[DOM DEBUG] Adding product to queue:", cachedProduct?.id);
+        addToProductDataQueue(cachedProduct);
+      }
+
+      console.log("[DOM DEBUG] Starting product queue processing");
+      processProductDataQueue();
+    } catch (error) {
+      console.error("[DOM DEBUG] Error in getCachedProducts:", error);
+    }
   } else {
+    console.log("[DOM DEBUG] No channel ID, skipping cached products fetch");
     // Don't retry if there's no channel - this is expected for demo page without selection
   }
 }
@@ -348,8 +437,15 @@ async function trackClick(productData) {
 // REACT-FIRST APPROACH: Let React handle all DOM manipulation
 // This function now only dispatches events for React components to handle
 function UpdateProductViaDataRole(i, time = null) {
+  console.log("[DOM DEBUG] UpdateProductViaDataRole called with index:", i);
+
   // Ensure the product exists at index i
   if (!products || i >= products.length || i < 0) {
+    console.error("[DOM DEBUG] Invalid index for products array:", {
+      index: i,
+      productsLength: products?.length || 0,
+      productsExists: !!products,
+    });
     edgeConsole.error(
       `UpdateProductViaDataRole: Invalid index ${i} for products array.`
     );
@@ -357,11 +453,18 @@ function UpdateProductViaDataRole(i, time = null) {
   }
 
   const product = products[i];
+  console.log("[DOM DEBUG] Product found:", {
+    id: product?.id,
+    type: product?.type,
+  });
 
   // Validate product image before dispatching (like original legacy code)
   if (product.image && !isValidImageUrl(product.image)) {
+    console.warn("[DOM DEBUG] Invalid product image URL, skipping update");
     return;
   }
+
+  console.log("[DOM DEBUG] Dispatching legacy-product-update event");
 
   // Dispatch a custom event that React components can listen to
   const productUpdateEvent = new CustomEvent("legacy-product-update", {
@@ -376,6 +479,7 @@ function UpdateProductViaDataRole(i, time = null) {
 
   // Also make product available for click tracking (React handles the actual clicks)
   window.currentProduct = product;
+  console.log("[DOM DEBUG] UpdateProductViaDataRole completed successfully");
 }
 
 // Expose global functions for legacy compatibility
@@ -383,60 +487,24 @@ window.UpdateProductViaDataRole = UpdateProductViaDataRole;
 window.trackClick = trackClick;
 
 // Vote button styles helper for React components to use
+// DEPRECATED: This function is no longer used as React components handle their own state
+// Kept for backward compatibility but will be removed in future versions
 function updateVoteButtonStyles(productId, voteType) {
-  try {
-    if (voteType === 1 || voteType === "1") voteType = "upvote";
-    else if (voteType === -1 || voteType === "-1") voteType = "downvote";
-
-    const likeButtons = document.querySelectorAll(
-      `[data-role="like"][data-product-id="${productId}"], ` +
-        `.like-button[data-product-id="${productId}"], ` +
-        `.item-container[data-product-id="${productId}"] .like-button`
-    );
-    const dislikeButtons = document.querySelectorAll(
-      `[data-role="dislike"][data-product-id="${productId}"], ` +
-        `.dislike-button[data-product-id="${productId}"], ` +
-        `.item-container[data-product-id="${productId}"] .dislike-button`
-    );
-
-    likeButtons.forEach((btn) => {
-      if (btn && btn.isConnected) {
-        btn.classList.toggle("clicked", voteType === "upvote");
-      }
-    });
-    dislikeButtons.forEach((btn) => {
-      if (btn && btn.isConnected) {
-        btn.classList.toggle("clicked", voteType === "downvote");
-      }
-    });
-  } catch (error) {
-    edgeConsole.warn("Failed to update vote button styles:", error);
-  }
+  // Vote button styling is now handled by React components
+  // This prevents DOM conflicts with React rendering cycles
+  console.debug(
+    `[DEPRECATED] updateVoteButtonStyles called for product ${productId} - React components handle this now`
+  );
 }
 window.updateVoteButtonStyles = updateVoteButtonStyles;
 
+// DEPRECATED: Initial vote styling is now handled by React components
+// Kept for backward compatibility but will be removed in future versions
 function applyInitialVoteStyles() {
-  try {
-    if (!votedProducts.length) return;
-    const containers = document.querySelectorAll(
-      ".item-container[data-product-id]"
-    );
-    containers.forEach((c) => {
-      if (!c || !c.isConnected) return;
-      const id = c.getAttribute("data-product-id");
-      const vote = votedProducts.find((v) => String(v.item_id) === String(id));
-      const vt = vote
-        ? vote.vote_type === 1
-          ? "upvote"
-          : vote.vote_type === -1
-          ? "downvote"
-          : "none"
-        : "none";
-      updateVoteButtonStyles(id, vt);
-    });
-  } catch (error) {
-    edgeConsole.warn("Failed to apply initial vote styles:", error);
-  }
+  // Vote styling is now managed by React component state
+  console.debug(
+    `[DEPRECATED] applyInitialVoteStyles called - React components handle this now`
+  );
 }
 
 // --- Main Initialization Function ---

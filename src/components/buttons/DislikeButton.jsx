@@ -11,6 +11,8 @@ export default function DislikeButton({ itemId, itemTypeName, onSuccess }) {
   const { openSidebar } = useSidebar();
   const { votes, fetchFavorites } = useFavorites();
   const [active, setActive] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const btnRef = useRef(null);
 
   useEffect(() => {
@@ -44,6 +46,10 @@ export default function DislikeButton({ itemId, itemTypeName, onSuccess }) {
 
   const handleClick = async (e) => {
     e.stopPropagation();
+
+    // Clear any previous error
+    setError(null);
+
     if (!user) return openSidebar();
 
     let id = itemId;
@@ -57,19 +63,58 @@ export default function DislikeButton({ itemId, itemTypeName, onSuccess }) {
 
     if (!id) return;
 
-    await downvoteProduct(id, typeName);
+    // Prevent multiple clicks while loading
+    if (isLoading) return;
+
+    // Optimistically update UI
     setActive(true);
-    fetchFavorites();
-    onSuccess?.();
+    setIsLoading(true);
+
+    try {
+      await downvoteProduct(id, typeName);
+      // Refresh favorites in background (don't wait for it)
+      fetchFavorites().catch((err) =>
+        console.warn("Failed to refresh favorites:", err)
+      );
+      onSuccess?.();
+    } catch (error) {
+      console.error("Vote failed:", error);
+
+      // Revert optimistic update
+      setActive(false);
+
+      // Set user-friendly error message
+      if (error.message.includes("No auth token")) {
+        setError("Please log in to vote");
+        openSidebar();
+      } else if (error.message.includes("500")) {
+        setError("Server error. Please try again.");
+      } else if (error.message.includes("fetch")) {
+        setError("Network error. Check your connection.");
+      } else {
+        setError("Vote failed. Please try again.");
+      }
+
+      // Clear error after 3 seconds
+      setTimeout(() => setError(null), 3000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <button
       ref={btnRef}
-      className={`product-cta dislike-button${active ? " clicked" : ""}`}
+      className={`product-cta dislike-button${active ? " clicked" : ""}${
+        isLoading ? " loading" : ""
+      }${error ? " error" : ""}`}
       data-role="dislike"
       data-product-id={itemId}
       onClick={handleClick}
+      disabled={isLoading}
+      title={
+        error || (isLoading ? "Voting..." : active ? "Disliked" : "Dislike")
+      }
     >
       <SvgDislike />
     </button>

@@ -8,7 +8,7 @@ export default function SEOHead({
   title = "Edge Video AI - Shoppable TV & AI-Powered Interactive Video Streaming",
   description = "Revolutionary AI-powered shoppable TV platform that transforms passive video watching into interactive shopping experiences. Watch, scan QR codes, and shop directly from live streams.",
   keywords = "shoppable tv, interactive video, AI streaming, live shopping, video commerce, edge video ai, real-time shopping, video streaming, interactive tv, AI powered shopping",
-  image = "https://www.edgevideo.ai/assets/hero-image-2.png",
+  image = "https://www.edgevideo.ai/assets/hero-image.png",
   url = "https://www.edgevideo.ai/app",
   type = "website",
 }) {

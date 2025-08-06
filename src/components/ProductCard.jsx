@@ -71,6 +71,7 @@ export default function ProductCard({
       : product.type === "deal"
       ? "Deal"
       : "DB Product";
+
   const price = product.price
     ? FormatPrice(product.price, product.currency || "USD")
     : "";

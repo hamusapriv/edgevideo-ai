@@ -60,33 +60,93 @@ async function fetchUserDetails(token) {
 }
 
 async function showLoggedInState(currentToken, fetchVotedProducts) {
+  console.log("[DOM DEBUG] showLoggedInState called");
   const user = await fetchUserDetails(currentToken);
 
   if (user) {
+    console.log("[DOM DEBUG] User found, updating DOM elements");
+
+    // CONSOLIDATED: Dispatch event for React AuthContext to handle state
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("auth-user-login", {
+          detail: {
+            user,
+            token: currentToken,
+          },
+        })
+      );
+    }
+
     if (signInButton) {
+      console.log("[DOM DEBUG] Updating signInButton display");
+      if (!signInButton.isConnected) {
+        console.warn("[DOM DEBUG] signInButton is not connected to DOM");
+        return;
+      }
       signInButton.style.display = "none";
     }
 
     if (logoutDiv) {
+      console.log("[DOM DEBUG] Updating logoutDiv display");
+      if (!logoutDiv.isConnected) {
+        console.warn("[DOM DEBUG] logoutDiv is not connected to DOM");
+        return;
+      }
       logoutDiv.style.display = "flex";
     }
 
-    usernameElements.forEach((el) => {
+    console.log(
+      "[DOM DEBUG] Updating username elements:",
+      usernameElements.length
+    );
+    usernameElements.forEach((el, index) => {
+      if (!el.isConnected) {
+        console.warn(
+          `[DOM DEBUG] usernameElement ${index} is not connected to DOM`
+        );
+        return;
+      }
       el.textContent = user.displayName;
     });
 
     const avatarSeed = encodeURIComponent(user.displayName);
     const avatarUrl = `https://api.dicebear.com/9.x/bottts/svg?seed=${avatarSeed}`;
-    avatarImages.forEach((img) => {
+
+    console.log("[DOM DEBUG] Updating avatar images:", avatarImages.length);
+    avatarImages.forEach((img, index) => {
+      if (!img.isConnected) {
+        console.warn(
+          `[DOM DEBUG] avatarImage ${index} is not connected to DOM`
+        );
+        return;
+      }
       img.src = avatarUrl;
       img.alt = `${user.displayName}'s avatar`;
       img.style.display = "flex";
     });
-    avatarContainers.forEach((div) => {
+
+    console.log(
+      "[DOM DEBUG] Updating avatar containers:",
+      avatarContainers.length
+    );
+    avatarContainers.forEach((div, index) => {
+      if (!div.isConnected) {
+        console.warn(
+          `[DOM DEBUG] avatarContainer ${index} is not connected to DOM`
+        );
+        return;
+      }
       div.style.display = "flex";
     });
 
-    if (errorMessageP) errorMessageP.textContent = "";
+    if (errorMessageP) {
+      if (!errorMessageP.isConnected) {
+        console.warn("[DOM DEBUG] errorMessageP is not connected to DOM");
+      } else {
+        errorMessageP.textContent = "";
+      }
+    }
 
     if (typeof fetchVotedProducts === "function") {
       await fetchVotedProducts();
@@ -95,7 +155,21 @@ async function showLoggedInState(currentToken, fetchVotedProducts) {
 }
 
 export function showLoggedOutState() {
+  console.log("[DOM DEBUG] showLoggedOutState called");
+
+  // CONSOLIDATED: Dispatch event for React AuthContext to handle logout
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("auth-user-logout"));
+  }
+
   if (signInButton) {
+    console.log("[DOM DEBUG] Updating signInButton to show");
+    if (!signInButton.isConnected) {
+      console.warn(
+        "[DOM DEBUG] signInButton is not connected to DOM in showLoggedOutState"
+      );
+      return;
+    }
     signInButton.style.display = "flex";
   }
 

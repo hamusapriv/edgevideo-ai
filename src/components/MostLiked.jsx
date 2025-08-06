@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { apiService } from "../services/apiService"; // CONSOLIDATED: Use centralized API service
 
 export default function MostLiked() {
   const [items, setItems] = useState([]);
@@ -6,11 +7,9 @@ export default function MostLiked() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("https://fastapi.edgevideo.ai/tracking/products/most-liked")
-      .then((res) => {
-        if (!res.ok) throw new Error(`Status ${res.status}`);
-        return res.json();
-      })
+    // CONSOLIDATED: Use centralized API service instead of direct fetch
+    apiService
+      .fetchMostLiked()
       .then((data) => setItems(data))
       .catch((err) => {
         console.error("Failed to load most-liked:", err);

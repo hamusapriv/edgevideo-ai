@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import "../styles/HomePage.css";
 import "../styles/marketing-theme.css";
-import HeroImg2 from "/assets/hero-image-2.png";
+import HeroImg from "/assets/hero-image.png";
 import HeroVideoMp4 from "/assets/hero-video-min.mp4";
 import HeroVideoWebm from "/assets/output_alpha.webm";
 import useIsMobile from "../hooks/useIsMobile";
@@ -298,12 +298,12 @@ export default function HomePage() {
                 </a>
               </div>
             </div>
-            {/*           <img src={HeroImg2} className="hero__image" /> */}
+            {/*           <img src={HeroImg} className="hero__image" /> */}
             <div className="hero-video-container" ref={containerRef}>
               {!videoLoaded && !videoError && (
                 <div className="video-loading">
                   <img
-                    src={HeroImg2}
+                    src={HeroImg}
                     alt="Loading..."
                     className="video-poster"
                   />
@@ -316,7 +316,7 @@ export default function HomePage() {
               {videoError && (
                 <div className="video-error">
                   <img
-                    src={HeroImg2}
+                    src={HeroImg}
                     alt="Video unavailable"
                     className="video-poster"
                   />
@@ -337,7 +337,7 @@ export default function HomePage() {
                   webkit-playsinline="true"
                   disablePictureInPicture
                   controlsList="nodownload nofullscreen noremoteplayback"
-                  poster={HeroImg2}
+                  poster={HeroImg}
                   preload={isMobile ? "none" : "metadata"}
                   onLoadedData={handleVideoLoad}
                   onError={handleVideoError}

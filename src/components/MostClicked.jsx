@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { apiService } from "../services/apiService";
 
 export default function MostClicked() {
   const [items, setItems] = useState([]);
@@ -6,15 +7,12 @@ export default function MostClicked() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("https://fastapi.edgevideo.ai/tracking/products/most-clicked")
-      .then((res) => {
-        if (!res.ok) throw new Error(`Status ${res.status}`);
-        return res.json();
-      })
+    apiService
+      .fetchMostClicked()
       .then((data) => setItems(data))
       .catch((err) => {
         console.error("Failed to load most-clicked:", err);
-        setError("Could not load featured products");
+        setError("Could not load clicked products");
       })
       .finally(() => setLoading(false));
   }, []);

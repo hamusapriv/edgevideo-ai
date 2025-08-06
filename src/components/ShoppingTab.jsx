@@ -5,6 +5,8 @@ import LiveShopping from "./LiveShopping";
 import FavoritesTab from "./FavoritesTab";
 
 export default function ShoppingTab({ openProfileSidebar }) {
+  console.log("[DOM DEBUG] ShoppingTab render");
+
   const nestedConfig = useMemo(
     () => [
       { key: "live", label: "Live Now", Component: LiveShopping },
@@ -16,6 +18,8 @@ export default function ShoppingTab({ openProfileSidebar }) {
 
   const [refreshFavoritesKey, setRefreshFavoritesKey] = useState(0);
   const [active, setActive] = useState(nestedConfig[0].key);
+
+  console.log("[DOM DEBUG] ShoppingTab active tab:", active);
 
   const prevRef = useRef(0);
   const panelRefs = useRef([]);
@@ -110,7 +114,9 @@ export default function ShoppingTab({ openProfileSidebar }) {
               className="nested-content"
             >
               {key === "live" ? (
-                <LiveShopping onLike={() => setRefreshFavoritesKey((k) => k + 1)} />
+                <LiveShopping
+                  onLike={() => setRefreshFavoritesKey((k) => k + 1)}
+                />
               ) : (
                 <HomeTab />
               )}

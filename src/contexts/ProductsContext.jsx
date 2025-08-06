@@ -1,7 +1,13 @@
 // src/contexts/ProductsContext.jsx
 // This file defines a context for managing products in a React application.
 
-import React, { createContext, useCallback, useContext, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
 
 const ProductsContext = createContext({
   products: [],
@@ -19,6 +25,22 @@ export function ProductsProvider({ children }) {
       return next.slice(-10);
     });
   }, []);
+
+  // CONSOLIDATED: Listen for legacy product events to unify data flow
+  useEffect(() => {
+    const handleLegacyProduct = (event) => {
+      addProduct(event.detail);
+    };
+
+    // Listen for both new events and legacy events for compatibility
+    window.addEventListener("add-product", handleLegacyProduct);
+    window.addEventListener("new-product", handleLegacyProduct);
+
+    return () => {
+      window.removeEventListener("add-product", handleLegacyProduct);
+      window.removeEventListener("new-product", handleLegacyProduct);
+    };
+  }, [addProduct]);
 
   return (
     <ProductsContext.Provider value={{ products, addProduct }}>

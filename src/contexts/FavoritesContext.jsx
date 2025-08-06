@@ -7,10 +7,7 @@ import React, {
 } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { getItemTypeNameFromId } from "../legacy/modules/voteModule";
-
-const VOTES_PRODUCTS = "https://fastapi.edgevideo.ai/tracking/votes/products";
-const VOTES_VIATOR = "https://fastapi.edgevideo.ai/tracking/votes/viator";
-const DOWNVOTE_URL = "https://fastapi.edgevideo.ai/tracking/vote/down";
+import { apiService } from "../services/apiService"; // CONSOLIDATED: Use centralized API service
 
 const FavoritesContext = createContext({
   favorites: [],
@@ -33,16 +30,10 @@ export function FavoritesProvider({ children }) {
       return;
     }
     try {
-      const token = localStorage.getItem("authToken");
-      const opts = { headers: { Authorization: `Bearer ${token}` } };
-      const [r1, r2] = await Promise.all([
-        fetch(VOTES_PRODUCTS, opts),
-        fetch(VOTES_VIATOR, opts),
-      ]);
-      if (!r1.ok || !r2.ok) throw new Error("Failed to fetch votes");
-      const [a1, a2] = await Promise.all([r1.json(), r2.json()]);
+      // CONSOLIDATED: Use centralized API service
+      const votedItems = await apiService.fetchVotedProducts();
 
-      const combined = [...a1, ...a2].map((v) => ({
+      const combined = votedItems.map((v) => ({
         ...v,
         itemTypeName: getItemTypeNameFromId(v.item_type_id),
       }));
@@ -51,8 +42,7 @@ export function FavoritesProvider({ children }) {
       setFavorites(combined.filter((v) => v.vote_type === 1));
     } catch (e) {
       console.error("Error loading favorites:", e);
-      setFavorites([]);
-      setVotes([]);
+      // Don't clear existing data on network errors
     }
   }, [user]);
 
@@ -61,17 +51,14 @@ export function FavoritesProvider({ children }) {
     fetchFavorites();
   }, [fetchFavorites]);
 
-  // 2️⃣ downvote + remove locally
+  // 2️⃣ downvote + remove locally with better error handling
   async function removeFavorite(itemId, itemTypeName) {
-    const token = localStorage.getItem("authToken");
-    await fetch(DOWNVOTE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ itemId, itemTypeName }),
-    });
+    if (!user) return;
+
+    // Optimistically update UI first
+    const originalFavorites = [...favorites];
+    const originalVotes = [...votes];
+
     setFavorites((f) => f.filter((v) => String(v.item_id) !== String(itemId)));
     setVotes((v) =>
       v.map((entry) =>
@@ -80,6 +67,29 @@ export function FavoritesProvider({ children }) {
           : entry
       )
     );
+
+    try {
+      // CONSOLIDATED: Use centralized API service
+      // Find the actual favorite item to get proper itemTypeName
+      const favoriteItem = favorites.find(
+        (f) => String(f.item_id) === String(itemId)
+      );
+      const itemTypeNameToUse =
+        itemTypeName || favoriteItem?.itemTypeName || "DB Product";
+
+      await apiService.submitVote(itemId, -1, {
+        itemTypeName: itemTypeNameToUse,
+      });
+    } catch (error) {
+      console.error("Failed to remove favorite:", error);
+
+      // Revert optimistic updates on failure
+      setFavorites(originalFavorites);
+      setVotes(originalVotes);
+
+      // Re-throw for component error handling
+      throw error;
+    }
   }
 
   return (

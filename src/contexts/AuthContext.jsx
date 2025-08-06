@@ -22,32 +22,38 @@ export function AuthProvider({ children }) {
   const USERINFO_URL = import.meta.env.VITE_USERINFO_URL; // e.g. https://fastapi.edgevideo.ai/auth_google/details
 
   // Fetch user profile from our backend
-  const fetchUser = useCallback(async (token) => {
-    try {
-      const res = await fetch(USERINFO_URL, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error(`Status ${res.status}`);
-      const data = await res.json();
-      setUser({
-        name: data.name || data.email,
-        email: data.email,
-        avatarSeed: encodeURIComponent(data.name || data.email),
-      });
-    } catch (err) {
-      console.error("Auth fetch failed:", err);
-      logout();
-    }
-  }, [USERINFO_URL]);
+  const fetchUser = useCallback(
+    async (token) => {
+      try {
+        const res = await fetch(USERINFO_URL, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const data = await res.json();
+        setUser({
+          name: data.name || data.email,
+          email: data.email,
+          avatarSeed: encodeURIComponent(data.name || data.email),
+        });
+      } catch (err) {
+        console.error("Auth fetch failed:", err);
+        logout();
+      }
+    },
+    [USERINFO_URL]
+  );
 
   // Called when GSI returns a credential
-  const handleCredentialResponse = useCallback((response) => {
-    const token = response.credential;
-    localStorage.setItem("authToken", token);
-    fetchUser(token);
-    // Clean up the URL if GSI used redirect
-    window.history.replaceState({}, "", window.location.pathname);
-  }, [fetchUser]);
+  const handleCredentialResponse = useCallback(
+    (response) => {
+      const token = response.credential;
+      localStorage.setItem("authToken", token);
+      fetchUser(token);
+      // Clean up the URL if GSI used redirect
+      window.history.replaceState({}, "", window.location.pathname);
+    },
+    [fetchUser]
+  );
 
   // Initialize GSI and check for existing token/credential
   useEffect(() => {
@@ -73,6 +79,31 @@ export function AuthProvider({ children }) {
       // Already have token from a previous session
       fetchUser(stored);
     }
+
+    // CONSOLIDATED: Listen for legacy auth events to unify state management
+    const handleLegacyLogin = (event) => {
+      const { user, token } = event.detail;
+      localStorage.setItem("authToken", token);
+      setUser({
+        name: user.displayName || user.name || user.email,
+        email: user.email,
+        avatarSeed: encodeURIComponent(
+          user.displayName || user.name || user.email
+        ),
+      });
+    };
+
+    const handleLegacyLogout = () => {
+      logout();
+    };
+
+    window.addEventListener("auth-user-login", handleLegacyLogin);
+    window.addEventListener("auth-user-logout", handleLegacyLogout);
+
+    return () => {
+      window.removeEventListener("auth-user-login", handleLegacyLogin);
+      window.removeEventListener("auth-user-logout", handleLegacyLogout);
+    };
   }, [CLIENT_ID, REDIRECT_URI, fetchUser, handleCredentialResponse]);
 
   // Trigger the GSI prompt (popup or redirect)
