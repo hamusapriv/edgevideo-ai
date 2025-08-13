@@ -109,7 +109,7 @@
   visibility: hidden;
   transition: all 0.3s ease;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 150px);
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -609,12 +609,4 @@
 }
 
 @media (max-width: 480px) {
-  .profile-panel {
-    max-width: calc(100vw - 10px);
-    right: 0;
-    left: 0;
-    margin: auto;
-    top: 60px;
-    width: auto;
-  }
 }
