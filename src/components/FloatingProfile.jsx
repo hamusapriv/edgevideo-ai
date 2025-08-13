@@ -133,8 +133,10 @@ export default function FloatingProfile() {
         {!user ? (
           <div className="profile-content">
             <div className="profile-section">
-              <h3>Sign In</h3>
-              <p>Connect to access your profile and wallet</p>
+              <h3 style={{ marginBottom: "12px" }}>Sign In</h3>
+              <p style={{ marginBottom: "12px" }}>
+                Connect to access your profile and wallet
+              </p>
               <GoogleSignInButton />
             </div>
           </div>
