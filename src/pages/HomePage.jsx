@@ -287,11 +287,14 @@ export default function HomePage() {
         <section className="hero">
           <div className="hero-container">
             <div className="hero-content">
-              <h1 className="hero-title">
-                Join the <br />
-                <span className="hero-highlight">Shoppable Video</span>
+              <h1 className="hero-title" style={{ lineHeight: "1.2" }}>
+                <span>Join the </span>
                 <br />
-                Revolution
+                <span className="hero-highlight" style={{ margin: "-12px 0" }}>
+                  Shoppable Video
+                </span>
+                <br />
+                <span>Revolution</span>{" "}
               </h1>
               <p className="hero-description">
                 Our AI-powered shoppable broadcasting solution adds a new
@@ -302,7 +305,7 @@ export default function HomePage() {
               <div className="hero__actions">
                 <a
                   href="mailto:info@edgevideo.ai"
-                  className="btn btn--primary btn--large"
+                  className="btn btn--secondary"
                 >
                   Contact Us
                 </a>
