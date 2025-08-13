@@ -35,14 +35,18 @@ export default function Tabs({
           aria-label="Toggle profile sidebar"
         >
           <div className="avatar-wrapper small">
-            <img
-              loading="lazy"
-              src={avatarUrl}
-              alt={user ? `${user.name} avatar` : "Guest avatar"}
-              className="avatar"
-            />
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
           </div>
-          Profile
         </button>
       </nav>
     </footer>

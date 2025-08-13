@@ -1,0 +1,23 @@
+/* Fix RainbowKit wrapper breaking flex layout */
+
+/* Make RainbowKit wrapper transparent to layout */
+div[data-rk] {
+  display: contents !important;
+}
+
+/* Only show the wrapper when it contains a modal */
+div[data-rk]:has([role="dialog"]) {
+  display: block !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 999999 !important;
+  pointer-events: none !important;
+}
+
+/* Ensure modal content can be interacted with */
+div[data-rk]:has([role="dialog"]) > * {
+  pointer-events: auto !important;
+}

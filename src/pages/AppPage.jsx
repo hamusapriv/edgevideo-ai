@@ -4,8 +4,6 @@ import EdgeLogo from "../assets/edgevideoai-logo.png";
 import ChannelLogo from "../components/ChannelLogo";
 import Tabs from "../components/Tabs";
 import ScreenInitializer from "../screen/ScreenInitializer";
-import PointsDisplay from "../components/PointsDisplay";
-import DailyCheckIn from "../components/DailyCheckIn";
 import { useSidebar } from "../contexts/SidebarContext";
 
 // Tab‐pane components
@@ -106,12 +104,6 @@ function AppPage() {
       {/* Injected AppHeader content directly */}
       <header className="header">
         <img src={EdgeLogo} alt="EdgeVideo" height="30" />
-
-        {/* Points and Daily Check-in */}
-        <div className="header-controls">
-          <PointsDisplay size="small" />
-          <DailyCheckIn />
-        </div>
 
         {/* Use channelId from useChannelId hook (state/prop, not window) */}
         {channelId && (

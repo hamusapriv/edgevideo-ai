@@ -135,3 +135,15 @@
   flex-direction: column;
   gap: 0.2rem;
 }
+
+.games-tab {
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
