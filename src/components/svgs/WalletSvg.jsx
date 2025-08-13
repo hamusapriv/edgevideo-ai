@@ -15,7 +15,8 @@ const WalletSvg = () => {
         zIndex: -1,
         opacity: 0.2,
         top: "50%",
-        transform: "translateY(-50%)",
+        left: "40%",
+        transform: "translate(-50%, -50%)",
       }}
     >
       <g clipPath="url(#clip0_29_2)">
