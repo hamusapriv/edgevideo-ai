@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Logo from "/assets/logo.png";
 import "../styles/HomePage.css";
 import MarketingThemeToggle from "./MarketingThemeToggle";
+import FloatingProfile from "./FloatingProfile";
 
 export default function Navbar() {
   const [navOpen, setNavOpen] = useState(false);
@@ -67,83 +68,86 @@ export default function Navbar() {
           </p>
         </a>
       </div>
-      <div className="floating-logo">
-        <Link to="/home" className="logo-link">
-          <img src={Logo} alt="Edge Video AI Logo" className="logo-image" />
-          <div className="logo-text">
-            <span className="logo-edge">Edge</span>
-            <span className="logo-video">Video</span>
-            <span className="logo-ai">AI</span>
-          </div>
-        </Link>
-      </div>
-      <nav className="floating-nav">
-        <button
-          className={`nav-orb ${navOpen ? "nav-orb--open" : ""}`}
-          onClick={toggleNav}
-          aria-label="Toggle Navigation"
-        >
-          <div className="orb-inner">
-            <div className="orb-lines">
-              <span></span>
-              <span></span>
-              <span></span>
+      <div className="floating-container">
+        <div className="floating-logo">
+          <Link to="/home" className="logo-link">
+            <img src={Logo} alt="Edge Video AI Logo" className="logo-image" />
+            <div className="logo-text">
+              <span className="logo-edge">Edge</span>
+              <span className="logo-video">Video</span>
+              <span className="logo-ai">AI</span>
+            </div>
+          </Link>
+        </div>
+        <nav className="floating-nav">
+          <button
+            className={`nav-orb ${navOpen ? "nav-orb--open" : ""}`}
+            onClick={toggleNav}
+            aria-label="Toggle Navigation"
+          >
+            <div className="orb-inner">
+              <div className="orb-lines">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+            <div className="orb-glow"></div>
+          </button>
+
+          <div className={`nav-items ${navOpen ? "nav-items--open" : ""}`}>
+            <Link
+              to="/channels"
+              className="nav-item"
+              data-tooltip="For Channels"
+              onClick={closeNav}
+            >
+              <span className="nav-item-text">Channels</span>
+            </Link>
+            <Link
+              to="/brands"
+              className="nav-item"
+              data-tooltip="For Brands"
+              onClick={closeNav}
+            >
+              <span className="nav-item-text">Brands</span>
+            </Link>
+            <Link
+              to="/viewers"
+              className="nav-item"
+              data-tooltip="For Viewers"
+              onClick={closeNav}
+            >
+              <span className="nav-item-text">Viewers</span>
+            </Link>
+            <Link
+              to="/app"
+              className="nav-item nav-item--primary"
+              data-tooltip="Open App"
+              onClick={closeNav}
+            >
+              <span className="nav-item-text">Open App</span>
+            </Link>
+            <a
+              href="mailto:info@edgevideo.ai"
+              className="nav-item"
+              data-tooltip="Contact Us"
+              onClick={closeNav}
+            >
+              <span className="nav-item-text">Contact</span>
+            </a>
+            <div className="nav-item nav-theme-toggle">
+              <MarketingThemeToggle />
             </div>
           </div>
-          <div className="orb-glow"></div>
-        </button>
 
-        <div className={`nav-items ${navOpen ? "nav-items--open" : ""}`}>
-          <Link
-            to="/channels"
-            className="nav-item"
-            data-tooltip="For Channels"
-            onClick={closeNav}
-          >
-            <span className="nav-item-text">Channels</span>
-          </Link>
-          <Link
-            to="/brands"
-            className="nav-item"
-            data-tooltip="For Brands"
-            onClick={closeNav}
-          >
-            <span className="nav-item-text">Brands</span>
-          </Link>
-          <Link
-            to="/viewers"
-            className="nav-item"
-            data-tooltip="For Viewers"
-            onClick={closeNav}
-          >
-            <span className="nav-item-text">Viewers</span>
-          </Link>
-          <Link
-            to="/app"
-            className="nav-item nav-item--primary"
-            data-tooltip="Open App"
-            onClick={closeNav}
-          >
-            <span className="nav-item-text">Open App</span>
-          </Link>
-          <a
-            href="mailto:info@edgevideo.ai"
-            className="nav-item"
-            data-tooltip="Contact Us"
-            onClick={closeNav}
-          >
-            <span className="nav-item-text">Contact</span>
-          </a>
-          <div className="nav-item nav-theme-toggle">
-            <MarketingThemeToggle />
-          </div>
-        </div>
-
-        <div
-          className={`nav-overlay ${navOpen ? "nav-overlay--open" : ""}`}
-          onClick={toggleNav}
-        ></div>
-      </nav>
+          <div
+            className={`nav-overlay ${navOpen ? "nav-overlay--open" : ""}`}
+            onClick={toggleNav}
+          ></div>
+        </nav>
+        <FloatingProfile />
+      </div>
     </>
   );
 }

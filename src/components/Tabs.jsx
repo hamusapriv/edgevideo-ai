@@ -42,6 +42,7 @@ export default function Tabs({
               className="avatar"
             />
           </div>
+          Profile
         </button>
       </nav>
     </footer>

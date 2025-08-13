@@ -9,16 +9,26 @@ import React, {
 
 const AuthContext = createContext({
   user: null,
+  isAuthLoading: true,
   login: () => {},
   logout: () => {},
 });
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   // Pull in our env vars
   const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+  // Use dynamic redirect URI based on current domain
   const REDIRECT_URI = `${window.location.origin}/app/oauth2callback`;
+
+  // For localhost, we might need to use a different approach
+  const isLocalhost =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1";
+
   const USERINFO_URL = import.meta.env.VITE_USERINFO_URL; // e.g. https://fastapi.edgevideo.ai/auth_google/details
 
   // Fetch user profile from our backend
@@ -38,6 +48,8 @@ export function AuthProvider({ children }) {
       } catch (err) {
         console.error("Auth fetch failed:", err);
         logout();
+      } finally {
+        setIsAuthLoading(false);
       }
     },
     [USERINFO_URL]
@@ -78,6 +90,9 @@ export function AuthProvider({ children }) {
     } else if (stored) {
       // Already have token from a previous session
       fetchUser(stored);
+    } else {
+      // No stored token - not logged in
+      setIsAuthLoading(false);
     }
 
     // CONSOLIDATED: Listen for legacy auth events to unify state management
@@ -108,19 +123,43 @@ export function AuthProvider({ children }) {
 
   // Trigger the GSI prompt (popup or redirect)
   function login() {
-    window.location.href =
+    console.log("Login attempt:");
+    console.log("AUTH_BASE_URL:", import.meta.env.VITE_AUTH_BASE_URL);
+    console.log("REDIRECT_URI:", REDIRECT_URI);
+    console.log("Current origin:", window.location.origin);
+    console.log("Is localhost:", isLocalhost);
+
+    // Store the current page to redirect back to after login
+    const currentPath = window.location.pathname;
+    localStorage.setItem("authRedirectPath", currentPath);
+    console.log("Stored redirect path:", currentPath);
+    console.log("Login initiated from:", currentPath);
+
+    // Always use the current domain's redirect URI
+    // The backend needs to be configured to accept localhost redirects
+    const finalRedirectUri = REDIRECT_URI;
+
+    const loginUrl =
       `${import.meta.env.VITE_AUTH_BASE_URL}/google` +
-      `?redirectUri=${encodeURIComponent(REDIRECT_URI)}`;
+      `?redirectUri=${encodeURIComponent(finalRedirectUri)}`;
+
+    console.log("Final redirect URI:", finalRedirectUri);
+    console.log("Final login URL:", loginUrl);
+
+    window.location.href = loginUrl;
   }
 
   // Clear the session
   function logout() {
     localStorage.removeItem("authToken");
     setUser(null);
+    setIsAuthLoading(false);
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, fetchUser }}>
+    <AuthContext.Provider
+      value={{ user, isAuthLoading, login, logout, fetchUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

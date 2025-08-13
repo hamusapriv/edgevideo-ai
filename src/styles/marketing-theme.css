@@ -184,7 +184,6 @@ body:has(.marketing-page) {
 .marketing-page .btn:hover,
 .marketing-page .btn--primary:hover,
 .marketing-page .btn--secondary:hover {
-  color: white !important;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
@@ -245,10 +244,6 @@ body:has(.marketing-page) {
 
 .marketing-page .home-bg::before {
   background-color: rgba(var(--marketing-text-rgb), 0.1) !important;
-}
-
-.marketing-page .floating-logo {
-  border: 1px solid rgba(var(--marketing-text-rgb), 0.2) !important;
 }
 
 /* Additional comprehensive background overrides to prevent any transitions */

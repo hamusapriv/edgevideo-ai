@@ -1,0 +1,294 @@
+/* Daily Check-In Styles */
+
+.daily-checkin-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-checkin-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #45a049, #4caf50);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4);
+}
+
+.daily-checkin-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.daily-checkin-btn.checked-in {
+  background: linear-gradient(135deg, #2196f3, #1976d2);
+  box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
+  cursor: default;
+}
+
+.daily-checkin-btn:disabled {
+  opacity: 0.8;
+  cursor: default;
+  transform: none !important;
+}
+
+.checkin-icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.daily-checkin-btn:hover:not(:disabled) .checkin-icon {
+  transform: scale(1.1);
+}
+
+.checkin-text {
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+/* Loading animation for the button */
+.daily-checkin-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.daily-checkin-btn:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+/* Modal Styles */
+.checkin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+  animation: modalFadeIn 0.3s ease;
+}
+
+.checkin-modal {
+  background: var(--bg-primary, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 90%;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease;
+}
+
+.checkin-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+}
+
+.checkin-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.checkin-modal-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.checkin-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.checkin-modal-content {
+  padding: 2rem;
+}
+
+.checkin-reward-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.checkin-reward-info > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 8px;
+  border-left: 4px solid var(--color-primary, #4caf50);
+}
+
+.checkin-label {
+  font-weight: 500;
+  color: var(--color-text-secondary, #666);
+}
+
+.checkin-value {
+  font-weight: 600;
+  color: var(--color-primary, #4caf50);
+  font-size: 1.125rem;
+}
+
+.checkin-earned .checkin-value {
+  color: var(--color-success, #4caf50);
+  font-size: 1.5rem;
+}
+
+.checkin-message {
+  text-align: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+  border-radius: 8px;
+  color: var(--color-text, #333);
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.checkin-modal-btn {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.checkin-modal-btn:hover {
+  background: linear-gradient(135deg, #45a049, #4caf50);
+  transform: translateY(-1px);
+}
+
+.checkin-modal-btn:active {
+  transform: translateY(0);
+}
+
+/* Animations */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Dark theme support */
+[data-theme="dark"] .checkin-modal {
+  background: var(--bg-primary-dark, #1a1a1a);
+  color: var(--color-text-dark, #ffffff);
+}
+
+[data-theme="dark"] .checkin-reward-info > div {
+  background: var(--bg-secondary-dark, #2a2a2a);
+}
+
+[data-theme="dark"] .checkin-label {
+  color: var(--color-text-secondary-dark, #b0b0b0);
+}
+
+[data-theme="dark"] .checkin-message {
+  background: rgba(76, 175, 80, 0.1);
+  color: var(--color-text-dark, #ffffff);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .checkin-modal {
+    width: 95%;
+    max-width: none;
+  }
+
+  .checkin-modal-header {
+    padding: 1rem;
+  }
+
+  .checkin-modal-content {
+    padding: 1.5rem;
+  }
+
+  .daily-checkin-btn {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .checkin-text {
+    font-size: 0.8rem;
+  }
+}
+
+/* Integration with header */
+.header .daily-checkin-btn {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.header .daily-checkin-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.header .daily-checkin-btn.checked-in {
+  background: rgba(33, 150, 243, 0.3);
+  border-color: rgba(33, 150, 243, 0.4);
+}
+
+/* Integration with sidebar */
+.sidebar .daily-checkin-btn {
+  width: 100%;
+  justify-content: center;
+}

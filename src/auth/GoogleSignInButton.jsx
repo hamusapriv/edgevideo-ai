@@ -1,6 +1,7 @@
 // src/auth/GoogleSignInButton.jsx
 import React from "react";
 import { useAuth } from "../contexts/AuthContext";
+import "../styles/google.css";
 
 export default function GoogleSignInButton() {
   const { login } = useAuth();

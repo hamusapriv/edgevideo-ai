@@ -2,6 +2,8 @@
 .favorites-search-container {
   position: relative;
   width: 100%;
+  flex: 1;
+  max-width: 300px;
 }
 
 .favorites-search-input {

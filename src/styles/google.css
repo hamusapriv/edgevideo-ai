@@ -255,6 +255,23 @@
 
 .logout-btn {
   margin: 0;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(153, 50, 50, 0);
+  border: 1px solid white;
+  padding: 6px 12px;
+  width: fit-content;
+  margin: auto;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.logout-btn:hover {
+  background-color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
 }
 
 .contact-btn {
@@ -266,4 +283,46 @@
   padding: 8px 12px;
   background-color: var(--color-primary);
   border-radius: 6px;
+}
+
+/* Sidebar Rewards Section */
+.sidebar-rewards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.sidebar-rewards .points-display {
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 8px;
+}
+
+.sidebar-rewards .daily-checkin-btn {
+  width: 100%;
+  justify-content: center;
+  background: rgba(33, 150, 243, 0.2);
+  border: 1px solid rgba(33, 150, 243, 0.4);
+}
+
+.sidebar-rewards .daily-checkin-btn:hover:not(:disabled) {
+  background: rgba(33, 150, 243, 0.3);
+  border-color: rgba(33, 150, 243, 0.6);
+}
+
+.sidebar-rewards .daily-checkin-btn.checked-in {
+  background: rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.4);
+}
+
+.sidebar .wallet-connect-container {
+  width: 100%;
+}
+
+.sidebar .wallet-connect-container .wallet-button,
+.sidebar .wallet-connect-container .wallet-verify-btn,
+.sidebar .wallet-connect-container .wallet-disconnect-btn {
+  width: 100%;
+  justify-content: center;
 }

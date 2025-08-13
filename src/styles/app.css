@@ -129,3 +129,9 @@
 .tab-content[data-tab-index="2"].tab-content-inactive {
   transform: translateX(100%);
 }
+
+.sidebar-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}

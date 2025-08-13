@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import LogoutButton from "../auth/LogoutButton";
 import GoogleSignInButton from "../auth/GoogleSignInButton";
+import PointsDisplay from "./PointsDisplay";
+import DailyCheckIn from "./DailyCheckIn";
 import Socials from "./Socials";
 import FAQ from "./FAQ";
 import { useState } from "react";
@@ -105,6 +107,15 @@ export default function ProfileSidebar({ isOpen, onClose }) {
               </div>
               <h3 className="name">{user.name}</h3>
               <p className="username">@{user.email}</p>
+            </div>
+
+            {/* Points and Rewards Section */}
+            <div className="list-block">
+              <h5 className="block-title">Rewards</h5>
+              <div className="sidebar-rewards">
+                <PointsDisplay size="normal" showLabel={true} />
+                <DailyCheckIn />
+              </div>
             </div>
 
             {/* Account settings */}

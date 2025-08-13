@@ -5,6 +5,8 @@ import { BrowserRouter } from "react-router-dom";
 
 import App from "./App";
 import { AuthProvider } from "./contexts/AuthContext";
+import { WalletProvider } from "./contexts/WalletContext";
+import { PointsProvider } from "./contexts/PointsContext";
 import { FavoritesProvider } from "./contexts/FavoritesContext";
 import { SidebarProvider } from "./contexts/SidebarContext";
 import { ProductsProvider } from "./contexts/ProductsContext";
@@ -14,15 +16,19 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <>
     <BrowserRouter>
       <AuthProvider>
-        <FavoritesProvider>
-          <SidebarProvider>
-            <AIStatusProvider>
-              <ProductsProvider>
-                <App />
-              </ProductsProvider>
-            </AIStatusProvider>
-          </SidebarProvider>
-        </FavoritesProvider>
+        <WalletProvider>
+          <PointsProvider>
+            <FavoritesProvider>
+              <SidebarProvider>
+                <AIStatusProvider>
+                  <ProductsProvider>
+                    <App />
+                  </ProductsProvider>
+                </AIStatusProvider>
+              </SidebarProvider>
+            </FavoritesProvider>
+          </PointsProvider>
+        </WalletProvider>
       </AuthProvider>
     </BrowserRouter>
   </>

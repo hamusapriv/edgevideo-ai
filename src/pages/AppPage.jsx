@@ -4,6 +4,8 @@ import EdgeLogo from "../assets/edgevideoai-logo.png";
 import ChannelLogo from "../components/ChannelLogo";
 import Tabs from "../components/Tabs";
 import ScreenInitializer from "../screen/ScreenInitializer";
+import PointsDisplay from "../components/PointsDisplay";
+import DailyCheckIn from "../components/DailyCheckIn";
 import { useSidebar } from "../contexts/SidebarContext";
 
 // Tab‐pane components
@@ -35,21 +37,43 @@ function AppPage() {
       {
         key: "shopping",
         label: (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="currentColor"
-            viewBox="0 0 256 256"
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              gap: "0.5rem",
+            }}
           >
-            <path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM176,88a48,48,0,0,1-96,0,8,8,0,0,1,16,0,32,32,0,0,0,64,0,8,8,0,0,1,16,0Z" />
-          </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              viewBox="0 0 256 256"
+            >
+              <path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM176,88a48,48,0,0,1-96,0,8,8,0,0,1,16,0,32,32,0,0,0,64,0,8,8,0,0,1,16,0Z" />
+            </svg>
+            <span>Shopping</span>
+          </div>
         ),
         Component: ShoppingTab,
       },
       {
         key: "games",
-        label: <GamesIcon />,
+        label: (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              gap: "0.5rem",
+            }}
+          >
+            <GamesIcon />
+            <span style={{ marginBottom: "-.5rem" }}>Games</span>
+          </div>
+        ),
         Component: GamesTab,
       },
       {
@@ -104,7 +128,12 @@ function AppPage() {
       {/* Injected AppHeader content directly */}
       <header className="header">
         <img src={EdgeLogo} alt="EdgeVideo" height="30" />
-        {/* The sidebar‐toggle button has been removed from here */}
+
+        {/* Points and Daily Check-in */}
+        <div className="header-controls">
+          <PointsDisplay size="small" />
+          <DailyCheckIn />
+        </div>
 
         {/* Use channelId from useChannelId hook (state/prop, not window) */}
         {channelId && (

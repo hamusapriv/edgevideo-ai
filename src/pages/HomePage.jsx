@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import "../styles/HomePage.css";
 import "../styles/marketing-theme.css";
+import "../styles/home-auth.css";
+import "../styles/google.css";
+import "../styles/FloatingProfile.css";
 import HeroImg from "/assets/hero-image.png";
 import HeroVideoMp4 from "/assets/hero-video-min.mp4";
 import HeroVideoWebm from "/assets/output_alpha.webm";
@@ -37,6 +40,8 @@ const ViewerEngagementIcon = lazy(() =>
 // Keep critical components as regular imports
 import Navbar from "../components/Navbar";
 import LazyImage from "../components/LazyImage";
+import { useAuth } from "../contexts/AuthContext";
+import { useWallet } from "../contexts/WalletContext";
 
 // Lazy load example pairs only when needed
 const loadExamplePairs = () => {
@@ -151,6 +156,8 @@ const testimonials = [
 ];
 
 export default function HomePage() {
+  const { user } = useAuth();
+  const { wallet } = useWallet();
   const [typedText, setTypedText] = useState("");
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState(false);
@@ -293,9 +300,17 @@ export default function HomePage() {
                 the screen.
               </p>
               <div className="hero__actions">
-                <a href="mailto:info@edgevideo.ai" className="btn btn--primary">
+                <a
+                  href="mailto:info@edgevideo.ai"
+                  className="btn btn--primary btn--large"
+                >
                   Contact Us
                 </a>
+                {user && wallet.isVerified && (
+                  <a href="/app" className="btn btn--primary">
+                    Enter App
+                  </a>
+                )}
               </div>
             </div>
             {/*           <img src={HeroImg} className="hero__image" /> */}

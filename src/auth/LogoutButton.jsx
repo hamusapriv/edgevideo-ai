@@ -6,12 +6,30 @@ export default function LogoutButton() {
   const { logout } = useAuth();
 
   function handleClick() {
+    // Get current page to determine where to redirect after logout
+    const currentPath = window.location.pathname;
+
+    // Determine redirect path based on current location
+    let redirectPath = "/app"; // default fallback
+
+    if (currentPath === "/" || currentPath === "/home") {
+      redirectPath = "/home";
+    } else if (currentPath.startsWith("/app")) {
+      redirectPath = "/app";
+    } else {
+      // For other pages (channels, brands, etc.), stay on the same page
+      // These pages should work fine without authentication
+      redirectPath = currentPath;
+    }
+
+    console.log("Logout from:", currentPath, "redirecting to:", redirectPath);
+
     logout();
-    window.location.assign("/app");
+    window.location.assign(redirectPath);
   }
 
   return (
-    <button onClick={handleClick} className="logout-btn btn--secondary">
+    <button onClick={handleClick} className="logout-btn ">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="icon icon-logout"

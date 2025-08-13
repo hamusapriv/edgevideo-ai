@@ -196,7 +196,7 @@ export default function FavouritesTab({
           display: "flex",
           flexWrap: "wrap",
           gap: "0.5rem",
-          padding: "1rem 1rem 0.5rem 1rem",
+          padding: "0.5rem",
           borderBottom: "1px solid var(--color-purple-text)",
           marginBottom: "0.5rem",
         }}
@@ -206,7 +206,10 @@ export default function FavouritesTab({
             key={category}
             onClick={() => setSelectedCategory(category)}
             style={{
-              padding: "0.4rem 0.8rem",
+              padding: "0.5rem 1rem",
+              margin: "auto 0",
+              flex: "none",
+              height: "fit-content",
               fontSize: "0.85rem",
               border: "1px solid var(--color-purple-text)",
               borderRadius: "20px",
@@ -225,92 +228,93 @@ export default function FavouritesTab({
           >
             {category} ({categories[category].length})
           </button>
-        ))}
-      </div>
-
-      {/* Search Input */}
-      <div
-        style={{
-          padding: "0.5rem 1rem",
-          borderBottom: "1px solid var(--color-purple-text)",
-          marginBottom: "0.5rem",
-        }}
-      >
-        <div className="favorites-search-container">
-          <input
-            type="text"
-            placeholder="Search favorites..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="favorites-search-input"
-          />
-          {/* Search Icon */}
-          <svg className="favorites-search-icon" viewBox="0 0 24 24">
-            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-          </svg>
-          {/* Clear Search Button */}
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm("")}
-              className="favorites-search-clear"
-            >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="currentColor"
+        ))}{" "}
+        {/* Search Input */}
+        <div
+          style={{
+            padding: "0",
+            display: "flex",
+            alignItems: "center",
+            marginLeft: screen.width < 768 ? "0" : "auto",
+          }}
+        >
+          <div className="favorites-search-container">
+            <input
+              type="text"
+              placeholder="Search favorites..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="favorites-search-input"
+            />
+            {/* Search Icon */}
+            <svg className="favorites-search-icon" viewBox="0 0 24 24">
+              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+            </svg>
+            {/* Clear Search Button */}
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="favorites-search-clear"
               >
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-              </svg>
-            </button>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                </svg>
+              </button>
+            )}
+          </div>{" "}
+          {/* Delete All Button */}
+          {filteredFavorites.length > 0 && (
+            <div
+              style={{
+                padding: "0.5rem 1rem",
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
+              <button
+                onClick={handleDeleteAll}
+                disabled={isDeleting}
+                style={{
+                  padding: "0.4rem 0.8rem",
+                  fontSize: "0.8rem",
+                  border: "1px solid var(--color-red)",
+                  borderRadius: "6px",
+                  background: "transparent",
+                  color: isDeleting ? "#666" : "var(--color-red)",
+                  cursor: isDeleting ? "not-allowed" : "pointer",
+                  transition: "all 0.2s ease",
+                  opacity: isDeleting ? 0.6 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (!isDeleting) {
+                    e.target.style.background = "var(--color-red)";
+                    e.target.style.color = "#fff";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isDeleting) {
+                    e.target.style.background = "transparent";
+                    e.target.style.color = "var(--color-red)";
+                  }
+                }}
+              >
+                {isDeleting
+                  ? "Removing..."
+                  : `Delete All ${
+                      selectedCategory === "All"
+                        ? "Favorites"
+                        : selectedCategory
+                    }`}
+              </button>
+            </div>
           )}
         </div>
       </div>
-
-      {/* Delete All Button */}
-      {filteredFavorites.length > 0 && (
-        <div
-          style={{
-            padding: "0.5rem 1rem",
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
-          <button
-            onClick={handleDeleteAll}
-            disabled={isDeleting}
-            style={{
-              padding: "0.4rem 0.8rem",
-              fontSize: "0.8rem",
-              border: "1px solid var(--color-red)",
-              borderRadius: "6px",
-              background: "transparent",
-              color: isDeleting ? "#666" : "var(--color-red)",
-              cursor: isDeleting ? "not-allowed" : "pointer",
-              transition: "all 0.2s ease",
-              opacity: isDeleting ? 0.6 : 1,
-            }}
-            onMouseEnter={(e) => {
-              if (!isDeleting) {
-                e.target.style.background = "var(--color-red)";
-                e.target.style.color = "#fff";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isDeleting) {
-                e.target.style.background = "transparent";
-                e.target.style.color = "var(--color-red)";
-              }
-            }}
-          >
-            {isDeleting
-              ? "Removing..."
-              : `Delete All ${
-                  selectedCategory === "All" ? "Favorites" : selectedCategory
-                }`}
-          </button>
-        </div>
-      )}
 
       {/* Favorites List */}
       <div

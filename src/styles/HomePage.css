@@ -277,13 +277,8 @@ h6,
 .top-banner {
   background: linear-gradient(90deg, var(--color-primary), #8b5cf6);
   padding: 6px 6px;
-  border-radius: 10px;
+  border-radius: 0 0 10px 10px;
   text-align: center;
-  position: fixed;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
   font-size: 14px;
   font-weight: 500;
 }
@@ -299,16 +294,26 @@ h6,
 }
 
 /* Floating Logo */
-.floating-logo {
+
+.floating-container {
   position: fixed;
   top: 50px;
-  left: 20px;
+  right: 0;
+  left: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 12px 24px;
   z-index: 999;
-  background: rgba(0, 0, 0, 0.8);
+  gap: 1rem;
+  width: 100%;
+}
+
+.floating-logo {
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 12px 24px 12px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .logo-link {
@@ -316,7 +321,7 @@ h6,
   align-items: center;
   gap: 12px;
   text-decoration: none;
-  color: white;
+  color: currentColor;
 }
 
 .logo-image {
@@ -330,15 +335,14 @@ h6,
   line-height: 1;
   font-weight: 600;
   position: relative;
+  color: currentColor;
 }
 
 .logo-edge {
-  color: white;
   font-size: 14px;
 }
 
 .logo-video {
-  color: white;
   font-size: 14px;
 }
 
@@ -352,10 +356,7 @@ h6,
 
 /* Floating Navigation */
 .floating-nav {
-  position: fixed;
-  top: 50px;
-  right: 20px;
-  z-index: 999;
+  margin-left: auto;
 }
 
 .nav-orb {
@@ -421,7 +422,7 @@ h6,
 
 .nav-items {
   position: absolute;
-  top: 70px;
+  top: 80px;
   right: 0;
   min-width: 200px;
   background: rgba(0, 0, 0, 0.9);
@@ -431,7 +432,6 @@ h6,
   padding: 12px;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-10px);
   transition: all 0.3s ease;
   z-index: 2;
   display: flex;
@@ -2167,7 +2167,6 @@ h6,
   }
 
   .nav-items {
-    right: -10px;
     min-width: 180px;
   }
 
@@ -2691,6 +2690,9 @@ h6,
 
 /* Mobile Touch Improvements */
 @media (max-width: 768px) {
+  .floating-container {
+    padding: 6px;
+  }
   .features-center {
     position: relative;
     z-index: -1;
@@ -2752,16 +2754,6 @@ h6,
 
   .testimonial blockquote {
     line-height: 1.5;
-  }
-
-  /* Better spacing for mobile */
-  .top-banner {
-    position: absolute;
-    top: 100dvh;
-    bottom: auto;
-    transform: translate(-50%, -110%);
-    left: 50%;
-    right: auto;
   }
 
   .banner-link {
