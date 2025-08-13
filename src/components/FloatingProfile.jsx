@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useWallet } from "../contexts/WalletContext";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import GoogleSignInButton from "../auth/GoogleSignInButton";
 import LogoutButton from "../auth/LogoutButton";
 import WalletSvg from "./svgs/WalletSvg";
@@ -133,8 +134,8 @@ export default function FloatingProfile() {
         {!user ? (
           <div className="profile-content">
             <div className="profile-section">
-              <h3 style={{ marginBottom: "18px" }}>Sign In</h3>
-              <p style={{ marginBottom: "18px" }}>
+              <h3 style={{ marginBottom: "18px", color: "white" }}>Sign In</h3>
+              <p style={{ marginBottom: "18px", color: "white" }}>
                 Connect to access your profile and wallet
               </p>
               <GoogleSignInButton />
@@ -172,7 +173,6 @@ export default function FloatingProfile() {
                 <div className="user-details">
                   <h3>{user.name || "User"}</h3>
                   <p className="user-email">{user.email}</p>
-                  <span className="user-status">Online</span>
                 </div>
               </div>
             </div>
@@ -184,12 +184,15 @@ export default function FloatingProfile() {
                   <WalletSvg />
                   <h4>Wallet</h4>
                 </div>
-                {wallet.isConnected && (
-                  <div className="connection-indicator">
-                    <div className="connection-dot"></div>
-                    <span>Connected</span>
-                  </div>
-                )}
+                {wallet.isConnected ? (
+                  <span
+                    className={`status-badge ${
+                      wallet.isVerified ? "verified" : "connected"
+                    }`}
+                  >
+                    {wallet.isVerified ? "✓ Verified" : "🔗 Connected"}
+                  </span>
+                ) : null}
               </div>
 
               {wallet.isConnected ? (
@@ -197,13 +200,6 @@ export default function FloatingProfile() {
                   <div className="wallet-address-card">
                     <div className="address-header">
                       <span className="address-label">Address</span>
-                      <span
-                        className={`status-badge ${
-                          wallet.isVerified ? "verified" : "connected"
-                        }`}
-                      >
-                        {wallet.isVerified ? "✓ Verified" : "🔗 Connected"}
-                      </span>
                     </div>
                     <div className="address-value">
                       <span className="address-text">
@@ -242,7 +238,7 @@ export default function FloatingProfile() {
                         className="profile-btn profile-btn--verify"
                         onClick={handleVerifyWallet}
                         disabled={true}
-                        title="Verification temporarily disabled - backend endpoints needed"
+                        title="Coming Soon"
                       >
                         <svg
                           width="16"
@@ -254,9 +250,7 @@ export default function FloatingProfile() {
                         >
                           <polyline points="20,6 9,17 4,12"></polyline>
                         </svg>
-                        {loading
-                          ? "Verifying..."
-                          : "Verify Ownership (Coming Soon)"}
+                        {loading ? "Verifying..." : "Verify Ownership"}
                       </button>
                     )}
                     <button
@@ -280,8 +274,8 @@ export default function FloatingProfile() {
                     </button>
                     <div className="wallet-disconnect-info">
                       <small>
-                        💡 To fully disconnect, go to MetaMask → Connected sites
-                        → Disconnect
+                        💡 App disconnected. To fully disconnect from your
+                        wallet, check your wallet's connected sites.
                       </small>
                     </div>
                   </div>
@@ -296,65 +290,64 @@ export default function FloatingProfile() {
 
                   {!wallet.hasMetaMask ? (
                     <div className="wallet-install-prompt">
-                      <div className="wallet-icon">
-                        <svg
-                          width="32"
-                          height="32"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                        >
-                          <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                        </svg>
-                      </div>
                       <p>
-                        MetaMask not detected. Please install MetaMask to
-                        continue.
+                        No wallet detected. Please install a compatible wallet
+                        to continue.
                       </p>
                       <a
-                        href="https://metamask.io/download/"
+                        href="https://walletconnect.com/explorer"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="profile-btn profile-btn--install"
                       >
-                        Install MetaMask
+                        Install Wallet
                       </a>
                     </div>
                   ) : (
                     <div className="wallet-connect-prompt">
-                      <div className="wallet-icon">
-                        <svg
-                          width="32"
-                          height="32"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                        >
-                          <rect x="1" y="3" width="15" height="13"></rect>
-                          <polygon points="16,6 16,20 21,12"></polygon>
-                        </svg>
-                      </div>
                       <p>Connect your wallet to access exclusive features</p>
-                      <button
-                        className="profile-btn profile-btn--connect"
-                        onClick={handleConnectWallet}
-                        disabled={loading}
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <rect x="1" y="3" width="15" height="13"></rect>
-                          <polygon points="16,6 16,20 21,12"></polygon>
-                        </svg>
-                        {loading ? "Connecting..." : "Connect Wallet"}
-                      </button>
+
+                      <ConnectButton.Custom>
+                        {({
+                          account,
+                          chain,
+                          openAccountModal,
+                          openChainModal,
+                          openConnectModal,
+                          mounted,
+                        }) => {
+                          const ready = mounted;
+                          const connected = ready && account && chain;
+
+                          return (
+                            <div
+                              {...(!ready && {
+                                "aria-hidden": true,
+                                style: {
+                                  opacity: 0,
+                                  pointerEvents: "none",
+                                  userSelect: "none",
+                                },
+                              })}
+                            >
+                              {(() => {
+                                if (!connected) {
+                                  return (
+                                    <button
+                                      className="profile-btn profile-btn--connect"
+                                      onClick={openConnectModal}
+                                      type="button"
+                                    >
+                                      Connect Wallet
+                                    </button>
+                                  );
+                                }
+                                return null;
+                              })()}
+                            </div>
+                          );
+                        }}
+                      </ConnectButton.Custom>
                     </div>
                   )}
                 </div>

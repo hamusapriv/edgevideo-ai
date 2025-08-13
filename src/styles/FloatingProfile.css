@@ -98,7 +98,7 @@
 /* Profile Panel */
 .profile-panel {
   top: 80px;
-  width: 400px;
+  width: 300px;
   position: absolute;
   right: 0;
   background: rgba(0, 0, 0, 0.95);
@@ -141,8 +141,8 @@
 .profile-header {
   background: linear-gradient(
     135deg,
-    rgba(138, 43, 226, 0.3),
-    rgba(75, 0, 130, 0.3)
+    rgba(138, 43, 226, 0.1),
+    rgba(75, 0, 130, 0.1)
   );
   position: relative;
   overflow: hidden;
@@ -168,8 +168,10 @@
 
 .user-info {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 16px;
+  width: 100%;
 }
 
 .user-avatar-container {
@@ -216,6 +218,10 @@
 }
 
 .user-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   flex: 1;
   min-width: 0;
 }
@@ -257,8 +263,8 @@
 .section-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
+  justify-content: center;
+  gap: 12px;
 }
 
 .section-title {
@@ -314,7 +320,6 @@
 .wallet-connected-info {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .wallet-address-card {
@@ -353,13 +358,13 @@
 }
 
 .copy-address-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
-  padding: 6px;
+  padding: 6px 6px 0 6px;
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   transition: all 0.2s ease;
+  margin-right: auto;
+  margin-bottom: 4px;
 }
 
 .copy-address-btn:hover {
@@ -431,6 +436,10 @@
   background: linear-gradient(135deg, #2196f3, #1976d2);
   color: white;
   border: 1px solid rgba(33, 150, 243, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
 }
 
 .profile-btn--connect:hover:not(:disabled) {
@@ -511,10 +520,6 @@
 }
 
 /* Enhanced Actions Section */
-.actions-section {
-  background: rgba(255, 255, 255, 0.02);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
 
 .profile-actions {
   display: flex;
@@ -554,7 +559,6 @@
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 500;
-  margin-bottom: 8px;
 }
 
 .status-badge.verified {
@@ -598,7 +602,7 @@
   }
 
   .profile-section {
-    padding: 6px 8px;
+    padding: 6px;
     max-width: 100%;
     overflow: auto;
   }

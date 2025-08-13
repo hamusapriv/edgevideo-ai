@@ -6,7 +6,8 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import walletService from "../services/walletService";
+import { useAccount, useDisconnect } from "wagmi";
+import rainbowKitWalletService from "../services/rainbowKitWalletService";
 import { useAuth } from "./AuthContext";
 
 const WalletContext = createContext({
@@ -14,7 +15,7 @@ const WalletContext = createContext({
     isConnected: false,
     address: null,
     isVerified: false,
-    hasMetaMask: false,
+    hasMetaMask: true,
     shortAddress: "",
   },
   connectWallet: () => {},
@@ -25,258 +26,178 @@ const WalletContext = createContext({
 });
 
 export function WalletProvider({ children }) {
-  const { user, isAuthLoading } = useAuth(); // Get auth loading state
+  const { user, isAuthLoading } = useAuth();
+  const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
+
   const [wallet, setWallet] = useState({
     isConnected: false,
     address: null,
     isVerified: false,
-    hasMetaMask: false, // Start with false and detect properly
+    hasMetaMask: true,
     shortAddress: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Update wallet state from service
-  const updateWalletState = useCallback(() => {
-    const status = walletService.getConnectionState();
-    const hasMetaMask = walletService.hasMetaMask();
-
-    console.log("🔄 WalletContext: Updating wallet state:", {
-      hasMetaMask,
-      status,
-      currentWalletState: wallet,
-    });
-
-    const newWalletState = {
-      isConnected: status.isConnected || false,
-      address: status.account || null,
-      isVerified: status.isVerified || false,
-      hasMetaMask: hasMetaMask,
-      shortAddress: status.account
-        ? `${status.account.slice(0, 6)}...${status.account.slice(-4)}`
-        : "",
-    };
-
-    console.log("🆕 WalletContext: New wallet state:", newWalletState);
-
-    setWallet(newWalletState);
+  // Format short address
+  const formatShortAddress = useCallback((addr) => {
+    if (!addr) return "";
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   }, []);
 
-  // Initial MetaMask detection with retry
-  useEffect(() => {
-    let detectionAttempts = 0;
-    const maxAttempts = 10;
-
-    const detectMetaMask = () => {
-      const hasMetaMask = walletService.hasMetaMask();
-      console.log(
-        `MetaMask detection attempt ${detectionAttempts + 1}:`,
-        hasMetaMask
-      );
-
-      if (hasMetaMask) {
-        console.log("MetaMask detected, updating wallet state");
-        updateWalletState();
-        return true; // Stop retrying
-      }
-
-      detectionAttempts++;
-      return false;
-    };
-
-    // Check immediately
-    if (detectMetaMask()) return;
-
-    // Aggressive retry schedule
-    const intervals = [100, 500, 1000, 2000, 3000, 5000];
-    const timeouts = [];
-
-    intervals.forEach((delay, index) => {
-      if (index < maxAttempts) {
-        timeouts.push(
-          setTimeout(() => {
-            if (!detectMetaMask() && index < intervals.length - 1) {
-              console.log(`MetaMask not detected after ${delay}ms, will retry`);
-            }
-          }, delay)
-        );
-      }
-    });
-
-    // Also listen for ethereum object becoming available
-    const handleEthereumAvailable = () => {
-      console.log("Ethereum provider initialized event detected");
-      detectMetaMask();
-    };
-
-    window.addEventListener("ethereum#initialized", handleEthereumAvailable);
-
-    return () => {
-      timeouts.forEach((timeout) => clearTimeout(timeout));
-      window.removeEventListener(
-        "ethereum#initialized",
-        handleEthereumAvailable
-      );
-    };
-  }, [updateWalletState]); // Remove wallet.hasMetaMask dependency to prevent loops
-
-  // Restore wallet state on app initialization
-  useEffect(() => {
-    const restoreWallet = async () => {
+  // Get verification status from localStorage
+  const getVerificationStatus = useCallback((address) => {
+    if (!address) return false;
+    const verificationData = localStorage.getItem("walletVerification");
+    if (verificationData) {
       try {
-        console.log("🚀 WalletContext: Starting wallet restoration...");
-        const restored = await walletService.restoreWalletState();
-        if (restored) {
-          console.log("✅ WalletContext: Wallet state restored successfully");
-          updateWalletState();
-        } else {
-          console.log("ℹ️ WalletContext: No previous wallet state to restore");
-        }
-      } catch (error) {
-        console.error(
-          "💥 WalletContext: Failed to restore wallet state:",
-          error
-        );
+        const parsed = JSON.parse(verificationData);
+        return parsed.isVerified || false;
+      } catch {
+        return false;
       }
-    };
-
-    // Only attempt restoration if we have authentication
-    const authToken = localStorage.getItem("authToken");
-    console.log("🔑 WalletContext: Auth token present:", !!authToken);
-
-    if (authToken) {
-      // Add a small delay to ensure MetaMask is fully loaded
-      setTimeout(restoreWallet, 100);
     }
-  }, []); // Run only once on mount
+    return false;
+  }, []);
 
-  // Subscribe to wallet service changes
+  // Update wallet state when wagmi account changes
   useEffect(() => {
-    updateWalletState();
+    if (isConnected && address) {
+      const isVerified = getVerificationStatus(address);
 
-    // Subscribe to wallet changes
-    walletService.addListener(updateWalletState);
+      setWallet({
+        isConnected: true,
+        address: address,
+        isVerified: isVerified,
+        hasMetaMask: true,
+        shortAddress: formatShortAddress(address),
+      });
 
-    return () => {
-      walletService.removeListener(updateWalletState);
-    };
-  }, [updateWalletState]);
+      // Sync with service
+      if (rainbowKitWalletService.account !== address) {
+        rainbowKitWalletService.account = address;
+        rainbowKitWalletService.isConnected = true;
+        rainbowKitWalletService.chainId = null; // Will be set by service
+        rainbowKitWalletService.storeWalletConnection();
+      }
+    } else {
+      setWallet({
+        isConnected: false,
+        address: null,
+        isVerified: false,
+        hasMetaMask: true,
+        shortAddress: "",
+      });
 
-  // Handle user login/logout and wallet restoration
+      // Sync with service
+      rainbowKitWalletService.account = null;
+      rainbowKitWalletService.isConnected = false;
+      rainbowKitWalletService.isVerified = false;
+    }
+  }, [isConnected, address, formatShortAddress, getVerificationStatus]);
+
+  // Connect wallet function - RainbowKit handles the modal
+  const connectWallet = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Check if user is authenticated first
+      const authToken = localStorage.getItem("authToken");
+      if (!authToken) {
+        throw new Error("Please sign in with OAuth first");
+      }
+
+      // Connection is handled by RainbowKit ConnectButton
+      console.log("🔄 Wallet connection initiated through RainbowKit");
+    } catch (err) {
+      console.error("Wallet connection error:", err);
+      setError(err.message || "Failed to connect wallet");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Verify wallet
+  const verifyWallet = useCallback(async () => {
+    if (!wallet.isConnected || !wallet.address) {
+      throw new Error("No wallet connected");
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const result = await rainbowKitWalletService.verifyWallet();
+
+      if (result.verified) {
+        setWallet((prev) => ({
+          ...prev,
+          isVerified: true,
+        }));
+      }
+
+      return result;
+    } catch (err) {
+      console.error("Wallet verification error:", err);
+      setError(err.message || "Failed to verify wallet");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [wallet.isConnected, wallet.address]);
+
+  // Disconnect wallet
+  const disconnectWallet = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Use wagmi disconnect
+      await disconnect();
+
+      // Clear stored data
+      rainbowKitWalletService.clearWalletData();
+    } catch (err) {
+      console.error("Wallet disconnect error:", err);
+      setError(err.message || "Failed to disconnect wallet");
+    } finally {
+      setLoading(false);
+    }
+  }, [disconnect]);
+
+  // Handle user login/logout
   useEffect(() => {
-    // Don't act on auth state until initial loading is complete
     if (isAuthLoading) {
       console.log("🔄 Auth still loading, skipping wallet login/logout logic");
       return;
     }
 
     if (!user && wallet.isConnected) {
-      // User logged out - clear wallet
       console.log("🚪 User logged out - disconnecting wallet");
       disconnectWallet();
-    } else if (user && !wallet.isConnected) {
-      // User logged in - try to restore wallet connection
-      const restoreWallet = async () => {
-        try {
-          console.log(
-            "🔑 User logged in - attempting to restore wallet connection"
-          );
-          const restored = await walletService.restoreWalletState();
-          if (restored) {
-            console.log("✅ Wallet state restored after user login");
-            updateWalletState();
-          } else {
-            console.log("ℹ️ No wallet state to restore after user login");
-          }
-        } catch (error) {
-          console.error(
-            "💥 Failed to restore wallet state after login:",
-            error
-          );
-        }
-      };
-
-      // Add a small delay to ensure everything is settled
-      setTimeout(restoreWallet, 200);
     }
-  }, [user, wallet.isConnected, isAuthLoading]);
+  }, [user, wallet.isConnected, disconnectWallet, isAuthLoading]);
 
-  const connectWallet = useCallback(async () => {
-    if (!user) {
-      setError("Please sign in before connecting your wallet");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      await walletService.connect();
-      updateWalletState();
-    } catch (err) {
-      console.error("Wallet connection failed:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, updateWalletState]);
-
-  const verifyWallet = useCallback(async () => {
-    if (!user) {
-      setError("Please sign in before verifying your wallet");
-      return;
-    }
-
-    if (!wallet.isConnected) {
-      setError("Please connect your wallet first");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      await walletService.verifyWallet();
-      updateWalletState();
-    } catch (err) {
-      console.error("Wallet verification failed:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, wallet.isConnected, updateWalletState]);
-
-  const disconnectWallet = useCallback(async () => {
-    try {
-      await walletService.disconnect();
-      updateWalletState();
-      setError(null);
-    } catch (err) {
-      console.error("Wallet disconnect failed:", err);
-      setError(err.message);
-    }
-  }, [updateWalletState]);
+  const value = {
+    wallet,
+    connectWallet,
+    verifyWallet,
+    disconnectWallet,
+    loading,
+    error,
+  };
 
   return (
-    <WalletContext.Provider
-      value={{
-        wallet,
-        connectWallet,
-        verifyWallet,
-        disconnectWallet,
-        loading,
-        error,
-      }}
-    >
-      {children}
-    </WalletContext.Provider>
+    <WalletContext.Provider value={value}>{children}</WalletContext.Provider>
   );
 }
 
-export const useWallet = () => {
+export function useWallet() {
   const context = useContext(WalletContext);
   if (!context) {
     throw new Error("useWallet must be used within a WalletProvider");
   }
   return context;
-};
+}

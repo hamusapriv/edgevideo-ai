@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Logo from "/assets/logo.png";
 import "../styles/HomePage.css";
@@ -8,6 +8,7 @@ import FloatingProfile from "./FloatingProfile";
 export default function Navbar() {
   const [navOpen, setNavOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const navRef = useRef(null);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -17,9 +18,24 @@ export default function Navbar() {
   }, []);
 
   const toggleNav = () => setNavOpen((v) => !v);
-  const closeNav = () => {
-    if (isMobile) setNavOpen(false);
-  };
+  const closeNav = () => setNavOpen(false);
+
+  // Close navigation when clicking outside (similar to FloatingProfile)
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (navRef.current && !navRef.current.contains(event.target)) {
+        setNavOpen(false);
+      }
+    };
+
+    if (navOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [navOpen]);
 
   useEffect(() => {
     if (isMobile && navOpen) {
@@ -79,7 +95,7 @@ export default function Navbar() {
             </div>
           </Link>
         </div>
-        <nav className="floating-nav">
+        <nav className="floating-nav" ref={navRef}>
           <button
             className={`nav-orb ${navOpen ? "nav-orb--open" : ""}`}
             onClick={toggleNav}
@@ -140,11 +156,6 @@ export default function Navbar() {
               <MarketingThemeToggle />
             </div>
           </div>
-
-          <div
-            className={`nav-overlay ${navOpen ? "nav-overlay--open" : ""}`}
-            onClick={toggleNav}
-          ></div>
         </nav>
         <FloatingProfile />
       </div>
