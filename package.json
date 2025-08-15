@@ -9,6 +9,7 @@
     "build:staging": "vite build --mode staging",
     "lint": "eslint .",
     "preview": "vite preview",
+    "dev:sandbox": "vite sandbox.html",
     "version:patch": "npm version patch --no-git-tag-version",
     "version:minor": "npm version minor --no-git-tag-version",
     "version:major": "npm version major --no-git-tag-version"
@@ -17,12 +18,15 @@
     "@rainbow-me/rainbowkit": "^2.2.8",
     "@tanstack/react-query": "^5.85.0",
     "file-saver": "^2.0.5",
+    "framer-motion": "^11.0.0",
     "hls.js": "^1.6.7",
     "lint": "^0.8.19",
+    "lottie-react": "^2.4.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-helmet": "^6.1.0",
     "react-router-dom": "^7.6.1",
+    "three": "^0.164.1",
     "viem": "^2.33.3",
     "wagmi": "^2.16.3"
   },
