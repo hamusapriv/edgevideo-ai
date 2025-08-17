@@ -227,6 +227,8 @@ export default function ThreePlates() {
   const [currentFrame, setCurrentFrame] = useState(0);
   const [rotationProgress, setRotationProgress] = useState(0);
   const [manualRotation, setManualRotation] = useState(0); // SVG scrollbar controls this
+  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [loadingProgress, setLoadingProgress] = useState(0); // Loading progress (0-100)
 
   // Callback for SVG scrollbar to control rotation
   const handleRotationChange = (newRotation) => {
@@ -256,25 +258,47 @@ export default function ThreePlates() {
       100
     );
 
-    // Responsive camera positioning
-    const isMobile =
-      window.innerWidth <= 768 ||
-      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
+    // Helper function to detect mobile devices
+    const isMobileDevice = () => {
+      return (
+        window.innerWidth <= 768 ||
+        /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        )
       );
+    };
 
-    if (isMobile) {
-      camera.position.set(10, 5, 8);
-      camera.lookAt(-20, -1, 0); // Look at the center of the plates
-    } else {
-      camera.position.set(0, 5, 12);
-      camera.lookAt(-12, 0, 0); // Look at the center of the plates
-    }
+    // Unified camera positioning function
+    const updateCameraPosition = () => {
+      const isMobile = isMobileDevice();
+
+      if (isMobile) {
+        camera.position.set(12, 5, 5);
+        camera.lookAt(-350, -50, 0); // Look at the center of the plates
+      } else {
+        camera.position.set(0, 5, 12);
+        camera.lookAt(-16, -5, 0); // Look at the center of the plates
+      }
+    };
+
+    // Set initial camera position
+    updateCameraPosition();
 
     // Renderer setup
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance", // Use discrete GPU if available
+      stencil: false, // Disable stencil buffer if not needed
+      depth: true, // Keep depth buffer for 3D
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Limit pixel ratio for performance
     renderer.setSize(target.clientWidth, target.clientHeight);
+
+    // Enable performance optimizations
+    renderer.shadowMap.enabled = false; // Disable shadows for better performance
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
     target.appendChild(renderer.domElement);
 
     // Track user interaction to pause auto-spin
@@ -323,11 +347,11 @@ export default function ThreePlates() {
     const plateWidth = 4.8; // 16 units wide
     const plateHeight = 2.7; // 9 units tall (16:9 ratio)
     const geometry = new RoundedBoxGeometry(
-      0.15,
+      0.05,
       plateWidth,
       plateHeight,
       3,
-      0.06
+      0
     );
 
     // Load frame images and product images as textures
@@ -335,19 +359,42 @@ export default function ThreePlates() {
     const frameTextures = [];
     const productTextures = [];
 
-    for (let i = 1; i <= 11; i++) {
+    // Preload only the first 3 textures initially for faster startup
+    const INITIAL_LOAD_COUNT = 3;
+    let texturesLoaded = 0;
+    const totalTextures = RECT_COUNT * 2; // frames + products
+
+    const onTextureLoad = () => {
+      texturesLoaded++;
+      const progress = Math.min(100, (texturesLoaded / totalTextures) * 100);
+      setLoadingProgress(progress);
+
+      if (texturesLoaded === INITIAL_LOAD_COUNT * 2) {
+        console.log(
+          `Initial ${INITIAL_LOAD_COUNT} texture pairs loaded, starting render`
+        );
+        setIsLoading(false); // Hide loading screen after initial textures
+      }
+    };
+
+    // Load initial textures synchronously, rest asynchronously
+    for (let i = 1; i <= RECT_COUNT; i++) {
+      const isInitialLoad = i <= INITIAL_LOAD_COUNT;
+
       // Load frame texture
       const frameTexture = textureLoader.load(
         `/assets/frame-product-pairs/Frame-Image-${i}.png`,
         // onLoad callback
         () => {
           console.log(`Frame texture ${i} loaded successfully`);
+          if (isInitialLoad) onTextureLoad();
         },
         // onProgress callback
         undefined,
         // onError callback
         (error) => {
           console.error(`Failed to load Frame-Image-${i}.png:`, error);
+          if (isInitialLoad) onTextureLoad(); // Still count as "loaded" to not block startup
         }
       );
 
@@ -357,12 +404,14 @@ export default function ThreePlates() {
         // onLoad callback
         () => {
           console.log(`Product texture ${i} loaded successfully`);
+          if (isInitialLoad) onTextureLoad();
         },
         // onProgress callback
         undefined,
         // onError callback
         (error) => {
           console.error(`Failed to load product-${i}.png:`, error);
+          if (isInitialLoad) onTextureLoad(); // Still count as "loaded" to not block startup
         }
       );
 
@@ -371,14 +420,20 @@ export default function ThreePlates() {
       frameTexture.rotation = Math.PI / 2;
 
       // Add padding by scaling down the texture
-      // Calculate padding ratio (3-5px padding on a texture)
-      // Assuming texture resolution of ~512px, 4px padding = 4/512 = ~0.008
-      const paddingRatio = 0.02; // 2% padding on each side (4% total reduction)
+      // Calculate padding ratio for better visual separation from rounded box edges
+      // Increased padding for more prominent frame border effect
+      const paddingRatio = 0.08; // 8% padding on each side (16% total reduction)
       frameTexture.repeat.set(1 - paddingRatio * 2, 1 - paddingRatio * 2);
       frameTexture.offset.set(paddingRatio, paddingRatio);
 
       frameTexture.wrapS = THREE.ClampToEdgeWrap;
       frameTexture.wrapT = THREE.ClampToEdgeWrap;
+
+      // Optimize texture settings for performance
+      frameTexture.generateMipmaps = true;
+      frameTexture.minFilter = THREE.LinearMipmapLinearFilter;
+      frameTexture.magFilter = THREE.LinearFilter;
+
       frameTextures.push(frameTexture);
 
       // Apply product texture settings
@@ -386,6 +441,12 @@ export default function ThreePlates() {
       productTexture.rotation = 0; // Products displayed upright
       productTexture.wrapS = THREE.ClampToEdgeWrap;
       productTexture.wrapT = THREE.ClampToEdgeWrap;
+
+      // Optimize product texture settings
+      productTexture.generateMipmaps = true;
+      productTexture.minFilter = THREE.LinearMipmapLinearFilter;
+      productTexture.magFilter = THREE.LinearFilter;
+
       productTextures.push(productTexture);
     }
 
@@ -406,7 +467,7 @@ export default function ThreePlates() {
     fallbackTexture.rotation = Math.PI / 2;
 
     // Add padding to fallback texture as well
-    const paddingRatio = 0.02; // Same padding as regular textures
+    const paddingRatio = 0.08; // Same increased padding as regular textures
     fallbackTexture.repeat.set(1 - paddingRatio * 2, 1 - paddingRatio * 2);
     fallbackTexture.offset.set(paddingRatio, paddingRatio);
 
@@ -461,8 +522,17 @@ export default function ThreePlates() {
     const plates = [];
     const productPlanes = [];
 
-    // Create geometry for product image planes (square aspect ratio, larger size)
-    const productGeometry = new THREE.PlaneGeometry(2, 2);
+    // Create geometry for product cards (with depth for card-like appearance)
+    const productCardGeometry = new RoundedBoxGeometry(1.4, 1.4, 0.08, 3, 0.02);
+
+    // Create a white card background geometry (slightly larger for border effect)
+    const cardBackgroundGeometry = new RoundedBoxGeometry(
+      1.5,
+      1.5,
+      0.06,
+      3,
+      0.02
+    );
 
     for (let i = 0; i < RECT_COUNT; i++) {
       const angle = (i / RECT_COUNT) * Math.PI * 2;
@@ -501,47 +571,89 @@ export default function ThreePlates() {
       plates.push(plateMesh);
       group.add(plateMesh);
 
-      // Create product image plane
-      const productMaterial = new THREE.MeshStandardMaterial({
-        map: productTexture,
-        transparent: true,
-        alphaTest: 0.01, // Lower alpha test to show more of the texture
-        metalness: 0.0,
-        roughness: 0.8,
+      // Create product card with layered approach for better visual depth
+
+      // 1. Card background (white border effect)
+      const cardBackgroundMaterial = new THREE.MeshStandardMaterial({
+        color: 0xffffff, // Pure white background
+        metalness: 0.1,
+        roughness: 0.3,
         envMap: envRT,
         envMapIntensity: 0.2,
-        color: 0xffffff,
-        side: THREE.DoubleSide, // Make sure it's visible from both sides
       });
 
-      const productPlane = new THREE.Mesh(productGeometry, productMaterial);
+      const cardBackground = new THREE.Mesh(
+        cardBackgroundGeometry,
+        cardBackgroundMaterial
+      );
 
-      // Position product plane further outside the frame plate for better visibility
-      const productRadius = RADIUS + 4; // Increased offset outward from frames
+      // 2. Product image with card styling
+      const productCardMaterial = new THREE.MeshStandardMaterial({
+        map: productTexture,
+        transparent: true,
+        alphaTest: 0.01,
+        metalness: 0.05, // Slight shine for card effect
+        roughness: 0.2, // Smoother surface like a real product card
+        envMap: envRT,
+        envMapIntensity: 0.4, // More reflective for premium look
+        color: 0xffffff,
+      });
+
+      const productCard = new THREE.Mesh(
+        productCardGeometry,
+        productCardMaterial
+      );
+
+      // 3. Create a group for the complete product card
+      const productCardGroup = new THREE.Group();
+
+      // Position background slightly behind the product image
+      cardBackground.position.z = -0.02;
+
+      // Add both elements to the group
+      productCardGroup.add(cardBackground);
+      productCardGroup.add(productCard);
+
+      // Position product card in front of the frame for better visibility
+      const productRadius = RADIUS + 1.8; // Slightly further out for card showcase
       const productX = Math.cos(angle) * productRadius;
       const productY = Math.sin(angle) * productRadius;
 
-      productPlane.position.set(productX, productY, 0); // Same Z level as frames
+      productCardGroup.position.set(productX, productY, 1.2); // Forward in Z for prominence
 
       // Calculate proper rotation to face outward from the center
-      // The plane should face the center of the circle (0,0,0) from its position
-      productPlane.lookAt(0, 0, 0); // Make it face the center
-      productPlane.rotateY(Math.PI); // Flip 180 degrees to face away from center (outward)
+      productCardGroup.lookAt(0, 0, 0); // Make it face the center
+      productCardGroup.rotateY(Math.PI); // Flip 180 degrees to face away from center (outward)
 
-      productPlane.userData = { index: i, baseScale: 1 };
+      // Add slight tilt for dynamic product card presentation
+      productCardGroup.rotateX(-Math.PI * 0.03); // Slight backward tilt for showcase effect
+      productCardGroup.rotateZ(Math.PI * 0.01); // Tiny rotation for dynamic look
 
-      productPlanes.push(productPlane);
-      group.add(productPlane);
+      productCardGroup.userData = { index: i, baseScale: 1 };
+
+      productPlanes.push(productCardGroup);
+      group.add(productCardGroup);
     }
 
     // Manual wheel rotation - only rotate around Z-axis like a wheel
     // Rotation is now controlled by the SVG scrollbar only    // Animation loop
     let raf;
     let lastTime = performance.now();
+    let frameSkip = 0; // Skip frames on slower devices
+    const targetFPS = isMobileDevice() ? 30 : 60; // Lower FPS target for mobile
+    const frameInterval = 1000 / targetFPS;
+
     const animate = () => {
       raf = requestAnimationFrame(animate);
       const now = performance.now();
       const dt = (now - lastTime) / 1000;
+
+      // Frame rate limiting for performance
+      frameSkip++;
+      if (now - lastTime < frameInterval && frameSkip < 2) {
+        return; // Skip this frame
+      }
+      frameSkip = 0;
       lastTime = now;
 
       // Auto-spin logic
@@ -557,25 +669,34 @@ export default function ThreePlates() {
       }
 
       // Update individual plate positions (static positions, no scaling)
-      for (let i = 0; i < RECT_COUNT; i++) {
-        const ang = (i / RECT_COUNT) * Math.PI * 2;
-        const x = Math.cos(ang) * RADIUS;
-        const y = Math.sin(ang) * RADIUS;
-        const z = 0; // Static Z position, no wave animation
+      // Only update positions if rotation has changed significantly (optimization)
+      const rotationChanged =
+        Math.abs(manualRotationRef.current - (window.lastRotation || 0)) > 0.01;
+      if (rotationChanged || !window.lastRotation) {
+        window.lastRotation = manualRotationRef.current;
 
-        // Update main plate
-        plates[i].position.set(x, y, z);
-        plates[i].rotation.z = ang + Math.PI / 2;
+        for (let i = 0; i < RECT_COUNT; i++) {
+          const ang = (i / RECT_COUNT) * Math.PI * 2;
+          const x = Math.cos(ang) * RADIUS;
+          const y = Math.sin(ang) * RADIUS;
+          const z = 0; // Static Z position, no wave animation
 
-        // Update product plane
-        const productRadius = RADIUS + 4; // Match the increased offset
-        const productX = Math.cos(ang) * productRadius;
-        const productY = Math.sin(ang) * productRadius;
-        productPlanes[i].position.set(productX, productY, 0); // Same Z level as frames
+          // Update main plate
+          plates[i].position.set(x, y, z);
+          plates[i].rotation.z = ang + Math.PI / 2;
 
-        // Calculate proper rotation to face outward from the center
-        productPlanes[i].lookAt(0, 2, 0); // Make it face the center
-        productPlanes[i].rotateY(Math.PI / 2); // Flip 180 degrees to face away from center (outward)
+          // Update product card group
+          const productRadius = RADIUS + 1.8; // Match the updated offset for card positioning
+          const productX = Math.cos(ang - 0.03) * productRadius;
+          const productY = Math.sin(ang - 0.03) * productRadius;
+          productPlanes[i].position.set(productX, productY, 1.2); // Forward positioning for cards
+
+          // Calculate proper rotation to face outward from the center
+          productPlanes[i].lookAt(0, 0, 0); // Make it face the center
+          productPlanes[i].rotateY(-Math.PI / 2); // Flip to face outward
+          productPlanes[i].rotateX(-Math.PI * 0.03); // Maintain slight tilt
+          productPlanes[i].rotateZ(0.2); // Maintain dynamic rotation
+        }
       }
 
       // Calculate which frame is currently at the front (closest to camera)
@@ -611,20 +732,8 @@ export default function ThreePlates() {
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
 
-      // Update camera position based on new window size
-      const isMobile =
-        window.innerWidth <= 768 ||
-        /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        );
-
-      if (isMobile) {
-        camera.position.set(10, 5, 8);
-        camera.lookAt(-20, -1, 0);
-      } else {
-        camera.position.set(0, 5, 12);
-        camera.lookAt(-12, 0, 0);
-      }
+      // Update camera position using unified function
+      updateCameraPosition();
     };
     window.addEventListener("resize", onResize);
 
@@ -656,15 +765,23 @@ export default function ThreePlates() {
         }
       });
 
-      // Dispose of product plane materials
-      productPlanes.forEach((plane) => {
-        if (plane.material && typeof plane.material.dispose === "function") {
-          plane.material.dispose();
+      // Dispose of product card groups and their materials
+      productPlanes.forEach((cardGroup) => {
+        if (cardGroup.children) {
+          cardGroup.children.forEach((child) => {
+            if (
+              child.material &&
+              typeof child.material.dispose === "function"
+            ) {
+              child.material.dispose();
+            }
+          });
         }
       });
 
       geometry.dispose();
-      productGeometry.dispose();
+      productCardGeometry.dispose();
+      cardBackgroundGeometry.dispose();
       baseMaterial.dispose();
       texturedMaterial.dispose();
       pmrem.dispose();
@@ -719,6 +836,54 @@ export default function ThreePlates() {
           WebkitTouchCallout: "none", // Disable iOS touch callout
         }}
       />
+
+      {/* Loading overlay */}
+      {isLoading && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0, 0, 0, 0.8)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+            zIndex: 20,
+            backdropFilter: "blur(10px)",
+          }}
+        >
+          <div style={{ fontSize: "18px", marginBottom: "20px" }}>
+            Loading 3D Experience...
+          </div>
+          <div
+            style={{
+              width: "200px",
+              height: "4px",
+              background: "rgba(255, 255, 255, 0.2)",
+              borderRadius: "2px",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                width: `${loadingProgress}%`,
+                height: "100%",
+                background: "linear-gradient(90deg, #00F7FF, #003ECF, #5100FF)",
+                borderRadius: "2px",
+                transition: "width 0.3s ease",
+              }}
+            />
+          </div>
+          <div style={{ fontSize: "14px", marginTop: "10px", opacity: 0.8 }}>
+            {Math.round(loadingProgress)}%
+          </div>
+        </div>
+      )}
+
       <div
         style={{
           position: "absolute",
