@@ -330,11 +330,14 @@ export default function ThreePlates() {
       0.06
     );
 
-    // Load frame images as textures
+    // Load frame images and product images as textures
     const textureLoader = new THREE.TextureLoader();
     const frameTextures = [];
+    const productTextures = [];
+
     for (let i = 1; i <= 11; i++) {
-      const texture = textureLoader.load(
+      // Load frame texture
+      const frameTexture = textureLoader.load(
         `/assets/frame-product-pairs/Frame-Image-${i}.png`,
         // onLoad callback
         () => {
@@ -347,20 +350,43 @@ export default function ThreePlates() {
           console.error(`Failed to load Frame-Image-${i}.png:`, error);
         }
       );
+
+      // Load corresponding product texture
+      const productTexture = textureLoader.load(
+        `/assets/frame-product-pairs/product-${i}.png`,
+        // onLoad callback
+        () => {
+          console.log(`Product texture ${i} loaded successfully`);
+        },
+        // onProgress callback
+        undefined,
+        // onError callback
+        (error) => {
+          console.error(`Failed to load product-${i}.png:`, error);
+        }
+      );
+
       // Apply texture rotation and settings safely
-      texture.center.set(0.5, 0.5);
-      texture.rotation = Math.PI / 2;
+      frameTexture.center.set(0.5, 0.5);
+      frameTexture.rotation = Math.PI / 2;
 
       // Add padding by scaling down the texture
       // Calculate padding ratio (3-5px padding on a texture)
       // Assuming texture resolution of ~512px, 4px padding = 4/512 = ~0.008
       const paddingRatio = 0.02; // 2% padding on each side (4% total reduction)
-      texture.repeat.set(1 - paddingRatio * 2, 1 - paddingRatio * 2);
-      texture.offset.set(paddingRatio, paddingRatio);
+      frameTexture.repeat.set(1 - paddingRatio * 2, 1 - paddingRatio * 2);
+      frameTexture.offset.set(paddingRatio, paddingRatio);
 
-      texture.wrapS = THREE.ClampToEdgeWrap;
-      texture.wrapT = THREE.ClampToEdgeWrap;
-      frameTextures.push(texture);
+      frameTexture.wrapS = THREE.ClampToEdgeWrap;
+      frameTexture.wrapT = THREE.ClampToEdgeWrap;
+      frameTextures.push(frameTexture);
+
+      // Apply product texture settings
+      productTexture.center.set(0.5, 0.5);
+      productTexture.rotation = 0; // Products displayed upright
+      productTexture.wrapS = THREE.ClampToEdgeWrap;
+      productTexture.wrapT = THREE.ClampToEdgeWrap;
+      productTextures.push(productTexture);
     }
 
     // Create a fallback texture in case images don't load
@@ -383,6 +409,20 @@ export default function ThreePlates() {
     const paddingRatio = 0.02; // Same padding as regular textures
     fallbackTexture.repeat.set(1 - paddingRatio * 2, 1 - paddingRatio * 2);
     fallbackTexture.offset.set(paddingRatio, paddingRatio);
+
+    // Create fallback product texture (more visible for debugging)
+    const productCanvas = document.createElement("canvas");
+    productCanvas.width = 400;
+    productCanvas.height = 400;
+    const productCtx = productCanvas.getContext("2d");
+    productCtx.fillStyle = "#ff6b6b"; // Bright red background for visibility
+    productCtx.fillRect(0, 0, 400, 400);
+    productCtx.fillStyle = "#ffffff";
+    productCtx.font = "bold 32px Arial";
+    productCtx.textAlign = "center";
+    productCtx.fillText("PRODUCT", 200, 180);
+    productCtx.fillText("FALLBACK", 200, 220);
+    const fallbackProductTexture = new THREE.CanvasTexture(productCanvas);
 
     // Create materials - one with texture for the front face, one plain for other faces
     const baseMaterial = new THREE.MeshStandardMaterial({
@@ -419,6 +459,10 @@ export default function ThreePlates() {
 
     // Create individual meshes instead of instanced for unique textures per plate
     const plates = [];
+    const productPlanes = [];
+
+    // Create geometry for product image planes (square aspect ratio, larger size)
+    const productGeometry = new THREE.PlaneGeometry(2, 2);
 
     for (let i = 0; i < RECT_COUNT; i++) {
       const angle = (i / RECT_COUNT) * Math.PI * 2;
@@ -429,6 +473,8 @@ export default function ThreePlates() {
       // Create materials array with texture for this plate
       const textureIndex = i % frameTextures.length;
       const frameTexture = frameTextures[textureIndex];
+      const productTexture =
+        productTextures[textureIndex] || fallbackProductTexture;
 
       // Clone the textured material and apply the specific frame texture
       const plateTexturedMaterial = texturedMaterial.clone();
@@ -454,6 +500,38 @@ export default function ThreePlates() {
       plateMesh.userData = { index: i, baseScale: 1 };
       plates.push(plateMesh);
       group.add(plateMesh);
+
+      // Create product image plane
+      const productMaterial = new THREE.MeshStandardMaterial({
+        map: productTexture,
+        transparent: true,
+        alphaTest: 0.01, // Lower alpha test to show more of the texture
+        metalness: 0.0,
+        roughness: 0.8,
+        envMap: envRT,
+        envMapIntensity: 0.2,
+        color: 0xffffff,
+        side: THREE.DoubleSide, // Make sure it's visible from both sides
+      });
+
+      const productPlane = new THREE.Mesh(productGeometry, productMaterial);
+
+      // Position product plane further outside the frame plate for better visibility
+      const productRadius = RADIUS + 4; // Increased offset outward from frames
+      const productX = Math.cos(angle) * productRadius;
+      const productY = Math.sin(angle) * productRadius;
+
+      productPlane.position.set(productX, productY, 0); // Same Z level as frames
+
+      // Calculate proper rotation to face outward from the center
+      // The plane should face the center of the circle (0,0,0) from its position
+      productPlane.lookAt(0, 0, 0); // Make it face the center
+      productPlane.rotateY(Math.PI); // Flip 180 degrees to face away from center (outward)
+
+      productPlane.userData = { index: i, baseScale: 1 };
+
+      productPlanes.push(productPlane);
+      group.add(productPlane);
     }
 
     // Manual wheel rotation - only rotate around Z-axis like a wheel
@@ -488,6 +566,16 @@ export default function ThreePlates() {
         // Update main plate
         plates[i].position.set(x, y, z);
         plates[i].rotation.z = ang + Math.PI / 2;
+
+        // Update product plane
+        const productRadius = RADIUS + 4; // Match the increased offset
+        const productX = Math.cos(ang) * productRadius;
+        const productY = Math.sin(ang) * productRadius;
+        productPlanes[i].position.set(productX, productY, 0); // Same Z level as frames
+
+        // Calculate proper rotation to face outward from the center
+        productPlanes[i].lookAt(0, 2, 0); // Make it face the center
+        productPlanes[i].rotateY(Math.PI / 2); // Flip 180 degrees to face away from center (outward)
       }
 
       // Calculate which frame is currently at the front (closest to camera)
@@ -548,6 +636,10 @@ export default function ThreePlates() {
       frameTextures.forEach((texture) => texture.dispose());
       fallbackTexture.dispose();
 
+      // Dispose of product textures
+      productTextures.forEach((texture) => texture.dispose());
+      fallbackProductTexture.dispose();
+
       // Dispose of individual plate materials (each plate has an array of materials)
       plates.forEach((plate) => {
         if (Array.isArray(plate.material)) {
@@ -564,7 +656,15 @@ export default function ThreePlates() {
         }
       });
 
+      // Dispose of product plane materials
+      productPlanes.forEach((plane) => {
+        if (plane.material && typeof plane.material.dispose === "function") {
+          plane.material.dispose();
+        }
+      });
+
       geometry.dispose();
+      productGeometry.dispose();
       baseMaterial.dispose();
       texturedMaterial.dispose();
       pmrem.dispose();

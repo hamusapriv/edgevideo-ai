@@ -6,7 +6,7 @@
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
-          "source": "**",
+          "source": "!/(sandbox.html)",
           "destination": "/index.html"
         }
       ],
@@ -18,7 +18,7 @@
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
-          "source": "**",
+          "source": "!/(sandbox.html)",
           "destination": "/index.html"
         }
       ],

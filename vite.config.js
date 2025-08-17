@@ -78,17 +78,22 @@ export default defineConfig(({ mode }) => {
       // Disable minification and enable source maps for staging
       minify: !isStaging,
       sourcemap: isStaging,
-      // Additional staging optimizations
-      ...(isStaging && {
-        rollupOptions: {
+      // Copy additional files to dist
+      rollupOptions: {
+        input: {
+          main: 'index.html',
+          sandbox: 'sandbox.html'
+        },
+        // Additional staging optimizations
+        ...(isStaging && {
           output: {
             // Keep readable chunk names in staging
             chunkFileNames: "[name]-[hash].js",
             entryFileNames: "[name]-[hash].js",
             assetFileNames: "[name]-[hash].[ext]",
           },
-        },
-      }),
+        }),
+      },
     },
   };
 });
