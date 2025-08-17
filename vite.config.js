@@ -81,8 +81,8 @@ export default defineConfig(({ mode }) => {
       // Copy additional files to dist
       rollupOptions: {
         input: {
-          main: 'index.html',
-          sandbox: 'sandbox.html'
+          main: "index.html",
+          sandbox: "sandbox.html",
         },
         // Additional staging optimizations
         ...(isStaging && {
