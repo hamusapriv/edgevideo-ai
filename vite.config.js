@@ -97,11 +97,8 @@ export default defineConfig(({ mode }) => {
             assetFileNames: "[name]-[hash].[ext]",
           }),
         },
-        external: (id) => {
-          // Mark problematic ox modules as external to reduce warnings
-          if (id.includes("ox/_esm")) return true;
-          return false;
-        },
+        // REMOVED the problematic external configuration
+        // This was causing modules to not be bundled properly
         onwarn: (warning, warn) => {
           // Suppress specific warnings that slow down build
           if (warning.code === "EVAL" && warning.id?.includes("lottie-web"))

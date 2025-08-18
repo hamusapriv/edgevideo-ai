@@ -13,8 +13,25 @@
       "predeploy": "npm run build",
       "headers": [
         {
-          "source": "**/*.@(js|css)",
+          "source": "**/*.@(js|mjs)",
           "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/javascript"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "max-age=31536000"
+            }
+          ]
+        },
+        {
+          "source": "**/*.css",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "text/css"
+            },
             {
               "key": "Cache-Control",
               "value": "max-age=31536000"
@@ -36,8 +53,25 @@
       "predeploy": "npm run build:staging",
       "headers": [
         {
-          "source": "**/*.@(js|css)",
+          "source": "**/*.@(js|mjs)",
           "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/javascript"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "max-age=3600"
+            }
+          ]
+        },
+        {
+          "source": "**/*.css",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "text/css"
+            },
             {
               "key": "Cache-Control",
               "value": "max-age=3600"

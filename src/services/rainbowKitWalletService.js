@@ -164,11 +164,8 @@ class RainbowKitWalletService {
 
   // Restore wallet state
   async restoreWalletState() {
-    console.log("🔄 Starting wallet state restoration...");
-
     const account = getAccount(wagmiConfig);
     if (account.address) {
-      console.log("✅ Wallet already connected:", account.address);
       return {
         success: true,
         account: account.address,
@@ -181,12 +178,10 @@ class RainbowKitWalletService {
     const wasConnected = localStorage.getItem("walletConnected") === "true";
 
     if (!storedAddress || !wasConnected) {
-      console.log("❌ No stored wallet state to restore");
       return { success: false };
     }
 
     // RainbowKit will handle auto-reconnection
-    console.log("🔄 Waiting for RainbowKit auto-reconnect...");
     return { success: false };
   }
 
@@ -201,7 +196,6 @@ class RainbowKitWalletService {
 
   // Event handling
   handleAccountChange(accounts) {
-    console.log("🔄 Account changed:", accounts);
     if (accounts.length === 0) {
       this.handleDisconnect();
     } else {
@@ -210,13 +204,11 @@ class RainbowKitWalletService {
   }
 
   handleDisconnect() {
-    console.log("🔌 Wallet disconnected");
     this.clearWalletData();
     this.notifyListeners("disconnect");
   }
 
   handleChainChange(chainId) {
-    console.log("🔗 Chain changed:", chainId);
     localStorage.setItem("walletChainId", chainId);
     this.notifyListeners("chainChanged", chainId);
   }

@@ -110,7 +110,6 @@ export function WalletProvider({ children }) {
       }
 
       // Connection is handled by RainbowKit ConnectButton
-      console.log("🔄 Wallet connection initiated through RainbowKit");
     } catch (err) {
       console.error("Wallet connection error:", err);
       setError(err.message || "Failed to connect wallet");
@@ -170,12 +169,10 @@ export function WalletProvider({ children }) {
   // Handle user login/logout
   useEffect(() => {
     if (isAuthLoading) {
-      console.log("🔄 Auth still loading, skipping wallet login/logout logic");
       return;
     }
 
     if (!user && wallet.isConnected) {
-      console.log("🚪 User logged out - disconnecting wallet");
       disconnectWallet();
     }
   }, [user, wallet.isConnected, disconnectWallet, isAuthLoading]);

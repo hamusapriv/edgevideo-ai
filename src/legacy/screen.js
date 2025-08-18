@@ -177,13 +177,10 @@ function SetShoppingAIStatus(messageText) {
 }
 
 async function getCachedProducts() {
-  console.log("[DOM DEBUG] getCachedProducts called");
   const channelId = getChannelId();
-  console.log("[DOM DEBUG] Channel ID:", channelId);
 
   if (typeof channelId !== "undefined" && channelId !== null) {
     try {
-      console.log("[DOM DEBUG] Fetching cached products from API");
       let cachedProductResponse = await fetch(
         `https://fastapi.edgevideo.ai/product_search/recent_products/${channelId}/1`
       );
@@ -197,12 +194,6 @@ async function getCachedProducts() {
       }
 
       let cachedProductData = await cachedProductResponse.json();
-      console.log("[DOM DEBUG] Cached product data received:", {
-        type: typeof cachedProductData,
-        isArray: Array.isArray(cachedProductData),
-        length: cachedProductData?.length,
-        data: cachedProductData,
-      });
 
       // Check if data is iterable before trying to iterate
       if (!Array.isArray(cachedProductData)) {
@@ -216,13 +207,11 @@ async function getCachedProducts() {
             cachedProductData.products &&
             Array.isArray(cachedProductData.products)
           ) {
-            console.log("[DOM DEBUG] Found products array in response object");
             cachedProductData = cachedProductData.products;
           } else if (
             cachedProductData.data &&
             Array.isArray(cachedProductData.data)
           ) {
-            console.log("[DOM DEBUG] Found data array in response object");
             cachedProductData = cachedProductData.data;
           } else {
             console.error("[DOM DEBUG] No valid array found in response");
@@ -234,23 +223,15 @@ async function getCachedProducts() {
         }
       }
 
-      console.log(
-        "[DOM DEBUG] Processing",
-        cachedProductData.length,
-        "cached products"
-      );
       for (let cachedProduct of cachedProductData) {
-        console.log("[DOM DEBUG] Adding product to queue:", cachedProduct?.id);
         addToProductDataQueue(cachedProduct);
       }
 
-      console.log("[DOM DEBUG] Starting product queue processing");
       processProductDataQueue();
     } catch (error) {
       console.error("[DOM DEBUG] Error in getCachedProducts:", error);
     }
   } else {
-    console.log("[DOM DEBUG] No channel ID, skipping cached products fetch");
     // Don't retry if there's no channel - this is expected for demo page without selection
   }
 }

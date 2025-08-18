@@ -90,6 +90,5 @@ export function downloadSitemap() {
 
 // For development - log sitemap to console
 export function logSitemap() {
-  console.log("Generated Sitemap:");
-  console.log(generateSitemap());
+  return generateSitemap();
 }

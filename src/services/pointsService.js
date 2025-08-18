@@ -24,8 +24,6 @@ class PointsService {
         return 0;
       }
 
-      console.log(`Fetching points for user: ${this.userEmail}`);
-
       // Try multiple API endpoints as fallback
       const apiUrls = [
         `https://referrals.edgevideo.com/get_new_points_by_email/${this.userEmail}`,

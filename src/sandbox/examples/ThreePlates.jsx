@@ -375,9 +375,6 @@ export default function ThreePlates() {
       setLoadingProgress(progress);
 
       if (texturesLoaded === INITIAL_LOAD_COUNT * 2) {
-        console.log(
-          `Initial ${INITIAL_LOAD_COUNT} texture pairs loaded, starting render`
-        );
         setIsLoading(false); // Hide loading screen after initial textures
       }
     };
@@ -391,7 +388,6 @@ export default function ThreePlates() {
         `/assets/frame-product-pairs/Frame-Image-${i}.png`,
         // onLoad callback
         () => {
-          console.log(`Frame texture ${i} loaded successfully`);
           if (isInitialLoad) onTextureLoad();
         },
         // onProgress callback
@@ -408,7 +404,6 @@ export default function ThreePlates() {
         `/assets/frame-product-pairs/product-${i}.png`,
         // onLoad callback
         () => {
-          console.log(`Product texture ${i} loaded successfully`);
           if (isInitialLoad) onTextureLoad();
         },
         // onProgress callback

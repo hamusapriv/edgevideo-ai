@@ -48,9 +48,6 @@ export default function OAuthCallback() {
       redirectPath = "/app";
     }
 
-    console.log("OAuth callback - redirecting to:", redirectPath);
-    console.log("Original stored path:", storedPath);
-
     if (tok) {
       localStorage.setItem("authToken", tok);
       // Clean up the stored redirect path

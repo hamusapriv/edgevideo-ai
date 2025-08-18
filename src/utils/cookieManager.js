@@ -44,7 +44,6 @@ export const applyConsent = (preferences) => {
 
 // Marketing cookies management
 const enableMarketingCookies = () => {
-  console.log("Marketing cookies enabled");
   // Add your marketing tracking here
   // Examples:
   // - Facebook Pixel
@@ -54,7 +53,6 @@ const enableMarketingCookies = () => {
 };
 
 const disableMarketingCookies = () => {
-  console.log("Marketing cookies disabled");
   clearMarketingCookies();
 };
 
@@ -71,12 +69,10 @@ const clearMarketingCookies = () => {
   ];
 
   clearCookiesByNames(marketingCookies);
-  console.log("Marketing cookies cleared");
 };
 
 // Functional cookies management
 const enableFunctionalCookies = () => {
-  console.log("Functional cookies enabled");
   // Enable functional features like:
   // - User preferences
   // - Theme settings
@@ -85,7 +81,6 @@ const enableFunctionalCookies = () => {
 };
 
 const disableFunctionalCookies = () => {
-  console.log("Functional cookies disabled");
   clearFunctionalCookies();
 };
 
@@ -100,7 +95,6 @@ const clearFunctionalCookies = () => {
   ];
 
   clearCookiesByNames(functionalCookies);
-  console.log("Functional cookies cleared");
 };
 
 // Utility function to clear cookies by names
@@ -121,7 +115,6 @@ const clearAllOptionalCookies = () => {
   clearGACookies();
   clearMarketingCookies();
   clearFunctionalCookies();
-  console.log("All optional cookies cleared");
 };
 
 // Show cookie consent banner programmatically
@@ -153,10 +146,8 @@ export const initializeCookieConsent = () => {
   if (consent) {
     // Apply existing consent preferences
     applyConsent(consent);
-    console.log("Applied existing cookie consent:", consent);
   } else {
     // No consent given - disable all optional cookies
     clearAllOptionalCookies();
-    console.log("No cookie consent found - optional cookies disabled");
   }
 };

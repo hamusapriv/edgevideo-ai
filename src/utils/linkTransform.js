@@ -22,14 +22,6 @@ export function trackOutboundLink(
   itemId = null
 ) {
   try {
-    // Log the click for debugging
-    console.log("Outbound link clicked:", {
-      url,
-      clickTypeName,
-      itemId,
-      timestamp: new Date().toISOString(),
-    });
-
     // Implement Google Analytics tracking if available
     if (window.gtag) {
       window.gtag("event", "click", {
@@ -67,7 +59,7 @@ export function trackOutboundLink(
         return response.text(); // Use text() instead of json() to handle any response format
       })
       .then((data) => {
-        console.log("Tracking successful:", data);
+        // Tracking successful
       })
       .catch((error) => {
         console.warn("Tracking failed (non-critical):", error.message);

@@ -22,14 +22,12 @@ export const initializeGA = () => {
         anonymize_ip: true,
         allow_google_signals: false,
       });
-      console.log(`Google Analytics enabled with ID: ${gaId}`);
     } else {
       // User hasn't consented - disable tracking
       window.gtag("config", gaId, {
         send_page_view: false,
         client_storage: "none",
       });
-      console.log(`Google Analytics disabled - no consent given`);
     }
   }
 };
@@ -53,8 +51,6 @@ export const applyGAConsent = (hasConsent) => {
         page_title: document.title,
         page_location: window.location.href,
       });
-
-      console.log("Google Analytics cookies enabled");
     } else {
       // Disable Google Analytics and clear existing cookies
       window.gtag("config", gaId, {
@@ -64,8 +60,6 @@ export const applyGAConsent = (hasConsent) => {
 
       // Clear GA cookies
       clearGACookies();
-
-      console.log("Google Analytics cookies disabled and cleared");
     }
   }
 };
@@ -87,6 +81,4 @@ export const clearGACookies = () => {
     const domain = window.location.hostname.replace(/^www\./, "");
     document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
   });
-
-  console.log("Google Analytics cookies cleared");
 };
