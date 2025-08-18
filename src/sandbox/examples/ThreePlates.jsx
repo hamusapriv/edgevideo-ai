@@ -2,6 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
+// Define THREE.js constants that might not be exported in build
+const ClampToEdgeWrap = THREE.ClampToEdgeWrap || 1001;
+const LinearMipmapLinearFilter = THREE.LinearMipmapLinearFilter || 1008;
+const LinearFilter = THREE.LinearFilter || 1006;
+
 // Progress bar component to show rotation progress through frames
 function FrameScrollbar({
   currentFrame,
@@ -426,26 +431,26 @@ export default function ThreePlates() {
       frameTexture.repeat.set(1 - paddingRatio * 2, 1 - paddingRatio * 2);
       frameTexture.offset.set(paddingRatio, paddingRatio);
 
-      frameTexture.wrapS = THREE.ClampToEdgeWrap;
-      frameTexture.wrapT = THREE.ClampToEdgeWrap;
+      frameTexture.wrapS = ClampToEdgeWrap;
+      frameTexture.wrapT = ClampToEdgeWrap;
 
       // Optimize texture settings for performance
       frameTexture.generateMipmaps = true;
-      frameTexture.minFilter = THREE.LinearMipmapLinearFilter;
-      frameTexture.magFilter = THREE.LinearFilter;
+      frameTexture.minFilter = LinearMipmapLinearFilter;
+      frameTexture.magFilter = LinearFilter;
 
       frameTextures.push(frameTexture);
 
       // Apply product texture settings
       productTexture.center.set(0.5, 0.5);
       productTexture.rotation = 0; // Products displayed upright
-      productTexture.wrapS = THREE.ClampToEdgeWrap;
-      productTexture.wrapT = THREE.ClampToEdgeWrap;
+      productTexture.wrapS = ClampToEdgeWrap;
+      productTexture.wrapT = ClampToEdgeWrap;
 
       // Optimize product texture settings
       productTexture.generateMipmaps = true;
-      productTexture.minFilter = THREE.LinearMipmapLinearFilter;
-      productTexture.magFilter = THREE.LinearFilter;
+      productTexture.minFilter = LinearMipmapLinearFilter;
+      productTexture.magFilter = LinearFilter;
 
       productTextures.push(productTexture);
     }

@@ -84,15 +84,32 @@ export default defineConfig(({ mode }) => {
           main: "index.html",
           sandbox: "sandbox.html",
         },
-        // Additional staging optimizations
-        ...(isStaging && {
-          output: {
+        output: {
+          // Suppress Rollup warnings for external dependencies
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            three: ['three'],
+            wallet: ['@rainbow-me/rainbowkit', '@tanstack/react-query', 'viem']
+          },
+          ...(isStaging && {
             // Keep readable chunk names in staging
             chunkFileNames: "[name]-[hash].js",
             entryFileNames: "[name]-[hash].js",
             assetFileNames: "[name]-[hash].[ext]",
-          },
-        }),
+          }),
+        },
+        external: (id) => {
+          // Mark problematic ox modules as external to reduce warnings
+          if (id.includes('ox/_esm')) return true;
+          return false;
+        },
+        onwarn: (warning, warn) => {
+          // Suppress specific warnings that slow down build
+          if (warning.code === 'EVAL' && warning.id?.includes('lottie-web')) return;
+          if (warning.message?.includes('/*#__PURE__*/')) return;
+          if (warning.message?.includes('ox/_esm')) return;
+          warn(warning);
+        }
       },
     },
   };
