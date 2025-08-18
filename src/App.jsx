@@ -29,6 +29,7 @@ const ChannelsPage = lazy(() => import("./pages/ChannelsPage"));
 const BrandsPage = lazy(() => import("./pages/BrandsPage"));
 const ViewersPage = lazy(() => import("./pages/ViewersPage"));
 const CookieSettingsPage = lazy(() => import("./pages/CookieSettingsPage"));
+const SandboxPage = lazy(() => import("./pages/SandboxPage"));
 import BuildInfo from "./components/BuildInfo";
 
 // OAuth callback
@@ -87,6 +88,7 @@ export default function App() {
           <Route path="/channels" element={<ChannelsPage />} />
           <Route path="/brands" element={<BrandsPage />} />
           <Route path="/viewers" element={<ViewersPage />} />
+          <Route path="/sandbox" element={<SandboxPage />} />
 
           {/* Backward compatibility redirects for old URLs */}
           <Route
