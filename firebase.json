@@ -10,7 +10,18 @@
           "destination": "/index.html"
         }
       ],
-      "predeploy": "npm run build"
+      "predeploy": "npm run build",
+      "headers": [
+        {
+          "source": "**/*.@(js|css)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "max-age=31536000"
+            }
+          ]
+        }
+      ]
     },
     {
       "site": "edgevideo-staging",
@@ -22,7 +33,18 @@
           "destination": "/index.html"
         }
       ],
-      "predeploy": "npm run build:staging"
+      "predeploy": "npm run build:staging",
+      "headers": [
+        {
+          "source": "**/*.@(js|css)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "max-age=3600"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
