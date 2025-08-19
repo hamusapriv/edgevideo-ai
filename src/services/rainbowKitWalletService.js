@@ -7,12 +7,17 @@ import {
   disconnect,
   signMessage,
   reconnect,
+  switchChain,
 } from "@wagmi/core";
 import { mainnet, polygon, arbitrum } from "viem/chains";
+import { SiweMessage } from "siwe";
 
 // RainbowKit configuration
 const projectId =
   import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID";
+
+// API Base URL - use production server for all environments
+const API_BASE_URL = "https://fastapi.edgevideo.ai";
 
 // Get default wallets
 const { wallets } = getDefaultWallets({
@@ -119,6 +124,286 @@ class RainbowKitWalletService {
     await disconnect(wagmiConfig);
     this.clearWalletData();
     this.notifyListeners("disconnect");
+  }
+
+  // Test wallet endpoints availability
+  async testWalletEndpoints() {
+    const authToken = localStorage.getItem("authToken");
+    const results = {
+      authToken: authToken ? "Found" : "Not found",
+      endpoints: {},
+    };
+
+    const endpointsToTest = [
+      {
+        name: "nonce",
+        url: `${API_BASE_URL}/wallet/wallet/nonce`,
+        method: "POST",
+      },
+      { name: "link", url: `${API_BASE_URL}/wallet/link`, method: "POST" },
+      {
+        name: "get_linked",
+        url: `${API_BASE_URL}/wallet/get_linked`,
+        method: "GET",
+      },
+    ];
+
+    for (const endpoint of endpointsToTest) {
+      try {
+        const options = {
+          method: endpoint.method,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+
+        if (authToken) {
+          options.headers["Authorization"] = `Bearer ${authToken}`;
+        }
+
+        if (endpoint.method === "POST") {
+          options.body = JSON.stringify({});
+        }
+
+        const response = await fetch(endpoint.url, options);
+
+        results.endpoints[endpoint.name] = {
+          status: response.status,
+          statusText: response.statusText,
+          available: response.status !== 404,
+          url: endpoint.url,
+        };
+
+        if (response.ok) {
+          try {
+            const data = await response.json();
+            results.endpoints[endpoint.name].sampleResponse = data;
+          } catch (e) {
+            const text = await response.text();
+            results.endpoints[endpoint.name].sampleResponse = text;
+          }
+        } else {
+          const errorText = await response.text();
+          results.endpoints[endpoint.name].error = errorText;
+        }
+      } catch (error) {
+        results.endpoints[endpoint.name] = {
+          status: "NETWORK_ERROR",
+          error: error.message,
+          url: endpoint.url,
+        };
+      }
+    }
+
+    return results;
+  }
+
+  // Get nonce for SIWE
+  async getNonce() {
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      throw new Error("User must be authenticated to get nonce");
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/wallet/nonce`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Failed to get nonce: ${response.status} - ${errorText}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Link wallet with SIWE signature
+  async linkWallet(nonceId, message, signature, walletAddress) {
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      throw new Error("User must be authenticated to link wallet");
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/wallet/link`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nonceId,
+          message,
+          signature,
+          walletAddress,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || `Wallet linking failed: ${response.status}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Check linked wallet status
+  async getLinkedWallet() {
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      return { walletAddress: null };
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/wallet/get_linked`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to get linked wallet: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Failed to get linked wallet:", error);
+      return { walletAddress: null };
+    }
+  }
+
+  // Complete SIWE wallet verification flow
+  async verifyWalletOwnership() {
+    const account = getAccount(wagmiConfig);
+    if (!account.address) {
+      throw new Error("No wallet connected. Please connect your wallet first.");
+    }
+
+    // Check if we're on Polygon (chainId 137)
+    if (account.chainId !== polygon.id) {
+      try {
+        console.log("Switching to Polygon network...");
+        await switchChain(wagmiConfig, { chainId: polygon.id });
+      } catch (error) {
+        throw new Error(
+          "Please switch to Polygon network (chainId 137) to verify wallet ownership."
+        );
+      }
+    }
+
+    try {
+      // Step 1: Get nonce from backend
+      console.log("Getting nonce for SIWE verification...");
+      const nonceData = await this.getNonce();
+
+      // Step 2: Create SIWE message
+      const siweMessage = new SiweMessage({
+        domain: nonceData.domain,
+        address: account.address,
+        statement: nonceData.statement,
+        uri: nonceData.uri,
+        version: "1",
+        chainId: nonceData.chainId,
+        nonce: nonceData.nonce,
+        issuedAt: new Date().toISOString(),
+        expirationTime: nonceData.expiresAt,
+        resources: nonceData.resources,
+      });
+
+      // Step 3: Prepare message string
+      const messageString = siweMessage.prepareMessage();
+      console.log("SIWE message prepared:", messageString);
+
+      // Step 4: Sign the message
+      console.log("Requesting wallet signature...");
+      const signature = await signMessage(wagmiConfig, {
+        message: messageString,
+        account: account.address,
+      });
+
+      // Step 5: Submit to backend for verification
+      console.log("Submitting signature to backend...");
+      const result = await this.linkWallet(
+        nonceData.nonceId,
+        messageString,
+        signature,
+        account.address
+      );
+
+      // Step 6: Update local state
+      localStorage.setItem("walletLinked", "true");
+      localStorage.setItem("linkedWalletAddress", account.address);
+
+      this.notifyListeners("walletLinked", {
+        address: account.address,
+        result,
+      });
+
+      return {
+        success: true,
+        walletAddress: account.address,
+        result,
+      };
+    } catch (error) {
+      console.error("Wallet verification failed:", error);
+
+      // Provide user-friendly error messages
+      let userMessage = error.message;
+      if (error.message.includes("User rejected")) {
+        userMessage = "Wallet signature was cancelled. Please try again.";
+      } else if (error.message.includes("Signature verification failed")) {
+        userMessage = "Signature verification failed. Please try again.";
+      } else if (error.message.includes("expired")) {
+        userMessage = "Verification expired. Please try again.";
+      } else if (error.message.includes("Invalid chain")) {
+        userMessage = "Please switch to Polygon network and try again.";
+      }
+
+      throw new Error(userMessage);
+    }
+  }
+
+  // Check if wallet is linked and verified
+  async isWalletLinked() {
+    try {
+      const linkedWallet = await this.getLinkedWallet();
+      const account = getAccount(wagmiConfig);
+
+      return {
+        isLinked: !!linkedWallet.walletAddress,
+        linkedAddress: linkedWallet.walletAddress,
+        currentAddress: account.address,
+        isCurrentWalletLinked: linkedWallet.walletAddress === account.address,
+        blockReason: linkedWallet.blockReason || null,
+      };
+    } catch (error) {
+      console.error("Failed to check wallet link status:", error);
+      return {
+        isLinked: false,
+        linkedAddress: null,
+        currentAddress: getAccount(wagmiConfig).address,
+        isCurrentWalletLinked: false,
+        blockReason: null,
+      };
+    }
   }
 
   // Verify wallet (sign message)

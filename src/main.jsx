@@ -20,6 +20,8 @@ import { wagmiConfig } from "./services/rainbowKitWalletService";
 import "@rainbow-me/rainbowkit/styles.css";
 // Fix RainbowKit layout issues
 import "./styles/rainbowkit-fix.css";
+// Import wallet verification styles
+import "./styles/WalletVerification.css";
 
 // Create a QueryClient instance for React Query
 const queryClient = new QueryClient();

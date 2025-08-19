@@ -3,14 +3,20 @@ import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useWallet } from "../contexts/WalletContext";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount } from "wagmi";
 import GoogleSignInButton from "../auth/GoogleSignInButton";
 import LogoutButton from "../auth/LogoutButton";
 import WalletSvg from "./svgs/WalletSvg";
+import rainbowKitWalletService from "../services/rainbowKitWalletService";
 
 export default function FloatingProfile() {
   const [profileOpen, setProfileOpen] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationError, setVerificationError] = useState(null);
+  const [isWalletLinked, setIsWalletLinked] = useState(false);
   const profileRef = useRef(null);
   const { user } = useAuth();
+  const { address, isConnected } = useAccount();
   const {
     wallet,
     connectWallet,
@@ -45,10 +51,48 @@ export default function FloatingProfile() {
   };
 
   const handleVerifyWallet = async () => {
+    if (!user) {
+      setVerificationError("Please log in first to verify wallet ownership");
+      return;
+    }
+
+    if (!isConnected || !address) {
+      setVerificationError("Please connect your wallet first");
+      return;
+    }
+
+    setIsVerifying(true);
+    setVerificationError(null);
+
     try {
-      await verifyWallet();
+      const result = await rainbowKitWalletService.verifyWalletOwnership();
+      console.log("Wallet verification successful:", result);
+
+      // Update local state
+      setIsWalletLinked(true);
+
+      // You might want to update the wallet context here too
+      // or trigger a refresh of wallet status
     } catch (error) {
-      console.error("Failed to verify wallet:", error);
+      console.error("Wallet verification failed:", error);
+
+      // Provide specific error messages based on the type of error
+      let userMessage = error.message;
+
+      if (error.message.includes("Internal server error")) {
+        userMessage =
+          "🔧 Backend service is being updated. Wallet verification will be available soon!";
+      } else if (error.message.includes("500")) {
+        userMessage =
+          "⚠️ Server error occurred. Please try again in a few minutes.";
+      } else if (error.message.includes("Failed to get nonce")) {
+        userMessage =
+          "🔄 Unable to start verification process. Backend service may be updating.";
+      }
+
+      setVerificationError(userMessage);
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -76,6 +120,25 @@ export default function FloatingProfile() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [profileOpen]);
+
+  // Check wallet link status when user/wallet changes
+  useEffect(() => {
+    const checkWalletLinkStatus = async () => {
+      if (user && isConnected && address) {
+        try {
+          const status = await rainbowKitWalletService.isWalletLinked();
+          setIsWalletLinked(status.isCurrentWalletLinked);
+        } catch (error) {
+          console.error("Failed to check wallet link status:", error);
+          setIsWalletLinked(false);
+        }
+      } else {
+        setIsWalletLinked(false);
+      }
+    };
+
+    checkWalletLinkStatus();
+  }, [user, isConnected, address]);
 
   return (
     <div className="floating-profile" ref={profileRef}>
@@ -233,12 +296,18 @@ export default function FloatingProfile() {
                   </div>
 
                   <div className="wallet-inline-actions">
-                    {!wallet.isVerified && (
+                    {!isWalletLinked && user && (
                       <button
                         className="profile-btn profile-btn--verify"
                         onClick={handleVerifyWallet}
-                        disabled={true}
-                        title="Coming Soon"
+                        disabled={isVerifying || !isConnected}
+                        title={
+                          !user
+                            ? "Please log in to verify wallet"
+                            : !isConnected
+                            ? "Please connect wallet first"
+                            : "Sign a message to verify wallet ownership"
+                        }
                       >
                         <svg
                           width="16"
@@ -250,8 +319,26 @@ export default function FloatingProfile() {
                         >
                           <polyline points="20,6 9,17 4,12"></polyline>
                         </svg>
-                        {loading ? "Verifying..." : "Verify Ownership"}
+                        {isVerifying ? "Verifying..." : "Verify Ownership"}
                       </button>
+                    )}
+                    {isWalletLinked && (
+                      <div className="wallet-verified-status">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          style={{ color: "#4caf50" }}
+                        >
+                          <polyline points="20,6 9,17 4,12"></polyline>
+                        </svg>
+                        <span style={{ color: "#4caf50", fontSize: "14px" }}>
+                          Verified
+                        </span>
+                      </div>
                     )}
                     <button
                       className="profile-btn profile-btn--disconnect"
@@ -272,6 +359,24 @@ export default function FloatingProfile() {
                       </svg>
                       Disconnect from App
                     </button>
+
+                    {verificationError && (
+                      <div
+                        className="wallet-error"
+                        style={{
+                          background: "#ffebee",
+                          border: "1px solid #f44336",
+                          borderRadius: "6px",
+                          padding: "8px 12px",
+                          marginTop: "8px",
+                          fontSize: "13px",
+                          color: "#c62828",
+                        }}
+                      >
+                        ⚠️ {verificationError}
+                      </div>
+                    )}
+
                     <div className="wallet-disconnect-info">
                       <small>
                         💡 App disconnected. To fully disconnect from your
