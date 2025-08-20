@@ -9,12 +9,14 @@ import LogoutButton from "../auth/LogoutButton";
 import WalletSvg from "./svgs/WalletSvg";
 import Link from "./svgs/Link";
 import rainbowKitWalletService from "../services/rainbowKitWalletService";
+import "../styles/FloatingProfile.css";
 
 export default function FloatingProfile() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState(null);
   const [isWalletLinked, setIsWalletLinked] = useState(false);
+  const [linkedWalletInfo, setLinkedWalletInfo] = useState(null);
   const profileRef = useRef(null);
   const { user } = useAuth();
   const { address, isConnected } = useAccount();
@@ -26,6 +28,10 @@ export default function FloatingProfile() {
     loading,
     error,
   } = useWallet();
+
+  // Generate avatar URL for fallback (same logic as ProfileSidebar)
+  const avatarSeed = user ? user.avatarSeed : "guest";
+  const avatarUrl = `https://api.dicebear.com/9.x/bottts/svg?seed=${avatarSeed}`;
 
   const toggleProfile = () => {
     setProfileOpen(!profileOpen);
@@ -72,8 +78,19 @@ export default function FloatingProfile() {
       // Update local state
       setIsWalletLinked(true);
 
-      // You might want to update the wallet context here too
-      // or trigger a refresh of wallet status
+      // Refresh wallet status
+      const status = await rainbowKitWalletService.isWalletLinked();
+      if (status.isLinked && status.linkedAddress) {
+        setLinkedWalletInfo({
+          address: status.linkedAddress,
+          shortAddress: `${status.linkedAddress.slice(
+            0,
+            6
+          )}...${status.linkedAddress.slice(-4)}`,
+          isCurrentWallet: status.isCurrentWalletLinked,
+          blockReason: status.blockReason,
+        });
+      }
     } catch (error) {
       console.error("Wallet verification failed:", error);
 
@@ -125,16 +142,35 @@ export default function FloatingProfile() {
   // Check wallet link status when user/wallet changes
   useEffect(() => {
     const checkWalletLinkStatus = async () => {
-      if (user && isConnected && address) {
+      if (user) {
         try {
+          // Always check if user has a linked wallet when they're logged in
           const status = await rainbowKitWalletService.isWalletLinked();
-          setIsWalletLinked(status.isCurrentWalletLinked);
+          console.log("🔍 Wallet link status:", status);
+
+          setIsWalletLinked(status.isLinked || status.isCurrentWalletLinked);
+
+          if (status.isLinked && status.linkedAddress) {
+            setLinkedWalletInfo({
+              address: status.linkedAddress,
+              shortAddress: `${status.linkedAddress.slice(
+                0,
+                6
+              )}...${status.linkedAddress.slice(-4)}`,
+              isCurrentWallet: status.isCurrentWalletLinked,
+              blockReason: status.blockReason,
+            });
+          } else {
+            setLinkedWalletInfo(null);
+          }
         } catch (error) {
           console.error("Failed to check wallet link status:", error);
           setIsWalletLinked(false);
+          setLinkedWalletInfo(null);
         }
       } else {
         setIsWalletLinked(false);
+        setLinkedWalletInfo(null);
       }
     };
 
@@ -158,19 +194,11 @@ export default function FloatingProfile() {
                   className="avatar-image"
                 />
               ) : (
-                <div className="avatar-placeholder">
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                </div>
+                <img
+                  src={avatarUrl}
+                  alt={user.name || "User"}
+                  className="avatar-image"
+                />
               )}
             </div>
           ) : (
@@ -218,19 +246,11 @@ export default function FloatingProfile() {
                       className="user-avatar"
                     />
                   ) : (
-                    <div className="user-avatar-placeholder">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                      </svg>
-                    </div>
+                    <img
+                      src={avatarUrl}
+                      alt={user.name || "User"}
+                      className="user-avatar"
+                    />
                   )}
                   <div className="status-indicator online"></div>
                 </div>
@@ -242,37 +262,48 @@ export default function FloatingProfile() {
             </div>
 
             {/* Enhanced Wallet Section */}
-            <div className="profile-section wallet-section">
+            <div className="profile-section">
+              <WalletSvg />
               <div className="section-header">
                 <div className="section-title">
-                  <WalletSvg />
                   <h4>Wallet</h4>
                 </div>
-                {wallet.isConnected ? (
-                  <span
-                    className={`status-badge ${
-                      wallet.isVerified ? "verified" : "connected"
-                    }`}
-                  >
-                    {wallet.isVerified ? "✓ Verified" : "🔗 Connected"}
-                  </span>
-                ) : null}
+                <div className="status-badges">
+                  {wallet.isConnected && (
+                    <span className="status-badge connected">🔗 Connected</span>
+                  )}
+                  {isWalletLinked && (
+                    <span className="status-badge verified">✓ Verified</span>
+                  )}
+                </div>
               </div>
 
-              {wallet.isConnected ? (
-                <div className="wallet-connected-info">
+              {/* Show linked wallet info even if not currently connected */}
+              {linkedWalletInfo && (
+                <div className="linked-wallet-info">
                   <div className="wallet-address-card">
                     <div className="address-header">
-                      <span className="address-label">Address</span>
+                      <span className="address-label">
+                        {linkedWalletInfo.isCurrentWallet
+                          ? "Current Wallet"
+                          : "Linked Wallet"}
+                      </span>
                     </div>
                     <div className="address-value">
                       <span className="address-text">
-                        {wallet.shortAddress}
+                        {linkedWalletInfo.shortAddress}
                       </span>
                       <button
                         className="copy-address-btn"
                         title="Copy address"
-                        onClick={copyAddress}
+                        onClick={() => {
+                          navigator.clipboard.writeText(
+                            linkedWalletInfo.address
+                          );
+                          console.log(
+                            "Linked wallet address copied to clipboard"
+                          );
+                        }}
                       >
                         <svg
                           width="16"
@@ -295,20 +326,57 @@ export default function FloatingProfile() {
                       </button>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {wallet.isConnected ? (
+                <div className="wallet-connected-info">
+                  {/* Only show current wallet address card if it's different from linked wallet or if no linked wallet */}
+                  {(!linkedWalletInfo || linkedWalletInfo.isCurrentWallet) && (
+                    <div className="wallet-address-card">
+                      <div className="address-header">
+                        <span className="address-label">Address</span>
+                      </div>
+                      <div className="address-value">
+                        <span className="address-text">
+                          {wallet.shortAddress}
+                        </span>
+                        <button
+                          className="copy-address-btn"
+                          title="Copy address"
+                          onClick={copyAddress}
+                        >
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <rect
+                              x="9"
+                              y="9"
+                              width="13"
+                              height="13"
+                              rx="2"
+                              ry="2"
+                            ></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="wallet-inline-actions">
-                    {!isWalletLinked && user && (
+                    {/* Only show verify button if wallet is connected but not linked */}
+                    {!isWalletLinked && user && isConnected && (
                       <button
                         className="profile-btn profile-btn--verify"
                         onClick={handleVerifyWallet}
-                        disabled={isVerifying || !isConnected}
-                        title={
-                          !user
-                            ? "Please log in to verify wallet"
-                            : !isConnected
-                            ? "Please connect wallet first"
-                            : "Sign a message to verify wallet ownership"
-                        }
+                        disabled={isVerifying}
+                        title="Sign a message to verify wallet ownership"
                       >
                         {isVerifying ? (
                           <>
@@ -334,28 +402,14 @@ export default function FloatingProfile() {
                             <span>Verifying...</span>
                           </>
                         ) : (
-                          <Link size={16} color="currentColor" /> 
+                          <>
+                            <Link size={16} color="currentColor" />
+                            <span>Verify Ownership</span>
+                          </>
                         )}
                       </button>
                     )}
-                    {isWalletLinked && (
-                      <div className="wallet-verified-status">
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          style={{ color: "#4caf50" }}
-                        >
-                          <polyline points="20,6 9,17 4,12"></polyline>
-                        </svg>
-                        <span style={{ color: "#4caf50", fontSize: "14px" }}>
-                          Verified
-                        </span>
-                      </div>
-                    )}
+
                     <button
                       className="profile-btn profile-btn--disconnect"
                       onClick={handleDisconnectWallet}
@@ -409,68 +463,73 @@ export default function FloatingProfile() {
                     </div>
                   )}
 
-                  {!wallet.hasMetaMask ? (
-                    <div className="wallet-install-prompt">
-                      <p>
-                        No wallet detected. Please install a compatible wallet
-                        to continue.
-                      </p>
-                      <a
-                        href="https://walletconnect.com/explorer"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="profile-btn profile-btn--install"
-                      >
-                        Install Wallet
-                      </a>
-                    </div>
-                  ) : (
-                    <div className="wallet-connect-prompt">
-                      <p>Connect your wallet to access exclusive features</p>
+                  {/* Only show connect wallet option if user doesn't have a linked wallet */}
+                  {!isWalletLinked ? (
+                    <>
+                      {!wallet.hasMetaMask ? (
+                        <div className="wallet-install-prompt">
+                          <p>
+                            No wallet detected. Please install a compatible
+                            wallet to continue.
+                          </p>
+                          <a
+                            href="https://walletconnect.com/explorer"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="profile-btn profile-btn--install"
+                          >
+                            Install Wallet
+                          </a>
+                        </div>
+                      ) : (
+                        <div className="wallet-connect-prompt">
+                          <p>Link your wallet to access exclusive features</p>
 
-                      <ConnectButton.Custom>
-                        {({
-                          account,
-                          chain,
-                          openAccountModal,
-                          openChainModal,
-                          openConnectModal,
-                          mounted,
-                        }) => {
-                          const ready = mounted;
-                          const connected = ready && account && chain;
+                          <ConnectButton.Custom>
+                            {({
+                              account,
+                              chain,
+                              openAccountModal,
+                              openChainModal,
+                              openConnectModal,
+                              mounted,
+                            }) => {
+                              const ready = mounted;
+                              const connected = ready && account && chain;
 
-                          return (
-                            <div
-                              {...(!ready && {
-                                "aria-hidden": true,
-                                style: {
-                                  opacity: 0,
-                                  pointerEvents: "none",
-                                  userSelect: "none",
-                                },
-                              })}
-                            >
-                              {(() => {
-                                if (!connected) {
-                                  return (
-                                    <button
-                                      className="profile-btn profile-btn--connect"
-                                      onClick={openConnectModal}
-                                      type="button"
-                                    >
-                                      Connect Wallet
-                                    </button>
-                                  );
-                                }
-                                return null;
-                              })()}
-                            </div>
-                          );
-                        }}
-                      </ConnectButton.Custom>
-                    </div>
-                  )}
+                              return (
+                                <div
+                                  {...(!ready && {
+                                    "aria-hidden": true,
+                                    style: {
+                                      opacity: 0,
+                                      pointerEvents: "none",
+                                      userSelect: "none",
+                                    },
+                                  })}
+                                >
+                                  {(() => {
+                                    if (!connected) {
+                                      return (
+                                        <button
+                                          className="profile-btn profile-btn--connect"
+                                          onClick={openConnectModal}
+                                          type="button"
+                                        >
+                                          Connect Wallet
+                                        </button>
+                                      );
+                                    }
+                                    return null;
+                                  })()}
+                                </div>
+                              );
+                            }}
+                          </ConnectButton.Custom>
+                        </div>
+                      )}
+                    </>
+                  ) : null}
                 </div>
               )}
             </div>
@@ -478,8 +537,11 @@ export default function FloatingProfile() {
             {/* Enhanced Actions Section */}
             <div className="profile-section actions-section">
               <div className="profile-actions">
-                {wallet.isVerified && (
-                  <a href="/app" className="profile-btn profile-btn--app">
+                {isWalletLinked && (
+                  <a
+                    href="/app?channelId=3d8c4c38-2d6e-483c-bdc5-e1eeeadd155e"
+                    className="profile-btn profile-btn--app"
+                  >
                     <svg
                       width="18"
                       height="18"

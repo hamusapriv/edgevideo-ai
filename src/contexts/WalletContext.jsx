@@ -64,21 +64,13 @@ export function WalletProvider({ children }) {
   // Check wallet linking status from server
   const checkWalletLinkingStatus = useCallback(
     async (address) => {
-      if (!user || !address) {
-        console.log("❌ Cannot check wallet linking: missing user or address", {
-          user: !!user,
-          address,
-        });
-        return false;
-      }
+      if (!user || !address) return false;
 
       try {
-        console.log("🔍 Calling rainbowKitWalletService.isWalletLinked()...");
         const linkStatus = await rainbowKitWalletService.isWalletLinked();
-        console.log("📊 Link status response:", linkStatus);
         return linkStatus.isCurrentWalletLinked;
       } catch (error) {
-        console.error("❌ Failed to check wallet linking status:", error);
+        console.error("Failed to check wallet linking status:", error);
         return false;
       }
     },
@@ -124,18 +116,9 @@ export function WalletProvider({ children }) {
   // Check server-side wallet linking status when user and wallet are both ready
   useEffect(() => {
     const checkServerWalletStatus = async () => {
-      console.log("🔄 useEffect: checkServerWalletStatus triggered", {
-        user: !!user,
-        isConnected: wallet.isConnected,
-        hasAddress: !!wallet.address,
-        isAuthLoading,
-      });
-
       if (user && wallet.isConnected && wallet.address && !isAuthLoading) {
         try {
-          console.log(
-            "✅ All conditions met, checking wallet linking status from server..."
-          );
+          console.log("Checking wallet linking status from server...");
           const isLinked = await checkWalletLinkingStatus(wallet.address);
 
           if (isLinked && !wallet.isVerified) {
@@ -163,22 +146,10 @@ export function WalletProvider({ children }) {
 
             // Clear localStorage as it's out of sync with server
             localStorage.removeItem("walletVerification");
-          } else {
-            console.log("ℹ️ Wallet state is already in sync", {
-              isLinked,
-              isVerified: wallet.isVerified,
-            });
           }
         } catch (error) {
-          console.error("❌ Failed to check server wallet status:", error);
+          console.error("Failed to check server wallet status:", error);
         }
-      } else {
-        console.log("⏭️ Skipping wallet status check - conditions not met", {
-          user: !!user,
-          isConnected: wallet.isConnected,
-          hasAddress: !!wallet.address,
-          isAuthLoading,
-        });
       }
     };
 

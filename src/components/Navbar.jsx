@@ -108,7 +108,6 @@ export default function Navbar() {
                 <span></span>
               </div>
             </div>
-            <div className="orb-glow"></div>
           </button>
 
           <div className={`nav-items ${navOpen ? "nav-items--open" : ""}`}>

@@ -71,12 +71,14 @@
   border-color: rgba(255, 255, 255, 0.5);
 }
 
+@media (max-width: 1200px) {
+  .hero__actions {
+    align-items: center;
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .hero__actions {
-    align-items: stretch;
-  }
-
   .authenticated-actions {
     max-width: 100%;
   }
