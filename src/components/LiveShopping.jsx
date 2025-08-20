@@ -6,6 +6,8 @@ import { useAIStatus } from "../contexts/AIStatusContext";
 import { useProductAIStatus } from "../hooks/useProductAIStatus";
 import FrameGallery from "./FrameGallery";
 import useIsMobile from "../hooks/useIsMobile";
+import useIsTouchDevice from "../hooks/useIsTouchDevice";
+import useLayoutPreference from "../hooks/useLayoutPreference";
 import AIStatusDisplay from "./AIStatusDisplay";
 import SafeComponent from "./SafeComponent";
 import { preloadImages, validateProductImages } from "../utils/imageValidation";
@@ -20,7 +22,19 @@ export default function LiveShopping() {
   const [displayProducts, setDisplayProducts] = useState(() =>
     products.map((p) => ({ ...p, _status: "" }))
   );
-  const isMobile = useIsMobile();
+  const isMobile = useIsMobile(); // For CSS styling (hover capability)
+  const isTouchDevice = useIsTouchDevice(); // For touch behavior (scroll-to-focus)
+  const layoutPreference = useLayoutPreference(); // For UI layout decisions
+
+  // Debug logging
+  useEffect(() => {
+    console.log("🔍 Device Detection:", {
+      isMobile: isMobile,
+      isTouchDevice: isTouchDevice,
+      layoutPreference: layoutPreference,
+      userAgent: navigator.userAgent
+    });
+  }, [isMobile, isTouchDevice, layoutPreference]);
   const scrollRef = useRef(null);
   const galleryRef = useRef(null);
   const beltRef = useRef(null);
@@ -178,7 +192,9 @@ export default function LiveShopping() {
 
   const handleHover = useCallback(
     (p) => {
+      // Use hover behavior on devices that have hover capability (desktop/laptop)
       if (!isMobile) {
+        console.log("🖱️ Hover-to-focus triggered for desktop device");
         setSelectedId(String(p.id));
       }
     },
@@ -188,7 +204,11 @@ export default function LiveShopping() {
   useEffect(() => {
     const box = scrollRef.current;
     const beltEl = beltRef.current;
-    if (!box || !beltEl || !isMobile) return;
+    // Only enable scroll-to-focus on touch devices (mobile phones/tablets)
+    // Desktop should use hover-to-focus instead
+    if (!box || !beltEl || !isTouchDevice) return;
+
+    console.log("🔄 Scroll-to-focus enabled for touch device");
 
     function applyFocus(card) {
       if (!card || card === lastFocusedRef.current) return;
@@ -243,7 +263,7 @@ export default function LiveShopping() {
     return () => {
       box.removeEventListener("scroll", updateFocusDuringScroll);
     };
-  }, [displayProducts, isMobile]);
+  }, [displayProducts, isTouchDevice]);
 
   useEffect(() => {
     const gallery = galleryRef.current;
@@ -284,7 +304,7 @@ export default function LiveShopping() {
   }, []);
 
   return (
-    <div className="liveshopping-container" style={{ width: "100%" }}>
+    <div className="liveshopping-container">
       <FrameGallery
         ref={galleryRef}
         selectedId={selectedId}

@@ -8,6 +8,7 @@
 @import "./favorites.css";
 @import "./FAQ.css";
 @import "./liveShoppingDesktop.css";
+@import "./orientationFixes.css";
 @import "./scrollBar.css";
 @import "./AppBg.css";
 /* Blinking typing cursor for AI status */

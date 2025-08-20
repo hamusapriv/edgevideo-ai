@@ -1,0 +1,92 @@
+/* Orientation-specific improvements for LiveShopping */
+
+/* Force desktop layout when in landscape mode on tablets/phones */
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .liveshopping-container {
+    flex-direction: row;
+  }
+  .item-container {
+    width: auto;
+  }
+  #absolute-container {
+    min-height: 0;
+  }
+
+  #itemContent {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card-details {
+    width: 350px;
+    max-width: 45vw;
+  }
+
+  /* Force desktop frame gallery layout in landscape */
+  .ai-frame-gallery {
+    display: flex;
+    flex-direction: column !important;
+    align-items: center;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    pointer-events: none;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 15px;
+    gap: 10px;
+    min-height: 110px;
+    min-width: 200px;
+
+    /* Desktop frame gallery styling with film strip effect */
+    --hole-size: 6px;
+    --hole-gap: 20px;
+    --frame-border: 2px;
+    --offset-x: 2px;
+    --offset-y: 2px;
+    background-color: black;
+
+    /* Film strip holes effect */
+    background-image:
+      /* left-edge holes */ repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent var(--hole-gap),
+        rgba(255, 255, 255, 0.7) var(--hole-gap),
+        rgba(255, 255, 255, 0.7) calc(var(--hole-gap) + var(--hole-size))
+      ),
+      /* right-edge holes */
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent var(--hole-gap),
+          rgba(255, 255, 255, 0.7) var(--hole-gap),
+          rgba(255, 255, 255, 0.7) calc(var(--hole-gap) + var(--hole-size))
+        );
+
+    /* only tile vertically */
+    background-repeat: repeat-y, repeat-y;
+
+    /* cell size: narrow width, tall height */
+    background-size: var(--hole-size) calc(var(--hole-gap) + var(--hole-size)),
+      var(--hole-size) calc(var(--hole-gap) + var(--hole-size));
+
+    /* position: (x, y) for each */
+    background-position:
+      /* first gradient */ calc(var(--offset-x) + 5px)
+        var(--offset-y),
+      /* second gradient */ calc(100% - var(--offset-x) - var(--hole-size))
+        var(--offset-y);
+  }
+
+  .ai-frame-gallery::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Ensure smooth transitions during orientation changes */
+.liveshopping-container,
+#itemContent,
+.card-details,
+.ai-frame-gallery {
+  transition: all 0.3s ease;
+}
