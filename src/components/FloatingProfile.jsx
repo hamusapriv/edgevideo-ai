@@ -7,6 +7,7 @@ import { useAccount } from "wagmi";
 import GoogleSignInButton from "../auth/GoogleSignInButton";
 import LogoutButton from "../auth/LogoutButton";
 import WalletSvg from "./svgs/WalletSvg";
+import Link from "./svgs/Link";
 import rainbowKitWalletService from "../services/rainbowKitWalletService";
 
 export default function FloatingProfile() {
@@ -309,17 +310,32 @@ export default function FloatingProfile() {
                             : "Sign a message to verify wallet ownership"
                         }
                       >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <polyline points="20,6 9,17 4,12"></polyline>
-                        </svg>
-                        {isVerifying ? "Verifying..." : "Verify Ownership"}
+                        {isVerifying ? (
+                          <>
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              className="spinning-icon"
+                            >
+                              <circle cx="12" cy="12" r="10" />
+                              <path d="M12 2 L12 6" />
+                              <path d="M12 18 L12 22" />
+                              <path d="M4.93 4.93 L7.76 7.76" />
+                              <path d="M16.24 16.24 L19.07 19.07" />
+                              <path d="M2 12 L6 12" />
+                              <path d="M18 12 L22 12" />
+                              <path d="M4.93 19.07 L7.76 16.24" />
+                              <path d="M16.24 7.76 L19.07 4.93" />
+                            </svg>
+                            <span>Verifying...</span>
+                          </>
+                        ) : (
+                          <Link size={16} color="currentColor" /> 
+                        )}
                       </button>
                     )}
                     {isWalletLinked && (

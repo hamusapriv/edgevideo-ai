@@ -45,6 +45,11 @@ export function AuthProvider({ children }) {
           email: data.email,
           avatarSeed: encodeURIComponent(data.name || data.email),
         });
+        
+        // Dispatch event to notify other components that user has logged in
+        window.dispatchEvent(new CustomEvent('auth-user-authenticated', {
+          detail: { user: data, token }
+        }));
       } catch (err) {
         console.error("Auth fetch failed:", err);
         logout();
@@ -154,6 +159,9 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("authToken");
     setUser(null);
     setIsAuthLoading(false);
+    
+    // Dispatch event to notify other components that user has logged out
+    window.dispatchEvent(new CustomEvent('auth-user-logout'));
   }
 
   return (

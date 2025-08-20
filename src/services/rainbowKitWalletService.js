@@ -527,4 +527,10 @@ class RainbowKitWalletService {
 
 // Export singleton instance
 const rainbowKitWalletService = new RainbowKitWalletService();
+
+// Make available for testing in development
+if (typeof window !== "undefined") {
+  window.rainbowKitWalletService = rainbowKitWalletService;
+}
+
 export default rainbowKitWalletService;
