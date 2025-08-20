@@ -2,6 +2,7 @@
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useWallet } from "../contexts/WalletContext";
 import LogoutButton from "../auth/LogoutButton";
 import GoogleSignInButton from "../auth/GoogleSignInButton";
 import PointsDisplay from "./PointsDisplay";
@@ -10,9 +11,11 @@ import Socials from "./Socials";
 import FAQ from "./FAQ";
 import { useState } from "react";
 import { showCookieConsent } from "../utils/cookieManager";
+import WalletSvg from "./svgs/WalletSvg";
 
 export default function ProfileSidebar({ isOpen, onClose }) {
   const { user } = useAuth();
+  const { wallet, linkedWallet } = useWallet();
   const sidebarRef = useRef(null);
 
   // Pick avatar based on login state
@@ -116,6 +119,88 @@ export default function ProfileSidebar({ isOpen, onClose }) {
                 <PointsDisplay size="normal" showLabel={true} />
                 <DailyCheckIn />
               </div>
+            </div>
+
+            {/* Wallet Section */}
+            <div className="list-block wallet-block">
+              <WalletSvg />
+              <div className="wallet-header">
+                <h5 className="block-title">Wallet</h5>
+                {linkedWallet.isLinked && (
+                  <div className="wallet-header-status">
+                    <span className="status-indicator verified">✓</span>
+                    <span>Verified & Linked</span>
+                  </div>
+                )}
+              </div>
+              {linkedWallet.isLinked ? (
+                <div
+                  className="wallet-info"
+                  style={{
+                    width: "100%",
+                  }}
+                >
+                  <div
+                    className="wallet-connected"
+                    style={{
+                      width: "100%",
+                    }}
+                  >
+                    <div
+                      className="wallet-address "
+                      style={{
+                        backgroundColor: "transparent",
+                        border: "none",
+                        gap: "10px",
+                        alignItems: "flex-start",
+                        width: "100%",
+                      }}
+                    >
+                      <span
+                        className="wallet-label"
+                        style={{
+                          color: "#fff",
+                        }}
+                      >
+                        Linked Wallet:
+                      </span>
+                      <span
+                        className="wallet-value"
+                        style={{
+                          color: "#fff",
+                          padding: "0",
+                          border: "none",
+                          background: "transparent",
+                        }}
+                      >
+                        {linkedWallet.shortAddress}
+                      </span>
+                    </div>
+                    {wallet.isConnected &&
+                      wallet.address === linkedWallet.address && (
+                        <div className="wallet-connection-status">
+                          <span className="connection-indicator connected">
+                            ●
+                          </span>
+                          <span>Currently Connected</span>
+                        </div>
+                      )}
+                  </div>
+                </div>
+              ) : (
+                <div className="wallet-cta">
+                  <p className="wallet-message">
+                    No wallet linked to your account
+                  </p>
+                  <Link
+                    to="/home"
+                    className="btn--primary wallet-link-btn"
+                    onClick={onClose}
+                  >
+                    Link Wallet
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Account settings */}

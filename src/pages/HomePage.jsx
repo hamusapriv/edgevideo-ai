@@ -625,11 +625,11 @@ export default function HomePage() {
                   {examplePairs.concat(examplePairs).map((item, index) => (
                     <div key={index} className="example-pair">
                       <div className="example-frame">
-                        <LazyImage src={item.frame} alt={item.frameAlt} />
+                        <img src={item.frame} alt={item.frameAlt} />
                       </div>
                       <div className="example-arrow">→</div>
                       <div className="example-product">
-                        <LazyImage src={item.product} alt={item.productAlt} />
+                        <img src={item.product} alt={item.productAlt} />
                       </div>
                     </div>
                   ))}

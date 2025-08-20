@@ -34,7 +34,6 @@ body:has(.marketing-page) {
 .marketing-page {
   color: var(--marketing-text);
   transition: color 0.3s ease;
-  min-height: 100vh; /* Ensure full height coverage */
 }
 
 .marketing-page h1,

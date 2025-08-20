@@ -296,8 +296,8 @@ h6,
 /* Floating Logo */
 
 .floating-container {
-  position: fixed;
-  top: 50px;
+  position: sticky;
+  top: 0;
   right: 0;
   left: 0;
   display: flex;

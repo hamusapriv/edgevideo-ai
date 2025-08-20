@@ -18,6 +18,11 @@ const WalletContext = createContext({
     hasMetaMask: true,
     shortAddress: "",
   },
+  linkedWallet: {
+    address: null,
+    shortAddress: "",
+    isLinked: false,
+  },
   connectWallet: () => {},
   verifyWallet: () => {},
   disconnectWallet: () => {},
@@ -36,6 +41,11 @@ export function WalletProvider({ children }) {
     isVerified: false,
     hasMetaMask: true,
     shortAddress: "",
+  });
+  const [linkedWallet, setLinkedWallet] = useState({
+    address: null,
+    shortAddress: "",
+    isLinked: false,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -76,6 +86,42 @@ export function WalletProvider({ children }) {
     },
     [user]
   );
+
+  // Check server-side linked wallet for the authenticated user
+  const checkServerLinkedWallet = useCallback(async () => {
+    if (!user) {
+      setLinkedWallet({
+        address: null,
+        shortAddress: "",
+        isLinked: false,
+      });
+      return;
+    }
+
+    try {
+      const linkedWalletData = await rainbowKitWalletService.getLinkedWallet();
+      if (linkedWalletData.walletAddress) {
+        setLinkedWallet({
+          address: linkedWalletData.walletAddress,
+          shortAddress: formatShortAddress(linkedWalletData.walletAddress),
+          isLinked: true,
+        });
+      } else {
+        setLinkedWallet({
+          address: null,
+          shortAddress: "",
+          isLinked: false,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to check server linked wallet:", error);
+      setLinkedWallet({
+        address: null,
+        shortAddress: "",
+        isLinked: false,
+      });
+    }
+  }, [user, formatShortAddress]);
 
   // Update wallet state when wagmi account changes
   useEffect(() => {
@@ -214,6 +260,13 @@ export function WalletProvider({ children }) {
     checkWalletLinkingStatus,
   ]);
 
+  // Check server-side linked wallet when user auth state changes
+  useEffect(() => {
+    if (!isAuthLoading) {
+      checkServerLinkedWallet();
+    }
+  }, [user, isAuthLoading, checkServerLinkedWallet]);
+
   // Connect wallet function - RainbowKit handles the modal
   const connectWallet = useCallback(async () => {
     try {
@@ -314,9 +367,11 @@ export function WalletProvider({ children }) {
 
   const value = {
     wallet,
+    linkedWallet,
     connectWallet,
     verifyWallet,
     disconnectWallet,
+    checkServerLinkedWallet,
     loading,
     error,
   };
