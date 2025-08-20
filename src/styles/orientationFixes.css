@@ -2,6 +2,38 @@
 
 /* Force desktop layout when in landscape mode on tablets/phones */
 @media screen and (orientation: landscape) and (max-height: 600px) {
+  #root {
+    flex-direction: row;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    z-index: 2;
+    padding: 10px 0;
+    gap: 10px;
+    right: 0;
+    left: auto;
+    width: 80px;
+  }
+
+  .app-footer {
+    margin-top: 80px;
+  }
+
+  .tabs {
+    flex-direction: column;
+    height: 100%;
+    width: 80px;
+  }
+
+  .header img {
+    height: 24px;
+  }
+
   .liveshopping-container {
     flex-direction: row;
   }
