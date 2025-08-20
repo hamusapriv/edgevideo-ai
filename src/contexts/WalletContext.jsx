@@ -62,17 +62,28 @@ export function WalletProvider({ children }) {
   }, []);
 
   // Check wallet linking status from server
-  const checkWalletLinkingStatus = useCallback(async (address) => {
-    if (!user || !address) return false;
-    
-    try {
-      const linkStatus = await rainbowKitWalletService.isWalletLinked();
-      return linkStatus.isCurrentWalletLinked;
-    } catch (error) {
-      console.error("Failed to check wallet linking status:", error);
-      return false;
-    }
-  }, [user]);
+  const checkWalletLinkingStatus = useCallback(
+    async (address) => {
+      if (!user || !address) {
+        console.log("❌ Cannot check wallet linking: missing user or address", {
+          user: !!user,
+          address,
+        });
+        return false;
+      }
+
+      try {
+        console.log("🔍 Calling rainbowKitWalletService.isWalletLinked()...");
+        const linkStatus = await rainbowKitWalletService.isWalletLinked();
+        console.log("📊 Link status response:", linkStatus);
+        return linkStatus.isCurrentWalletLinked;
+      } catch (error) {
+        console.error("❌ Failed to check wallet linking status:", error);
+        return false;
+      }
+    },
+    [user]
+  );
 
   // Update wallet state when wagmi account changes
   useEffect(() => {
@@ -113,42 +124,73 @@ export function WalletProvider({ children }) {
   // Check server-side wallet linking status when user and wallet are both ready
   useEffect(() => {
     const checkServerWalletStatus = async () => {
+      console.log("🔄 useEffect: checkServerWalletStatus triggered", {
+        user: !!user,
+        isConnected: wallet.isConnected,
+        hasAddress: !!wallet.address,
+        isAuthLoading,
+      });
+
       if (user && wallet.isConnected && wallet.address && !isAuthLoading) {
         try {
-          console.log("Checking wallet linking status from server...");
+          console.log(
+            "✅ All conditions met, checking wallet linking status from server..."
+          );
           const isLinked = await checkWalletLinkingStatus(wallet.address);
-          
+
           if (isLinked && !wallet.isVerified) {
             console.log("✅ Wallet is linked on server, updating local state");
-            setWallet(prev => ({
+            setWallet((prev) => ({
               ...prev,
               isVerified: true,
             }));
-            
+
             // Update localStorage to sync with server state
-            localStorage.setItem("walletVerification", JSON.stringify({
-              isVerified: true,
-              address: wallet.address,
-              timestamp: Date.now(),
-            }));
+            localStorage.setItem(
+              "walletVerification",
+              JSON.stringify({
+                isVerified: true,
+                address: wallet.address,
+                timestamp: Date.now(),
+              })
+            );
           } else if (!isLinked && wallet.isVerified) {
             console.log("❌ Wallet not linked on server, clearing local state");
-            setWallet(prev => ({
+            setWallet((prev) => ({
               ...prev,
               isVerified: false,
             }));
-            
+
             // Clear localStorage as it's out of sync with server
             localStorage.removeItem("walletVerification");
+          } else {
+            console.log("ℹ️ Wallet state is already in sync", {
+              isLinked,
+              isVerified: wallet.isVerified,
+            });
           }
         } catch (error) {
-          console.error("Failed to check server wallet status:", error);
+          console.error("❌ Failed to check server wallet status:", error);
         }
+      } else {
+        console.log("⏭️ Skipping wallet status check - conditions not met", {
+          user: !!user,
+          isConnected: wallet.isConnected,
+          hasAddress: !!wallet.address,
+          isAuthLoading,
+        });
       }
     };
 
     checkServerWalletStatus();
-  }, [user, wallet.isConnected, wallet.address, wallet.isVerified, isAuthLoading, checkWalletLinkingStatus]);
+  }, [
+    user,
+    wallet.isConnected,
+    wallet.address,
+    wallet.isVerified,
+    isAuthLoading,
+    checkWalletLinkingStatus,
+  ]);
 
   // Listen for authentication events to trigger immediate wallet status check
   useEffect(() => {
@@ -157,35 +199,49 @@ export function WalletProvider({ children }) {
         console.log("User authenticated, checking wallet linking status...");
         try {
           const isLinked = await checkWalletLinkingStatus(wallet.address);
-          
+
           if (isLinked !== wallet.isVerified) {
-            setWallet(prev => ({
+            setWallet((prev) => ({
               ...prev,
               isVerified: isLinked,
             }));
-            
+
             if (isLinked) {
-              localStorage.setItem("walletVerification", JSON.stringify({
-                isVerified: true,
-                address: wallet.address,
-                timestamp: Date.now(),
-              }));
+              localStorage.setItem(
+                "walletVerification",
+                JSON.stringify({
+                  isVerified: true,
+                  address: wallet.address,
+                  timestamp: Date.now(),
+                })
+              );
             } else {
               localStorage.removeItem("walletVerification");
             }
           }
         } catch (error) {
-          console.error("Failed to check wallet status after authentication:", error);
+          console.error(
+            "Failed to check wallet status after authentication:",
+            error
+          );
         }
       }
     };
 
-    window.addEventListener('auth-user-authenticated', handleUserAuthenticated);
-    
+    window.addEventListener("auth-user-authenticated", handleUserAuthenticated);
+
     return () => {
-      window.removeEventListener('auth-user-authenticated', handleUserAuthenticated);
+      window.removeEventListener(
+        "auth-user-authenticated",
+        handleUserAuthenticated
+      );
     };
-  }, [wallet.isConnected, wallet.address, wallet.isVerified, checkWalletLinkingStatus]);
+  }, [
+    wallet.isConnected,
+    wallet.address,
+    wallet.isVerified,
+    checkWalletLinkingStatus,
+  ]);
 
   // Connect wallet function - RainbowKit handles the modal
   const connectWallet = useCallback(async () => {
@@ -271,17 +327,17 @@ export function WalletProvider({ children }) {
   useEffect(() => {
     const handleUserLogout = () => {
       console.log("User logged out, clearing wallet verification state");
-      setWallet(prev => ({
+      setWallet((prev) => ({
         ...prev,
         isVerified: false,
       }));
       localStorage.removeItem("walletVerification");
     };
 
-    window.addEventListener('auth-user-logout', handleUserLogout);
-    
+    window.addEventListener("auth-user-logout", handleUserLogout);
+
     return () => {
-      window.removeEventListener('auth-user-logout', handleUserLogout);
+      window.removeEventListener("auth-user-logout", handleUserLogout);
     };
   }, []);
 

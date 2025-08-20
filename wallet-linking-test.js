@@ -23,20 +23,23 @@ async function testWalletLinkingStatus() {
   console.log("\n📡 Testing /wallet/get_linked endpoint...");
 
   try {
-    const response = await fetch("https://fastapi.edgevideo.ai/wallet/get_linked", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      "https://fastapi.edgevideo.ai/wallet/get_linked",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     console.log(`Response status: ${response.status}`);
 
     if (response.ok) {
       const data = await response.json();
       console.log("✅ API Response:", data);
-      
+
       if (data.walletAddress) {
         console.log(`🔗 Linked wallet found: ${data.walletAddress}`);
       } else {
@@ -108,7 +111,9 @@ function testWalletConnectionState() {
   // Check wallet service state
   if (window.rainbowKitWalletService) {
     console.log("\n🔧 Wallet Service State:");
-    console.log(`  Account: ${window.rainbowKitWalletService.account || "None"}`);
+    console.log(
+      `  Account: ${window.rainbowKitWalletService.account || "None"}`
+    );
     console.log(`  Connected: ${window.rainbowKitWalletService.isConnected}`);
     console.log(`  Verified: ${window.rainbowKitWalletService.isVerified}`);
   }
@@ -117,10 +122,10 @@ function testWalletConnectionState() {
 // Combined test
 async function runWalletTests() {
   console.log("🚀 Running Complete Wallet Tests...\n");
-  
+
   testWalletConnectionState();
   await testWalletLinkingStatus();
-  
+
   console.log("\n✅ Tests completed!");
 }
 

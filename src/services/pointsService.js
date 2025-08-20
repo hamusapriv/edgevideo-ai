@@ -24,48 +24,53 @@ class PointsService {
         return 0;
       }
 
-      // Try multiple API endpoints as fallback
-      const apiUrls = [
-        `https://referrals.edgevideo.com/get_new_points_by_email/${this.userEmail}`,
-        // Games endpoints disabled until live
-        // `https://eat.edgevideo.com:8080/get_new_points_by_email/${this.userEmail}`,
-        `https://referrals.edgevideo.com/get_new_points/${this.userEmail}`, // fallback to original format
-      ];
-
-      for (const url of apiUrls) {
-        try {
-          const response = await fetch(url);
-
-          if (!response.ok) {
-            console.warn(`Points API failed for ${url}: ${response.status}`);
-            continue;
-          }
-
-          const data = await response.json();
-
-          if (data.result && typeof data.result.offchain_balance === "number") {
-            this.pointsBalance = data.result.offchain_balance;
-            this.notifyListeners();
-            console.log(`Points updated: ${this.pointsBalance}`);
-            return this.pointsBalance;
-          } else if (typeof data.points === "number") {
-            // Alternative response format
-            this.pointsBalance = data.points;
-            this.notifyListeners();
-            console.log(`Points updated: ${this.pointsBalance}`);
-            return this.pointsBalance;
-          } else {
-            console.warn("Invalid points response format:", data);
-            continue;
-          }
-        } catch (err) {
-          console.warn(`Points request failed for ${url}:`, err);
-          continue;
-        }
-      }
-
-      console.warn("All points API endpoints failed");
+      // Referrals API endpoints disabled - will be re-enabled with working endpoint later
+      console.log("Referrals API disabled - points update skipped");
       return this.pointsBalance;
+
+      // TODO: Re-enable when referrals endpoint is working
+      // Try multiple API endpoints as fallback
+      // const apiUrls = [
+      //   `https://referrals.edgevideo.com/get_new_points_by_email/${this.userEmail}`,
+      //   // Games endpoints disabled until live
+      //   // `https://eat.edgevideo.com:8080/get_new_points_by_email/${this.userEmail}`,
+      //   `https://referrals.edgevideo.com/get_new_points/${this.userEmail}`, // fallback to original format
+      // ];
+
+      // for (const url of apiUrls) {
+      //   try {
+      //     const response = await fetch(url);
+
+      //     if (!response.ok) {
+      //       console.warn(`Points API failed for ${url}: ${response.status}`);
+      //       continue;
+      //     }
+
+      //     const data = await response.json();
+
+      //     if (data.result && typeof data.result.offchain_balance === "number") {
+      //       this.pointsBalance = data.result.offchain_balance;
+      //       this.notifyListeners();
+      //       console.log(`Points updated: ${this.pointsBalance}`);
+      //       return this.pointsBalance;
+      //     } else if (typeof data.points === "number") {
+      //       // Alternative response format
+      //       this.pointsBalance = data.points;
+      //       this.notifyListeners();
+      //       console.log(`Points updated: ${this.pointsBalance}`);
+      //       return this.pointsBalance;
+      //     } else {
+      //       console.warn("Invalid points response format:", data);
+      //       continue;
+      //     }
+      //   } catch (err) {
+      //     console.warn(`Points request failed for ${url}:`, err);
+      //     continue;
+      //   }
+      // }
+
+      // console.warn("All points API endpoints failed");
+      // return this.pointsBalance;
     } catch (error) {
       console.error("Failed to update points:", error);
       return this.pointsBalance;
@@ -75,9 +80,11 @@ class PointsService {
   // Set user email for points fetching
   setUserEmail(email) {
     this.userEmail = email;
-    if (email) {
-      this.updatePoints();
-    }
+    // Referrals API disabled - skip automatic points update
+    // TODO: Re-enable when referrals endpoint is working
+    // if (email) {
+    //   this.updatePoints();
+    // }
   }
 
   // Set channel ID for WebSocket connection
@@ -192,7 +199,9 @@ class PointsService {
           console.log("Points lost in game");
         }
         // Update points after win/loss
-        setTimeout(() => this.updatePoints(), 500);
+        // Referrals API disabled - skip points update
+        // TODO: Re-enable when referrals endpoint is working
+        // setTimeout(() => this.updatePoints(), 500);
         break;
 
       case "checkin":
@@ -220,7 +229,9 @@ class PointsService {
     window.dispatchEvent(event);
 
     // Update points after check-in
-    this.updatePoints();
+    // Referrals API disabled - skip points update
+    // TODO: Re-enable when referrals endpoint is working
+    // this.updatePoints();
   }
 
   // Send WebSocket message

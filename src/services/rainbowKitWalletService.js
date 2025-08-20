@@ -271,6 +271,9 @@ class RainbowKitWalletService {
     }
 
     try {
+      console.log(
+        "🔍 Checking wallet link status with /wallet/get_linked endpoint..."
+      );
       const response = await fetch(`${API_BASE_URL}/wallet/get_linked`, {
         method: "GET",
         headers: {
@@ -279,13 +282,21 @@ class RainbowKitWalletService {
         },
       });
 
+      console.log(`📡 /wallet/get_linked response status: ${response.status}`);
+
       if (!response.ok) {
+        if (response.status === 404) {
+          console.log("ℹ️ User not found or no wallet linked");
+          return { walletAddress: null };
+        }
         throw new Error(`Failed to get linked wallet: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      console.log("✅ /wallet/get_linked response data:", data);
+      return data;
     } catch (error) {
-      console.error("Failed to get linked wallet:", error);
+      console.error("❌ Failed to get linked wallet:", error);
       return { walletAddress: null };
     }
   }
@@ -384,18 +395,32 @@ class RainbowKitWalletService {
   // Check if wallet is linked and verified
   async isWalletLinked() {
     try {
+      console.log("🔍 isWalletLinked: Starting wallet link status check...");
       const linkedWallet = await this.getLinkedWallet();
-      const account = getAccount(wagmiConfig);
+      console.log("📊 isWalletLinked: getLinkedWallet response:", linkedWallet);
 
-      return {
+      const account = getAccount(wagmiConfig);
+      console.log("👤 isWalletLinked: Current account:", account.address);
+
+      // Normalize addresses to lowercase for comparison
+      const linkedAddress = linkedWallet.walletAddress?.toLowerCase();
+      const currentAddress = account.address?.toLowerCase();
+
+      const result = {
         isLinked: !!linkedWallet.walletAddress,
         linkedAddress: linkedWallet.walletAddress,
         currentAddress: account.address,
-        isCurrentWalletLinked: linkedWallet.walletAddress === account.address,
+        isCurrentWalletLinked: linkedAddress === currentAddress,
         blockReason: linkedWallet.blockReason || null,
       };
+
+      console.log("✅ isWalletLinked: Final result:", result);
+      return result;
     } catch (error) {
-      console.error("Failed to check wallet link status:", error);
+      console.error(
+        "❌ isWalletLinked: Failed to check wallet link status:",
+        error
+      );
       return {
         isLinked: false,
         linkedAddress: null,

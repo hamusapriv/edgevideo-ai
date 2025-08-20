@@ -8,9 +8,10 @@ class ApiClient {
       // eatWallet:
       //   import.meta.env.VITE_API_BASE_EAT_WALLET ||
       //   "https://eat.edgevideo.com:8081",
-      referrals:
-        import.meta.env.VITE_API_BASE_REFERRALS ||
-        "https://referrals.edgevideo.com",
+      // Referrals endpoints disabled - will be re-enabled with working endpoint later
+      // referrals:
+      //   import.meta.env.VITE_API_BASE_REFERRALS ||
+      //   "https://referrals.edgevideo.com",
       studio:
         import.meta.env.VITE_API_BASE_STUDIO ||
         "https://studio-api.edgevideo.com",
@@ -18,12 +19,12 @@ class ApiClient {
   }
 
   async request(endpoint, options = {}) {
-    const { service = "referrals", ...fetchOptions } = options;
+    const { service = "studio", ...fetchOptions } = options;
     const baseUrl = this.baseUrls[service];
 
     if (!baseUrl) {
       throw new Error(
-        `Service '${service}' is not available - games endpoints disabled until live`
+        `Service '${service}' is not available - some endpoints disabled until live`
       );
     }
 
@@ -118,11 +119,11 @@ class ApiClient {
   }
 
   // Service-specific methods
-  async get(endpoint, service = "referrals") {
+  async get(endpoint, service = "studio") {
     return this.request(endpoint, { method: "GET", service });
   }
 
-  async post(endpoint, data, service = "referrals") {
+  async post(endpoint, data, service = "studio") {
     return this.request(endpoint, {
       method: "POST",
       body: JSON.stringify(data),
@@ -130,7 +131,7 @@ class ApiClient {
     });
   }
 
-  async put(endpoint, data, service = "referrals") {
+  async put(endpoint, data, service = "studio") {
     return this.request(endpoint, {
       method: "PUT",
       body: JSON.stringify(data),
@@ -138,7 +139,7 @@ class ApiClient {
     });
   }
 
-  async delete(endpoint, service = "referrals") {
+  async delete(endpoint, service = "studio") {
     return this.request(endpoint, { method: "DELETE", service });
   }
 }
