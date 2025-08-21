@@ -4,13 +4,6 @@
       "site": "edgevideo-production",
       "public": "dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "redirects": [
-        {
-          "source": "/",
-          "destination": "/app",
-          "type": 301
-        }
-      ],
       "rewrites": [
         {
           "source": "**",
@@ -59,13 +52,6 @@
       "site": "edgevideo-staging",
       "public": "dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "redirects": [
-        {
-          "source": "/",
-          "destination": "/app",
-          "type": 301
-        }
-      ],
       "rewrites": [
         {
           "source": "**",
