@@ -74,6 +74,13 @@ export default defineConfig(({ mode }) => {
       __BRANCH__: JSON.stringify(buildInfo.branch),
       __GA_ID__: JSON.stringify(GA_ID),
     },
+    resolve: {
+      alias: {
+        // Ensure React is properly resolved
+        react: "react",
+        "react-dom": "react-dom",
+      },
+    },
     build: {
       // Disable minification and enable source maps for staging
       minify: !isStaging,
