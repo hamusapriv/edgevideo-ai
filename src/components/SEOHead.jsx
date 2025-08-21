@@ -8,8 +8,8 @@ export default function SEOHead({
   title = "Edge Video AI - Shoppable TV & AI-Powered Interactive Video Streaming",
   description = "Revolutionary AI-powered shoppable TV platform that transforms passive video watching into interactive shopping experiences. Watch, scan QR codes, and shop directly from live streams.",
   keywords = "shoppable tv, interactive video, AI streaming, live shopping, video commerce, edge video ai, real-time shopping, video streaming, interactive tv, AI powered shopping",
-  image = "https://www.edgevideo.ai/assets/hero-image.png",
-  url = "https://www.edgevideo.ai/app",
+  image = "https://edgevideo.ai/assets/hero-image.png",
+  url = "https://edgevideo.ai/app",
   type = "website",
 }) {
   useEffect(() => {
@@ -70,7 +70,7 @@ export const seoConfigs = {
       "Revolutionary AI-powered shoppable TV platform that transforms passive video watching into interactive shopping experiences. Join 12 channels, 21,527 vendors, and 17+ million products.",
     keywords:
       "shoppable tv, interactive video, AI streaming, live shopping, video commerce, edge video ai",
-    url: "https://www.edgevideo.ai",
+    url: "https://edgevideo.ai",
   },
 
   app: {
@@ -79,7 +79,7 @@ export const seoConfigs = {
       "Experience the future of shopping with Edge Video AI. Watch live streams, discover products with AI, and shop directly from your favorite channels. Real-time interactive shopping made simple.",
     keywords:
       "live shopping app, interactive tv app, AI shopping, real-time product discovery, shoppable video",
-    url: "https://www.edgevideo.ai/app",
+    url: "https://edgevideo.ai/app",
   },
 
   channels: {
@@ -88,7 +88,7 @@ export const seoConfigs = {
       "Explore our network of shoppable TV channels featuring AI-powered product discovery. Watch, discover, and shop from 12 channels with millions of products available instantly.",
     keywords:
       "shoppable tv channels, interactive channels, AI powered channels, live shopping channels",
-    url: "https://www.edgevideo.ai/channels",
+    url: "https://edgevideo.ai/channels",
   },
 
   brands: {
@@ -97,7 +97,7 @@ export const seoConfigs = {
       "Discover thousands of brands and millions of products through AI-powered video recognition. Shop from 21,527+ verified vendors across multiple categories.",
     keywords:
       "brand marketplace, product discovery, AI shopping, verified vendors, online marketplace",
-    url: "https://www.edgevideo.ai/brands",
+    url: "https://edgevideo.ai/brands",
   },
 
   demo: {
@@ -106,7 +106,7 @@ export const seoConfigs = {
       "Experience how Edge Video AI transforms regular video content into interactive shopping experiences. See our AI technology identify products in real-time video streams.",
     keywords:
       "shoppable tv demo, AI product recognition demo, interactive video demo, live shopping demo",
-    url: "https://www.edgevideo.ai/demo",
+    url: "https://edgevideo.ai/demo",
   },
 
   privacy: {
@@ -115,7 +115,7 @@ export const seoConfigs = {
       "Learn how Edge Video AI protects your privacy and handles your data. Our commitment to transparency and user privacy in AI-powered video experiences.",
     keywords:
       "privacy policy, data protection, user privacy, Edge Video AI privacy",
-    url: "https://www.edgevideo.ai/privacy",
+    url: "https://edgevideo.ai/privacy",
   },
 
   terms: {
@@ -123,6 +123,6 @@ export const seoConfigs = {
     description:
       "Read our terms of service for using Edge Video AI's shoppable TV platform and interactive video experiences.",
     keywords: "terms of service, user agreement, Edge Video AI terms",
-    url: "https://www.edgevideo.ai/terms",
+    url: "https://edgevideo.ai/terms",
   },
 };
