@@ -10,7 +10,6 @@
           "destination": "/index.html"
         }
       ],
-      "predeploy": "npm run build",
       "headers": [
         {
           "source": "**/*.@(js|mjs)",
@@ -50,7 +49,6 @@
           "destination": "/index.html"
         }
       ],
-      "predeploy": "npm run build:staging",
       "headers": [
         {
           "source": "**/*.@(js|mjs)",

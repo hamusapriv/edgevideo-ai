@@ -11,18 +11,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
-      - run: npm ci
+          
+      # Cache node_modules for faster builds
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            
+      # Cache Vite build cache
+      - name: Cache Vite
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.vite
+          key: ${{ runner.os }}-vite-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vite-
+      
+      - run: npm ci --prefer-offline --no-audit --no-fund
       - run: npm run build:staging
-      - name: Setup Firebase CLI
-        run: npm install -g firebase-tools
+      
       - name: Deploy to Firebase Hosting (Staging)
         env:
           GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EDGEVIDEO_AI_8753A }}
         run: |
           echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > $GITHUB_WORKSPACE/firebase-service-account.json
           export GOOGLE_APPLICATION_CREDENTIALS=$GITHUB_WORKSPACE/firebase-service-account.json
-          firebase deploy --only hosting:edgevideo-staging --project edgevideo-ai-8753a --non-interactive
+          npx firebase-tools deploy --only hosting:edgevideo-staging --project edgevideo-ai-8753a --non-interactive

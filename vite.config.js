@@ -77,7 +77,9 @@ export default defineConfig(({ mode }) => {
     build: {
       // Disable minification and enable source maps for staging
       minify: !isStaging,
-      sourcemap: isStaging,
+      sourcemap: false, // Disable source maps for faster builds
+      // Increase chunk size warning limit to reduce warnings
+      chunkSizeWarningLimit: 1000,
       // Copy additional files to dist
       rollupOptions: {
         input: {
@@ -85,10 +87,28 @@ export default defineConfig(({ mode }) => {
         },
         output: {
           // Suppress Rollup warnings for external dependencies
-          manualChunks: {
-            vendor: ["react", "react-dom"],
-            three: ["three"],
-            wallet: ["@rainbow-me/rainbowkit", "@tanstack/react-query", "viem"],
+          manualChunks: (id) => {
+            // Better chunk splitting for faster builds
+            if (id.includes("node_modules")) {
+              if (id.includes("react") || id.includes("react-dom")) {
+                return "react-vendor";
+              }
+              if (id.includes("three")) {
+                return "three-vendor";
+              }
+              if (
+                id.includes("@rainbow-me") ||
+                id.includes("wagmi") ||
+                id.includes("viem")
+              ) {
+                return "wallet-vendor";
+              }
+              if (id.includes("framer-motion")) {
+                return "animation-vendor";
+              }
+              // Group all other vendor dependencies
+              return "vendor";
+            }
           },
           ...(isStaging && {
             // Keep readable chunk names in staging
@@ -105,6 +125,7 @@ export default defineConfig(({ mode }) => {
             return;
           if (warning.message?.includes("/*#__PURE__*/")) return;
           if (warning.message?.includes("ox/_esm")) return;
+          if (warning.code === "LARGE_BUNDLE") return; // Suppress large bundle warnings
           warn(warning);
         },
       },
