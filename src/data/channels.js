@@ -7,11 +7,7 @@ export const channels = [
     id: "2d192295-4e70-4187-a06d-55ecac2f9bf6",
     streamUrl: "https://atp-loop.edgevideo.ai/hls/stream.m3u8",
   },
-  {
-    name: "CW Networks",
-    id: "946027d4-367c-4f7d-90e4-4929638d60bc",
-    streamUrl: "https://cw-loop.edgevideo.ai/hls/stream.m3u8",
-  },
+
   {
     name: "Danger TV",
     id: "a1ba66f8-4540-444d-be98-bc5f761169c0",
