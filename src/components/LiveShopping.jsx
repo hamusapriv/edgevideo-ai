@@ -32,7 +32,7 @@ export default function LiveShopping() {
       isMobile: isMobile,
       isTouchDevice: isTouchDevice,
       layoutPreference: layoutPreference,
-      userAgent: navigator.userAgent
+      userAgent: navigator.userAgent,
     });
   }, [isMobile, isTouchDevice, layoutPreference]);
   const scrollRef = useRef(null);

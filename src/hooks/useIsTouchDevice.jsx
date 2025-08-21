@@ -6,21 +6,21 @@ export default function useIsTouchDevice() {
     if (typeof window === "undefined") return false;
 
     // Check for touch capability - be more conservative
-    const hasTouch = (
+    const hasTouch =
       "ontouchstart" in window ||
       navigator.maxTouchPoints > 0 ||
-      navigator.msMaxTouchPoints > 0
-    );
+      navigator.msMaxTouchPoints > 0;
 
     // Additional check: if it's clearly a desktop browser, prioritize that
-    const isDesktopBrowser = /Windows|Macintosh|Linux/.test(navigator.userAgent) && 
-                            !/Mobile|Android|iPhone|iPad/.test(navigator.userAgent);
-    
+    const isDesktopBrowser =
+      /Windows|Macintosh|Linux/.test(navigator.userAgent) &&
+      !/Mobile|Android|iPhone|iPad/.test(navigator.userAgent);
+
     console.log("🔍 Touch Detection:", {
       hasTouch,
       isDesktopBrowser,
       userAgent: navigator.userAgent,
-      finalResult: hasTouch && !isDesktopBrowser
+      finalResult: hasTouch && !isDesktopBrowser,
     });
 
     // Only consider it a touch device if it has touch AND isn't clearly a desktop
@@ -34,10 +34,11 @@ export default function useIsTouchDevice() {
         "ontouchstart" in window ||
         navigator.maxTouchPoints > 0 ||
         navigator.msMaxTouchPoints > 0;
-      
-      const isDesktopBrowser = /Windows|Macintosh|Linux/.test(navigator.userAgent) && 
-                              !/Mobile|Android|iPhone|iPad/.test(navigator.userAgent);
-      
+
+      const isDesktopBrowser =
+        /Windows|Macintosh|Linux/.test(navigator.userAgent) &&
+        !/Mobile|Android|iPhone|iPad/.test(navigator.userAgent);
+
       const finalResult = hasTouch && !isDesktopBrowser;
       setIsTouchDevice(finalResult);
     };
