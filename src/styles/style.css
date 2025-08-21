@@ -666,7 +666,7 @@ section {
 /* Quick Access Tab */
 .quick-access-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
   padding: 16px;
   max-width: 100%;
@@ -684,6 +684,16 @@ section {
   align-items: center;
   gap: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+@media (max-width: 436px) {
+  .quick-access-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+  .channel-card {
+    flex-direction: column;
+    padding: 12px;
+  }
 }
 
 .channel-card:hover {
@@ -707,10 +717,13 @@ section {
 .channel-logo-small {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .channel-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   flex: 1;
   min-width: 0;
 }
@@ -720,9 +733,10 @@ section {
   font-weight: 600;
   color: var(--text-primary, #ffffff);
   margin: 0 0 4px 0;
-  white-space: nowrap;
+  white-space: wrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: center;
 }
 
 .channel-type {
@@ -730,6 +744,7 @@ section {
   color: var(--text-secondary, #888);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-align: center;
 }
 
 .channel-card-arrow {
