@@ -2685,9 +2685,6 @@ h6,
 
 /* Mobile Touch Improvements */
 @media (max-width: 768px) {
-  .floating-container {
-    padding: 6px;
-  }
   .features-center {
     position: relative;
     z-index: -1;
