@@ -1,9 +1,6 @@
 import React, { forwardRef } from "react";
 import { useProducts } from "../contexts/ProductsContext";
-import {
-  handleImageErrorWithPlaceholder,
-  isValidImageUrl,
-} from "../utils/imageValidation";
+import { handleImageErrorWithPlaceholder } from "../utils/imageValidation";
 
 const FrameGallery = forwardRef(function FrameGallery(
   { selectedId, items },
@@ -21,7 +18,7 @@ const FrameGallery = forwardRef(function FrameGallery(
   return (
     <div className="ai-frame-gallery" ref={ref}>
       {frames.map((p) =>
-        p.back_image && isValidImageUrl(p.back_image) ? (
+        p.back_image ? (
           <div
             style={{ position: "relative" }}
             key={p.id}

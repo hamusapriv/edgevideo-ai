@@ -26,7 +26,6 @@ export function isValidImageUrl(imageUrl) {
   const errorPatterns = [
     "placeholder",
     "notfound",
-    "404",
     "error",
     "missing",
     "unavailable",
@@ -94,8 +93,7 @@ export function preloadImage(imageUrl) {
       // Check if the image is actually an error page by examining common error patterns
       if (
         img.currentSrc &&
-        (img.currentSrc.includes("404") ||
-          img.currentSrc.includes("error") ||
+        (img.currentSrc.includes("error") ||
           img.currentSrc.includes("notfound") ||
           img.currentSrc.includes("placeholder"))
       ) {
@@ -137,8 +135,6 @@ export async function validateProductImages(products) {
     return [];
   }
 
-  console.log(`🔍 Validating ${products.length} products for image quality...`);
-
   const validationPromises = products.map(async (product) => {
     if (!product.image) {
       console.warn(
@@ -149,9 +145,6 @@ export async function validateProductImages(products) {
 
     // Additional check for problematic image services
     if (isProblematicImageService(product.image)) {
-      console.warn(
-        `⚠️ Product ${product.id} uses potentially unreliable service, using thorough validation`
-      );
       const isValid = await validateImageThoroughly(product.image);
       if (!isValid) {
         console.warn(
@@ -159,7 +152,6 @@ export async function validateProductImages(products) {
         );
         return null;
       }
-      console.log(`✅ Product ${product.id} passed thorough validation`);
       return product;
     }
 
@@ -171,16 +163,19 @@ export async function validateProductImages(products) {
       return null;
     }
 
-    console.log(`✅ Product ${product.id} passed validation`);
     return product;
   });
 
   const results = await Promise.all(validationPromises);
   const validProducts = results.filter((product) => product !== null);
 
-  console.log(
-    `🔍 Validation complete: ${validProducts.length}/${products.length} products passed`
-  );
+  // Only log if there were failures
+  const failedCount = products.length - validProducts.length;
+  if (failedCount > 0) {
+    console.warn(
+      `🔍 Image validation: ${failedCount} products excluded due to invalid images`
+    );
+  }
 
   return validProducts;
 }
@@ -244,15 +239,7 @@ export function isProblematicImageService(imageUrl) {
     "cdn.productserve.com",
   ];
 
-  const isProblematic = problematicServices.some((service) =>
-    imageUrl.includes(service)
-  );
-
-  if (isProblematic) {
-    console.log(`🚨 Detected problematic image service in: ${imageUrl}`);
-  }
-
-  return isProblematic;
+  return problematicServices.some((service) => imageUrl.includes(service));
 }
 
 /**
@@ -267,10 +254,6 @@ export async function validateImageThoroughly(imageUrl) {
 
   // If it's from a problematic service, use stricter validation
   if (isProblematicImageService(imageUrl)) {
-    console.log(
-      `Using thorough validation for potentially problematic service: ${imageUrl}`
-    );
-
     try {
       // Try to fetch the image with a HEAD request first
       const response = await fetch(imageUrl, {

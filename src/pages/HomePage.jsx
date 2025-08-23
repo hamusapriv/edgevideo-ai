@@ -536,7 +536,13 @@ export default function HomePage() {
                         </div>
                       </div>
                       <div className="analysis-arrow">→</div>
-                      <div className="ai-query-visual">
+                      <div
+                        className="ai-query-visual"
+                        style={{
+                          height: window.innerWidth < 768 ? "90px" : "150px",
+                          overflow: "hidden",
+                        }}
+                      >
                         <div className="ai-query-text">
                           <span className="typing-text">{typedText}</span>
                         </div>
