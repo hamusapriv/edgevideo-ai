@@ -358,10 +358,10 @@ export function WalletProvider({ children }) {
       localStorage.removeItem("walletVerification");
     };
 
-    window.addEventListener("auth-user-logout", handleUserLogout);
+    window.addEventListener("auth-logout-completed", handleUserLogout);
 
     return () => {
-      window.removeEventListener("auth-user-logout", handleUserLogout);
+      window.removeEventListener("auth-logout-completed", handleUserLogout);
     };
   }, []);
 

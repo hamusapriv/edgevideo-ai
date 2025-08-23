@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import LikeButton from "./buttons/LikeButton";
 import DislikeButton from "./buttons/DislikeButton";
 import ShareButton from "./buttons/ShareButton";
@@ -6,6 +6,9 @@ import { FormatPrice } from "../legacy/modules/productsModule";
 import {
   handleImageErrorWithPlaceholder,
   isValidImageUrl,
+  validateImageThoroughly,
+  isProblematicImageService,
+  preloadImage,
 } from "../utils/imageValidation";
 import {
   applyProductTypeStyles,
@@ -23,10 +26,54 @@ export default function ProductCard({
   focused = false,
   extraClass = "",
   onMouseEnter,
+  onImageError = null,
 }) {
   const itemContainerRef = useRef(null);
+  const [imageLoadFailed, setImageLoadFailed] = useState(false);
+  const [imageValidated, setImageValidated] = useState(false);
 
   if (!product) return null;
+
+  // Validate image on component mount
+  useEffect(() => {
+    if (!product.image || !isValidImageUrl(product.image)) {
+      setImageLoadFailed(true);
+      if (onImageError) {
+        onImageError(product.id, "Invalid image URL");
+      }
+      return;
+    }
+
+    // Use thorough validation for problematic services, regular preload for others
+    const validationMethod = isProblematicImageService(product.image)
+      ? validateImageThoroughly
+      : preloadImage;
+
+    validationMethod(product.image)
+      .then((isValid) => {
+        if (!isValid) {
+          console.warn(
+            `Product ${product.id} image failed validation, hiding product`
+          );
+          setImageLoadFailed(true);
+          if (onImageError) {
+            onImageError(product.id, "Image failed to load");
+          }
+        } else {
+          setImageValidated(true);
+        }
+      })
+      .catch((error) => {
+        console.error(
+          `Error validating image for product ${product.id}:`,
+          error
+        );
+        setImageLoadFailed(true);
+        if (onImageError) {
+          onImageError(product.id, "Image validation error");
+        }
+      });
+  }, [product.image, product.id, onImageError]);
 
   // Apply product type styling when component mounts or product changes
   useEffect(() => {
@@ -92,16 +139,23 @@ export default function ProductCard({
 
   // Image error handlers using your utility
   const handleProductImageError = (e) => {
-    handleImageErrorWithPlaceholder(
-      e,
-      product.image,
-      "/assets/placeholder-image.svg" // Use local placeholder
-    );
+    console.warn(`Product ${product.id} image failed to load, hiding product`);
+    setImageLoadFailed(true);
+    if (onImageError) {
+      onImageError(product.id, "Image error in component");
+    }
+    // Hide the entire product card when image fails
+    e.target.style.display = "none";
   };
 
   const handleVendorImageError = (e) => {
     e.target.style.display = "none";
   };
+
+  // Don't render the product at all if image validation failed
+  if (imageLoadFailed) {
+    return null;
+  }
 
   // Determine the product type class for the main container
   const getProductTypeClass = () => {

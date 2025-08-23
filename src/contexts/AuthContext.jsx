@@ -116,7 +116,10 @@ export function AuthProvider({ children }) {
     };
 
     const handleLegacyLogout = () => {
-      logout();
+      // Prevent infinite loop by directly handling logout without calling logout()
+      localStorage.removeItem("authToken");
+      setUser(null);
+      setIsAuthLoading(false);
     };
 
     window.addEventListener("auth-user-login", handleLegacyLogin);
@@ -162,8 +165,9 @@ export function AuthProvider({ children }) {
     setUser(null);
     setIsAuthLoading(false);
 
-    // Dispatch event to notify other components that user has logged out
-    window.dispatchEvent(new CustomEvent("auth-user-logout"));
+    // Only dispatch event for external components, not legacy handlers to prevent loops
+    // Use a different event name to avoid triggering handleLegacyLogout
+    window.dispatchEvent(new CustomEvent("auth-logout-completed"));
   }
 
   return (

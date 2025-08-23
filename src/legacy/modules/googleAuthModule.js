@@ -143,7 +143,7 @@ async function showLoggedInState(currentToken, fetchVotedProducts) {
 export function showLoggedOutState() {
   // CONSOLIDATED: Dispatch event for React AuthContext to handle logout
   if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent("auth-user-logout"));
+    window.dispatchEvent(new CustomEvent("auth-logout-completed"));
   }
 
   if (signInButton) {

@@ -10,10 +10,14 @@ import useIsTouchDevice from "../hooks/useIsTouchDevice";
 import useLayoutPreference from "../hooks/useLayoutPreference";
 import AIStatusDisplay from "./AIStatusDisplay";
 import SafeComponent from "./SafeComponent";
-import { preloadImages, validateProductImages } from "../utils/imageValidation";
+import {
+  preloadImages,
+  validateProductImages,
+  validateImageThoroughly,
+} from "../utils/imageValidation";
 
 export default function LiveShopping() {
-  const { products, addProduct } = useProducts();
+  const { products, addProduct, removeProduct } = useProducts();
   const { setShoppingAIStatus } = useAIStatus();
   const { processProductWithAIStatus } = useProductAIStatus(
     setShoppingAIStatus
@@ -25,6 +29,42 @@ export default function LiveShopping() {
   const isMobile = useIsMobile(); // For CSS styling (hover capability)
   const isTouchDevice = useIsTouchDevice(); // For touch behavior (scroll-to-focus)
   const layoutPreference = useLayoutPreference(); // For UI layout decisions
+
+  // Handle image errors by removing products from display
+  const handleProductImageError = useCallback(
+    (productId, reason) => {
+      console.warn(
+        `Removing product ${productId} from Live Shopping due to image error: ${reason}`
+      );
+
+      // Remove from display products
+      setDisplayProducts((prev) => {
+        const updated = prev.map((p) =>
+          p.id === productId ? { ...p, _status: "exit" } : p
+        );
+        // Schedule removal after animation
+        setTimeout(() => {
+          setDisplayProducts((curr) => curr.filter((p) => p.id !== productId));
+        }, 500);
+        return updated;
+      });
+
+      // Remove from products context
+      removeProduct(productId);
+
+      // Update selected ID if the removed product was selected
+      setSelectedId((currentId) => {
+        if (String(currentId) === String(productId)) {
+          const remainingProducts = products.filter((p) => p.id !== productId);
+          return remainingProducts.length > 0
+            ? String(remainingProducts[0].id)
+            : null;
+        }
+        return currentId;
+      });
+    },
+    [removeProduct, products]
+  );
 
   // Debug logging
   useEffect(() => {
@@ -323,6 +363,7 @@ export default function LiveShopping() {
               focused={String(selectedId) === String(p.id)}
               extraClass={p._status}
               onMouseEnter={isMobile ? undefined : () => handleHover(p)}
+              onImageError={handleProductImageError}
             />
           ))}
         </div>

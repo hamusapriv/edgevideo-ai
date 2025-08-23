@@ -12,6 +12,7 @@ import React, {
 const ProductsContext = createContext({
   products: [],
   addProduct: () => {},
+  removeProduct: () => {},
 });
 
 export function ProductsProvider({ children }) {
@@ -24,6 +25,10 @@ export function ProductsProvider({ children }) {
       const next = [...prev, product];
       return next.slice(-10);
     });
+  }, []);
+
+  const removeProduct = useCallback((productId) => {
+    setProducts((prev) => prev.filter((p) => p.id !== productId));
   }, []);
 
   // CONSOLIDATED: Listen for legacy product events to unify data flow
@@ -43,7 +48,7 @@ export function ProductsProvider({ children }) {
   }, [addProduct]);
 
   return (
-    <ProductsContext.Provider value={{ products, addProduct }}>
+    <ProductsContext.Provider value={{ products, addProduct, removeProduct }}>
       {children}
     </ProductsContext.Provider>
   );
