@@ -65,6 +65,27 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    server: {
+      port: 5173,
+      strictPort: true, // Fail if port 5173 is not available
+      host: true, // Listen on all local IPs
+    },
+    configureServer(server) {
+      // Add middleware to handle Coinbase Wallet HEAD requests
+      server.middlewares.use("/app", (req, res, next) => {
+        if (req.method === "HEAD") {
+          // Handle HEAD request for Coinbase Wallet COOP check
+          res.writeHead(200, {
+            "Content-Type": "text/html",
+            "Cross-Origin-Opener-Policy": "same-origin",
+            "Cross-Origin-Embedder-Policy": "require-corp",
+          });
+          res.end();
+          return;
+        }
+        next();
+      });
+    },
     define: {
       __COMMIT_HASH__: JSON.stringify(
         process.env.COMMIT_HASH || buildInfo.commitHash
