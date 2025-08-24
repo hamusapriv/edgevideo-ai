@@ -179,4 +179,24 @@
   .ai-frame-gallery::-webkit-scrollbar {
     display: none;
   }
+
+  /* Desktop styles for cached products */
+  .cached-products-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .cached-product-item .item-container {
+    height: 120px;
+    max-height: 120px;
+  }
+
+  .cached-product-item .live-image-container {
+    width: 80px;
+    height: 80px;
+  }
+
+  .cached-products-scroll-container {
+    max-height: 500px;
+  }
 }

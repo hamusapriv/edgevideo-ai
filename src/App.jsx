@@ -30,6 +30,7 @@ const BrandsPage = lazy(() => import("./pages/BrandsPage"));
 const ViewersPage = lazy(() => import("./pages/ViewersPage"));
 const CookieSettingsPage = lazy(() => import("./pages/CookieSettingsPage"));
 const SandboxPage = lazy(() => import("./pages/SandboxPage"));
+import BuildInfo from "./components/BuildInfo";
 
 // OAuth callback
 import OAuthCallback from "./auth/OAuthCallback";
@@ -121,6 +122,7 @@ export default function App() {
       </Suspense>
 
       <CookieConsent />
+      <BuildInfo />
     </MarketingThemeProvider>
   );
 }

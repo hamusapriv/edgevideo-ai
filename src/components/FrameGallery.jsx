@@ -36,7 +36,6 @@ const FrameGallery = forwardRef(function FrameGallery(
                 height: "90px",
                 objectFit: "contain",
               }}
-              key={p.id}
               src={p.back_image}
               alt={`Frame for ${p.title}`}
               onError={(e) => handleFrameImageError(e, p.back_image)}

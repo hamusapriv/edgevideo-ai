@@ -176,65 +176,8 @@ function SetShoppingAIStatus(messageText) {
   }
 }
 
-async function getCachedProducts() {
-  const channelId = getChannelId();
-
-  if (typeof channelId !== "undefined" && channelId !== null) {
-    try {
-      let cachedProductResponse = await fetch(
-        `https://fastapi.edgevideo.ai/product_search/recent_products/${channelId}/1`
-      );
-
-      if (!cachedProductResponse.ok) {
-        console.error(
-          "[DOM DEBUG] API response not ok:",
-          cachedProductResponse.status
-        );
-        return;
-      }
-
-      let cachedProductData = await cachedProductResponse.json();
-
-      // Check if data is iterable before trying to iterate
-      if (!Array.isArray(cachedProductData)) {
-        console.error(
-          "[DOM DEBUG] cachedProductData is not an array:",
-          cachedProductData
-        );
-        // Try to handle different response formats
-        if (cachedProductData && typeof cachedProductData === "object") {
-          if (
-            cachedProductData.products &&
-            Array.isArray(cachedProductData.products)
-          ) {
-            cachedProductData = cachedProductData.products;
-          } else if (
-            cachedProductData.data &&
-            Array.isArray(cachedProductData.data)
-          ) {
-            cachedProductData = cachedProductData.data;
-          } else {
-            console.error("[DOM DEBUG] No valid array found in response");
-            return;
-          }
-        } else {
-          console.error("[DOM DEBUG] Response is not a valid object");
-          return;
-        }
-      }
-
-      for (let cachedProduct of cachedProductData) {
-        addToProductDataQueue(cachedProduct);
-      }
-
-      processProductDataQueue();
-    } catch (error) {
-      console.error("[DOM DEBUG] Error in getCachedProducts:", error);
-    }
-  } else {
-    // Don't retry if there's no channel - this is expected for demo page without selection
-  }
-}
+// REMOVED: getCachedProducts function - now handled by React ProductsContext
+// The cached products are loaded via infinite scroll in the React components
 
 function initializeWebSocket() {
   // Get current channel ID dynamically
@@ -500,7 +443,7 @@ let channelChangeListenerAdded = false;
 
 export function initProductsFeature() {
   initializeWebSocket();
-  getCachedProducts();
+  // REMOVED: getCachedProducts() - now handled by React ProductsContext
 
   // Add channel change listener only once
   if (!channelChangeListenerAdded) {
@@ -513,7 +456,7 @@ export function initProductsFeature() {
 
         // Reconnect WebSocket for new channel
         initializeWebSocket();
-        getCachedProducts();
+        // REMOVED: getCachedProducts() - now handled by React ProductsContext
       } else {
         // Clear products when channel is cleared
         clearProducts();
