@@ -609,7 +609,7 @@ export default function LiveShopping() {
             (p) => !displayProducts.some((live) => live.id === p.id)
           ).length > 0 && (
             <div className="recently-matched-separator">
-              ----- Recently Matched -------
+              <div className="separator-text">Recently Matched</div>
             </div>
           )}
 

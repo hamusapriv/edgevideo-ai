@@ -24,11 +24,13 @@ export function ProductsProvider({ children }) {
   const [products, setProducts] = useState([]);
   const [cachedProducts, setCachedProducts] = useState([]);
   const [cachedProductsLoading, setCachedProductsLoading] = useState(false);
-  const [cachedProductsPage, setCachedProductsPage] = useState(1);
   const [hasMoreCachedProducts, setHasMoreCachedProducts] = useState(true);
   const [cachedProductsInitialized, setCachedProductsInitialized] = useState(
     false
   );
+  // Pre-fetched cached products pool (for serving one by one)
+  const [preFetchedPool, setPreFetchedPool] = useState([]);
+  const [poolInitialized, setPoolInitialized] = useState(false);
 
   const addProduct = useCallback((product) => {
     if (!product) return;
@@ -43,31 +45,34 @@ export function ProductsProvider({ children }) {
     setProducts((prev) => prev.filter((p) => p.id !== productId));
   }, []);
 
-  // Load cached products using the same API as screen.js getCachedProducts
-  const loadMoreCachedProducts = useCallback(async () => {
-    if (cachedProductsLoading || !hasMoreCachedProducts) return;
+  // Pre-fetch 50 cached products on page load for serving one by one
+  const preFetchCachedProducts = useCallback(async () => {
+    if (poolInitialized) return;
 
     const channelId = getChannelId();
     if (!channelId) {
-      console.warn("No channel ID available for cached products");
+      console.warn("No channel ID available for pre-fetching");
       return;
     }
 
-    setCachedProductsLoading(true);
+    console.log(
+      "🚀 Pre-fetching cached products from page 50 for one-by-one serving..."
+    );
 
     try {
+      // Fetch page 50 directly - should contain ~50 products in one call
       const response = await fetch(
-        `https://fastapi.edgevideo.ai/product_search/recent_products/${channelId}/${cachedProductsPage}`
+        `https://fastapi.edgevideo.ai/product_search/recent_products/${channelId}/50`
       );
 
       if (!response.ok) {
-        console.error("Cached products API response not ok:", response.status);
+        console.error("Pre-fetch API response not ok:", response.status);
         return;
       }
 
       let cachedProductData = await response.json();
 
-      // Handle different response formats (same logic as screen.js)
+      // Handle different response formats
       if (!Array.isArray(cachedProductData)) {
         if (cachedProductData && typeof cachedProductData === "object") {
           if (
@@ -81,39 +86,113 @@ export function ProductsProvider({ children }) {
           ) {
             cachedProductData = cachedProductData.data;
           } else {
-            console.error("No valid array found in cached products response");
+            console.error("No valid array found in pre-fetch response");
             return;
           }
         } else {
-          console.error("Cached products response is not a valid object");
+          console.error("Pre-fetch response is not a valid object");
           return;
         }
       }
 
       if (cachedProductData.length === 0) {
-        // No more products available
+        console.log("� No cached products returned from page 50");
         setHasMoreCachedProducts(false);
-      } else {
-        // Filter out products that already exist to prevent duplicates
-        setCachedProducts((prev) => {
-          const existingIds = new Set(prev.map((p) => p.id));
-          const newProducts = cachedProductData.filter(
-            (product) => !existingIds.has(product.id)
-          );
-          return [...prev, ...newProducts];
-        });
-        setCachedProductsPage((prev) => prev + 1);
+        return;
+      }
+
+      // Sort by time (newest first for serving)
+      cachedProductData.sort((a, b) => {
+        const timeA = a.time || 0;
+        const timeB = b.time || 0;
+        return timeB - timeA; // newest first
+      });
+
+      setPreFetchedPool(cachedProductData);
+      setPoolInitialized(true);
+
+      console.log(
+        `🎯 Pre-fetch complete: ${cachedProductData.length} products ready for one-by-one serving`
+      );
+      console.log(
+        `📊 Time range: newest = ${cachedProductData[0]?.time}, oldest = ${
+          cachedProductData[cachedProductData.length - 1]?.time
+        }`
+      );
+    } catch (error) {
+      console.error("Error during pre-fetch:", error);
+    }
+  }, [poolInitialized]);
+
+  // Load one cached product at a time from pre-fetched pool
+  // Load one cached product at a time from pre-fetched pool
+  const loadMoreCachedProducts = useCallback(async () => {
+    if (cachedProductsLoading || !hasMoreCachedProducts) return;
+
+    // Initialize pre-fetch pool if not done yet
+    if (!poolInitialized) {
+      await preFetchCachedProducts();
+      return;
+    }
+
+    setCachedProductsLoading(true);
+
+    try {
+      // Filter pool to exclude live products and already added cached products
+      const existingCachedIds = new Set(cachedProducts.map((p) => p.id));
+      const liveProductIds = new Set(products.map((p) => p.id));
+
+      const availableProducts = preFetchedPool.filter(
+        (product) =>
+          !existingCachedIds.has(product.id) && !liveProductIds.has(product.id)
+      );
+
+      if (availableProducts.length === 0) {
+        console.log("📭 No more cached products available from pool");
+        setHasMoreCachedProducts(false);
+        return;
+      }
+
+      // Get the newest available product (first in sorted array)
+      const nextProduct = availableProducts[0];
+
+      // Add one product to cached products
+      setCachedProducts((prev) => [...prev, nextProduct]);
+
+      console.log(
+        `➕ Added cached product from pool: ${nextProduct.title ||
+          nextProduct.id}`
+      );
+      console.log(
+        `📊 Product time: ${
+          nextProduct.time
+        }, Products remaining in pool: ${availableProducts.length - 1}`
+      );
+
+      // Check if we have more products left
+      if (availableProducts.length <= 1) {
+        console.log("📭 Pool exhausted, no more cached products available");
+        setHasMoreCachedProducts(false);
       }
     } catch (error) {
-      console.error("Error loading cached products:", error);
+      console.error("Error loading cached product from pool:", error);
     } finally {
       setCachedProductsLoading(false);
     }
-  }, [cachedProductsLoading, hasMoreCachedProducts, cachedProductsPage]);
+  }, [
+    cachedProductsLoading,
+    hasMoreCachedProducts,
+    poolInitialized,
+    preFetchedPool,
+    cachedProducts,
+    products,
+    preFetchCachedProducts,
+  ]);
 
-  // REMOVED: Automatic cached products loading on page load
-  // Cached products should only load when user scrolls down or manually triggered
-  // This prevents cached products from appearing before live products
+  // Pre-fetch cached products on page load
+  useEffect(() => {
+    preFetchCachedProducts();
+  }, [preFetchCachedProducts]);
 
   // CONSOLIDATED: Listen for legacy product events to unify data flow
   useEffect(() => {
