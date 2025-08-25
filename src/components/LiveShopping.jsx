@@ -587,9 +587,24 @@ export default function LiveShopping() {
         items={allProducts}
       />
       <div id="absolute-container" ref={scrollRef}>
+        {" "}
         <SafeComponent fallback="AI Status Loading...">
           <AIStatusDisplay />
-        </SafeComponent>
+        </SafeComponent>{" "}
+        <div
+          className="recently-matched-separator live-separator scroll-to-top-btn"
+          onClick={() => {
+            const container = scrollRef.current;
+            if (container) {
+              container.scrollTo({
+                top: 0,
+                behavior: "smooth",
+              });
+            }
+          }}
+        >
+          <div className="separator-text">Live Now</div>
+        </div>
         <div id="itemContent" ref={beltRef} style={{ display: "flex" }}>
           {/* Live Products */}
           {displayProducts.map((p) => (
@@ -603,113 +618,116 @@ export default function LiveShopping() {
               onImageError={handleProductImageError}
             />
           ))}
+          <div>
+            {/* Recently Matched Separator - only show if there are cached products and no duplicates */}
+            {cachedProducts.filter(
+              (p) => !displayProducts.some((live) => live.id === p.id)
+            ).length > 0 && (
+              <div className="recently-matched-separator">
+                <div className="separator-text">Recently Matched</div>
+              </div>
+            )}
 
-          {/* Recently Matched Separator - only show if there are cached products and no duplicates */}
-          {cachedProducts.filter(
-            (p) => !displayProducts.some((live) => live.id === p.id)
-          ).length > 0 && (
-            <div className="recently-matched-separator">
-              <div className="separator-text">Recently Matched</div>
-            </div>
-          )}
+            {/* Cached Products (excluding duplicates of live products) */}
+            {cachedProducts
+              .filter((p) => !displayProducts.some((live) => live.id === p.id))
+              .map((p) => (
+                <ProductCard
+                  key={`cached-${p.id}`}
+                  product={p}
+                  showDetails={true}
+                  focused={String(selectedId) === String(p.id)}
+                  extraClass="cached-product"
+                  onMouseEnter={isMobile ? undefined : () => handleHover(p)}
+                />
+              ))}
 
-          {/* Cached Products (excluding duplicates of live products) */}
-          {cachedProducts
-            .filter((p) => !displayProducts.some((live) => live.id === p.id))
-            .map((p) => (
-              <ProductCard
-                key={`cached-${p.id}`}
-                product={p}
-                showDetails={true}
-                focused={String(selectedId) === String(p.id)}
-                extraClass="cached-product"
-                onMouseEnter={isMobile ? undefined : () => handleHover(p)}
-              />
-            ))}
-
-          {/* Pull-to-load indicator for cached products */}
-          {hasMoreCachedProducts && (
-            <div
-              ref={pullIndicatorRef}
-              className={`pull-to-load-indicator ${pullToLoadState}`}
-            >
-              <div className="pull-to-load-progress">
-                <svg
-                  width="60"
-                  height="60"
-                  viewBox="0 0 60 60"
-                  className="progress-circle"
-                >
-                  {/* Background circle */}
-                  <circle
-                    cx="30"
-                    cy="30"
-                    r="25"
-                    stroke="rgba(255, 255, 255, 0.2)"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  {/* Progress circle */}
-                  <circle
-                    cx="30"
-                    cy="30"
-                    r="25"
-                    stroke={
-                      pullToLoadState === "loading"
-                        ? "rgba(76, 175, 80, 1)"
-                        : "rgba(76, 175, 80, 0.8)"
-                    }
-                    strokeWidth="4"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeDasharray={`${2 * Math.PI * 25}`}
-                    strokeDashoffset={`${2 *
-                      Math.PI *
-                      25 *
-                      (1 - loadProgress / 100)}`}
-                    className={pullToLoadState === "loading" ? "rotating" : ""}
-                    style={{
-                      transition:
-                        pullToLoadState === "loading"
-                          ? "none"
-                          : "stroke-dashoffset 0.1s ease-out",
-                      transformOrigin: "50% 50%",
-                      transform: "rotate(-90deg)",
-                    }}
-                  />
-                  {/* Center icon */}
-                  <text
-                    x="30"
-                    y="36"
-                    textAnchor="middle"
-                    fontSize="20"
-                    fill={
-                      pullToLoadState === "loading"
-                        ? "rgba(76, 175, 80, 1)"
-                        : "rgba(255, 255, 255, 0.8)"
-                    }
+            {/* Pull-to-load indicator for cached products */}
+            {hasMoreCachedProducts && (
+              <div
+                ref={pullIndicatorRef}
+                className={`pull-to-load-indicator ${pullToLoadState}`}
+              >
+                <div className="pull-to-load-progress">
+                  <svg
+                    width="60"
+                    height="60"
+                    viewBox="0 0 60 60"
+                    className="progress-circle"
                   >
-                    {pullToLoadState === "loading" ? "⟳" : "↓"}
-                  </text>
-                </svg>
+                    {/* Background circle */}
+                    <circle
+                      cx="30"
+                      cy="30"
+                      r="25"
+                      stroke="rgba(255, 255, 255, 0.2)"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    {/* Progress circle */}
+                    <circle
+                      cx="30"
+                      cy="30"
+                      r="25"
+                      stroke={
+                        pullToLoadState === "loading"
+                          ? "rgba(76, 175, 80, 1)"
+                          : "rgba(76, 175, 80, 0.8)"
+                      }
+                      strokeWidth="4"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeDasharray={`${2 * Math.PI * 25}`}
+                      strokeDashoffset={`${2 *
+                        Math.PI *
+                        25 *
+                        (1 - loadProgress / 100)}`}
+                      className={
+                        pullToLoadState === "loading" ? "rotating" : ""
+                      }
+                      style={{
+                        transition:
+                          pullToLoadState === "loading"
+                            ? "none"
+                            : "stroke-dashoffset 0.1s ease-out",
+                        transformOrigin: "50% 50%",
+                        transform: "rotate(-90deg)",
+                      }}
+                    />
+                    {/* Center icon */}
+                    <text
+                      x="30"
+                      y="36"
+                      textAnchor="middle"
+                      fontSize="20"
+                      fill={
+                        pullToLoadState === "loading"
+                          ? "rgba(76, 175, 80, 1)"
+                          : "rgba(255, 255, 255, 0.8)"
+                      }
+                    >
+                      {pullToLoadState === "loading" ? "⟳" : "↓"}
+                    </text>
+                  </svg>
+                </div>
+                <div className="pull-to-load-text">
+                  {pullToLoadState === "loading"
+                    ? "Loading more..."
+                    : `${loadProgress}% - Scroll to load more`}
+                </div>
               </div>
-              <div className="pull-to-load-text">
-                {pullToLoadState === "loading"
-                  ? "Loading more..."
-                  : `${loadProgress}% - Scroll to load more`}
-              </div>
-            </div>
-          )}
+            )}
 
-          {/* Legacy loading indicator - keep for other loading states */}
-          {cachedProductsLoading && pullToLoadState === "hidden" && (
-            <div className="item-container cached-loading">
-              <div className="loading-spinner"></div>
-              <div className="card-details">
-                <div className="loading-text">Loading more...</div>
+            {/* Legacy loading indicator - keep for other loading states */}
+            {cachedProductsLoading && pullToLoadState === "hidden" && (
+              <div className="item-container cached-loading">
+                <div className="loading-spinner"></div>
+                <div className="card-details">
+                  <div className="loading-text">Loading more...</div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 

@@ -425,10 +425,9 @@ section {
   flex-direction: column;
   align-items: center;
 
-  justify-content: flex-start;
-  position: relative;
+  justify-content: flex-start; /* 
+  position: relative; */
   min-width: 0;
-  width: 100%;
   gap: 10px;
   min-height: 110%;
 }
@@ -893,9 +892,51 @@ section {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin: 24px 16px;
+  margin: 0 auto;
   padding: 0;
-  position: relative;
+  position: sticky;
+  top: 70px;
+  z-index: 20;
+}
+
+.live-separator {
+  top: 35px;
+}
+
+/* Scroll-to-top button styling */
+.scroll-to-top-btn {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.scroll-to-top-btn:hover {
+  transform: translateY(-2px);
+}
+
+.scroll-to-top-btn:hover .separator-text {
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.scroll-to-top-btn:active {
+  transform: translateY(0px);
+  transition: transform 0.1s ease;
+}
+
+.scroll-to-top-btn::before {
+  transition: all 0.2s ease;
+}
+
+.scroll-to-top-btn:hover::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 10%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.2) 90%,
+    transparent 100%
+  );
 }
 
 .recently-matched-separator::before {
@@ -942,7 +983,7 @@ section {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin: 0 16px;
+  margin: 0 auto;
   color: rgba(255, 255, 255, 0.6);
   font-size: 11px;
   text-align: center;
