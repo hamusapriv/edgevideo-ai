@@ -267,7 +267,7 @@ class RainbowKitWalletService {
   async getLinkedWallet() {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
-      return { walletAddress: null };
+      return { walletAddress: null, walletAddresses: [] };
     }
 
     try {
@@ -283,10 +283,28 @@ class RainbowKitWalletService {
         throw new Error(`Failed to get linked wallet: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+
+      // Handle both old single wallet format and new array format
+      if (data.walletAddresses && Array.isArray(data.walletAddresses)) {
+        // New array format from CTO's backend
+        return {
+          walletAddress: data.walletAddresses[0] || null, // Backward compatibility
+          walletAddresses: data.walletAddresses,
+        };
+      } else if (data.walletAddress) {
+        // Old single wallet format - convert to array format
+        return {
+          walletAddress: data.walletAddress,
+          walletAddresses: [data.walletAddress],
+        };
+      } else {
+        // No wallets linked
+        return { walletAddress: null, walletAddresses: [] };
+      }
     } catch (error) {
       console.error("Failed to get linked wallet:", error);
-      return { walletAddress: null };
+      return { walletAddress: null, walletAddresses: [] };
     }
   }
 
@@ -387,15 +405,22 @@ class RainbowKitWalletService {
       const linkedWallet = await this.getLinkedWallet();
       const account = getAccount(wagmiConfig);
 
-      // Normalize addresses to lowercase for comparison
+      // Handle both array and single address formats
+      const walletAddresses = linkedWallet.walletAddresses || [];
       const linkedAddress = linkedWallet.walletAddress?.toLowerCase();
       const currentAddress = account.address?.toLowerCase();
 
+      // Check if current wallet is in the array of linked addresses
+      const isCurrentWalletLinked = walletAddresses.some(
+        (addr) => addr?.toLowerCase() === currentAddress
+      );
+
       return {
-        isLinked: !!linkedWallet.walletAddress,
-        linkedAddress: linkedWallet.walletAddress,
+        isLinked: walletAddresses.length > 0,
+        linkedAddress: linkedWallet.walletAddress, // Primary address for backward compatibility
+        linkedAddresses: walletAddresses, // All linked addresses
         currentAddress: account.address,
-        isCurrentWalletLinked: linkedAddress === currentAddress,
+        isCurrentWalletLinked: isCurrentWalletLinked,
         blockReason: linkedWallet.blockReason || null,
       };
     } catch (error) {
@@ -403,6 +428,7 @@ class RainbowKitWalletService {
       return {
         isLinked: false,
         linkedAddress: null,
+        linkedAddresses: [],
         currentAddress: getAccount(wagmiConfig).address,
         isCurrentWalletLinked: false,
         blockReason: null,

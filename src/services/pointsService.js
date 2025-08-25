@@ -1,6 +1,9 @@
 // Points Service - Handle points balance and spending
 // Based on legacy main.js implementation
 
+// Configuration
+const API_BASE_URL = "https://fastapi.edgevideo.ai";
+
 class PointsService {
   constructor() {
     this.pointsBalance = 0;
@@ -10,6 +13,16 @@ class PointsService {
     this.channelId = null;
     this.userEmail = null;
     this.isCheckingIn = false; // Prevent multiple simultaneous check-ins
+  }
+
+  /**
+   * Get the auth token for API calls
+   * @returns {string|null} Auth token from localStorage
+   */
+  getAuthToken() {
+    return (
+      localStorage.getItem("authToken") || localStorage.getItem("access_token")
+    );
   }
 
   // Get current points balance
@@ -25,27 +38,20 @@ class PointsService {
         return 0;
       }
 
-      // Get auth token from localStorage (assuming it's stored there)
-      const token =
-        localStorage.getItem("authToken") ||
-        localStorage.getItem("access_token");
+      // Get auth token using the standard method
+      const token = this.getAuthToken();
       if (!token) {
         console.warn("No auth token available for points API");
         return this.pointsBalance;
       }
 
       try {
-        const response = await fetch(
-          `https://fastapi.edgevideo.ai/points/get?user_email=${encodeURIComponent(
-            this.userEmail
-          )}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`${API_BASE_URL}/points/get`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => null);
@@ -106,27 +112,19 @@ class PointsService {
         return null;
       }
 
-      const token =
-        localStorage.getItem("authToken") ||
-        localStorage.getItem("access_token");
+      const token = this.getAuthToken();
       if (!token) {
         console.debug("No auth token available for check-in status");
         return null;
       }
 
       // First try the points GET endpoint
-      const response = await fetch(
-        `https://fastapi.edgevideo.ai/points/get?user_email=${encodeURIComponent(
-          this.userEmail
-        )}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
+      const response = await fetch(`${API_BASE_URL}/points/get`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       if (!response.ok) {
         console.warn(`Check-in status API failed: ${response.status}`);
         return null;
@@ -208,28 +206,20 @@ class PointsService {
         return { canCheckin: false, reason: "No user email" };
       }
 
-      const token =
-        localStorage.getItem("authToken") ||
-        localStorage.getItem("access_token");
+      const token = await this.getAuthToken();
       if (!token) {
         return { canCheckin: false, reason: "No auth token" };
       }
 
       // We'll test by making the actual check-in request
       // If it fails with "Already checked in", we know the status
-      const response = await fetch(
-        "https://fastapi.edgevideo.ai/points/checkin",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user_email: this.userEmail,
-          }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/points/checkin`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       const data = await response.json();
       console.log("Check-in test response:", data, "Status:", response.status);
@@ -610,8 +600,7 @@ class PointsService {
       return;
     }
 
-    const token =
-      localStorage.getItem("authToken") || localStorage.getItem("access_token");
+    const token = await this.getAuthToken();
     if (!token) {
       console.log("❌ No auth token available for API testing");
       return;
@@ -623,18 +612,13 @@ class PointsService {
     try {
       // Test GET /points
       console.log("\n📊 Testing GET /points:");
-      const pointsResponse = await fetch(
-        `https://fastapi.edgevideo.ai/points/get?user_email=${encodeURIComponent(
-          this.userEmail
-        )}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const pointsResponse = await fetch(`${API_BASE_URL}/points/get`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (pointsResponse.ok) {
         const pointsData = await pointsResponse.json();
@@ -646,17 +630,13 @@ class PointsService {
 
       // Test POST /checkin (this will either work or show "already checked in")
       console.log("\n📅 Testing POST /checkin:");
-      const checkinResponse = await fetch(
-        "https://fastapi.edgevideo.ai/points/checkin",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_email: this.userEmail }),
-        }
-      );
+      const checkinResponse = await fetch(`${API_BASE_URL}/points/checkin`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       const checkinData = await checkinResponse.json();
       console.log("POST /checkin response:", checkinData);
