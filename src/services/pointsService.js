@@ -222,28 +222,10 @@ class PointsService {
       });
 
       const data = await response.json();
-      console.log("Check-in test response:", data, "Status:", response.status);
-
-      // Log what fields are available in check-in response
-      if (data) {
-        console.log("Check-in response fields:", Object.keys(data));
-        if (data.error) {
-          console.log("Error response - available fields:", Object.keys(data));
-        } else {
-          console.log("Success response fields:", {
-            points: data.points,
-            reward: data.reward,
-            streak: data.streak,
-            days: data.days,
-            total_points: data.total_points,
-            message: data.message,
-          });
-        }
-      }
 
       if (!response.ok) {
         if (data.error && data.error.includes("Already checked in")) {
-          console.log("Already checked in response data:", data);
+          console.log("✅ Already checked in today - status confirmed");
           return {
             canCheckin: false,
             reason: "Already checked in today",
@@ -315,10 +297,10 @@ class PointsService {
       const availabilityTest = await this.testCheckinAvailability();
 
       if (!availabilityTest.canCheckin) {
-        console.log(`Check-in not available: ${availabilityTest.reason}`);
-
-        // If already checked in, update local state
+        // If already checked in, this is normal - not an error
         if (availabilityTest.alreadyCheckedIn) {
+          console.log("✅ Already checked in today - user is up to date");
+
           const today = new Date().toISOString().split("T")[0];
           localStorage.setItem("lastDailyCheckin", today);
 
@@ -341,6 +323,9 @@ class PointsService {
             },
           });
           window.dispatchEvent(event);
+        } else {
+          // Other reasons like wallet requirement - these are actual issues
+          console.log(`Check-in not available: ${availabilityTest.reason}`);
         }
 
         return null;
@@ -355,8 +340,8 @@ class PointsService {
         // Mark as checked in
         localStorage.setItem("lastDailyCheckin", today);
 
-        // Store the streak from the API response (using 'days' field)
-        const streakValue = data.days || data.streak || 1;
+        // Store the streak from the API response (using 'days' field from CTO's backend)
+        const streakValue = data.days || 1;
         localStorage.setItem("dailyCheckinStreak", streakValue.toString());
 
         // Update points
@@ -365,9 +350,10 @@ class PointsService {
         // Emit event for UI components
         const event = new CustomEvent("dailyCheckinReward", {
           detail: {
-            days: streakValue,
-            value: data.reward || data.points || 10,
-            total: data.points || data.total_points || data.total || 10,
+            days: data.days || streakValue, // Use backend 'days' field
+            value: data.value || 100, // Use backend 'value' field
+            total: data.total, // Use backend 'total' field
+            success: true,
           },
         });
         window.dispatchEvent(event);
@@ -646,8 +632,8 @@ class PointsService {
       if (checkinResponse.ok) {
         console.log("✅ Check-in successful! Response data:", checkinData);
         console.log("🎯 Streak (days field):", checkinData.days);
-        console.log("🎯 Reward points:", checkinData.reward);
-        console.log("🎯 Total points:", checkinData.points);
+        console.log("🎯 Reward points:", checkinData.value);
+        console.log("🎯 Total points:", checkinData.total);
       } else {
         console.log(
           "ℹ️ Check-in not available (likely already checked in):",
@@ -657,6 +643,21 @@ class PointsService {
     } catch (error) {
       console.error("❌ API testing failed:", error);
     }
+  }
+
+  // Debug function to test fanfare/celebration
+  debugFanfare() {
+    console.log("🎉 Testing fanfare event...");
+    const event = new CustomEvent("dailyCheckinReward", {
+      detail: {
+        days: 5,
+        value: 100,
+        total: 500,
+        success: true,
+      },
+    });
+    window.dispatchEvent(event);
+    console.log("✅ Fanfare event dispatched! Check if celebration appears.");
   }
 }
 
