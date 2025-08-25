@@ -3,7 +3,6 @@ import React from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { usePoints } from "../contexts/PointsContext";
 import PointsDisplay from "./PointsDisplay";
-import DailyCheckIn from "./DailyCheckIn";
 import styles from "../styles/GamesTab.module.css";
 
 export default function GamesTab() {

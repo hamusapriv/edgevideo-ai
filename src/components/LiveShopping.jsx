@@ -618,7 +618,7 @@ export default function LiveShopping() {
               onImageError={handleProductImageError}
             />
           ))}
-          <div>
+          <div style={{ maxWidth: "100%" }}>
             {/* Recently Matched Separator - only show if there are cached products and no duplicates */}
             {cachedProducts.filter(
               (p) => !displayProducts.some((live) => live.id === p.id)

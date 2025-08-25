@@ -9,6 +9,7 @@ class PointsService {
     this.wsOpened = false;
     this.channelId = null;
     this.userEmail = null;
+    this.isCheckingIn = false; // Prevent multiple simultaneous check-ins
   }
 
   // Get current points balance
@@ -24,67 +25,388 @@ class PointsService {
         return 0;
       }
 
-      // Referrals API endpoints disabled - will be re-enabled with working endpoint later
-      console.log("Referrals API disabled - points update skipped");
-      return this.pointsBalance;
+      // Get auth token from localStorage (assuming it's stored there)
+      const token =
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("access_token");
+      if (!token) {
+        console.warn("No auth token available for points API");
+        return this.pointsBalance;
+      }
 
-      // TODO: Re-enable when referrals endpoint is working
-      // Try multiple API endpoints as fallback
-      // const apiUrls = [
-      //   `https://referrals.edgevideo.com/get_new_points_by_email/${this.userEmail}`,
-      //   // Games endpoints disabled until live
-      //   // `https://eat.edgevideo.com:8080/get_new_points_by_email/${this.userEmail}`,
-      //   `https://referrals.edgevideo.com/get_new_points/${this.userEmail}`, // fallback to original format
-      // ];
+      try {
+        const response = await fetch(
+          `https://fastapi.edgevideo.ai/points/get?user_email=${encodeURIComponent(
+            this.userEmail
+          )}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      // for (const url of apiUrls) {
-      //   try {
-      //     const response = await fetch(url);
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          if (
+            errorData?.error?.includes("wallet") ||
+            errorData?.error?.includes("linked")
+          ) {
+            console.warn(
+              `Points API requires wallet linking: ${errorData.error}`
+            );
+            // Emit wallet requirement event
+            const event = new CustomEvent("walletRequiredForPoints", {
+              detail: {
+                error: errorData.error,
+                requiresWallet: true,
+              },
+            });
+            window.dispatchEvent(event);
+          } else {
+            console.warn(`Points API failed: ${response.status}`);
+          }
+          return this.pointsBalance;
+        }
 
-      //     if (!response.ok) {
-      //       console.warn(`Points API failed for ${url}: ${response.status}`);
-      //       continue;
-      //     }
+        const data = await response.json();
+        console.log("Points API response:", data);
 
-      //     const data = await response.json();
-
-      //     if (data.result && typeof data.result.offchain_balance === "number") {
-      //       this.pointsBalance = data.result.offchain_balance;
-      //       this.notifyListeners();
-      //       console.log(`Points updated: ${this.pointsBalance}`);
-      //       return this.pointsBalance;
-      //     } else if (typeof data.points === "number") {
-      //       // Alternative response format
-      //       this.pointsBalance = data.points;
-      //       this.notifyListeners();
-      //       console.log(`Points updated: ${this.pointsBalance}`);
-      //       return this.pointsBalance;
-      //     } else {
-      //       console.warn("Invalid points response format:", data);
-      //       continue;
-      //     }
-      //   } catch (err) {
-      //     console.warn(`Points request failed for ${url}:`, err);
-      //     continue;
-      //   }
-      // }
-
-      // console.warn("All points API endpoints failed");
-      // return this.pointsBalance;
+        if (typeof data.points === "number") {
+          this.pointsBalance = data.points;
+          this.notifyListeners();
+          console.log(`Points updated: ${this.pointsBalance}`);
+          return this.pointsBalance;
+        } else if (data.result && typeof data.result.points === "number") {
+          this.pointsBalance = data.result.points;
+          this.notifyListeners();
+          console.log(`Points updated: ${this.pointsBalance}`);
+          return this.pointsBalance;
+        } else {
+          console.warn("Invalid points response format:", data);
+          return this.pointsBalance;
+        }
+      } catch (err) {
+        console.warn("Points request failed:", err);
+        return this.pointsBalance;
+      }
     } catch (error) {
       console.error("Failed to update points:", error);
       return this.pointsBalance;
     }
   }
 
+  // Get user's check-in status from server (anti-cheat validation)
+  async getCheckinStatus() {
+    try {
+      if (!this.userEmail) {
+        // Use debug log instead of warn to reduce console noise
+        console.debug("No user email available for check-in status");
+        return null;
+      }
+
+      const token =
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("access_token");
+      if (!token) {
+        console.debug("No auth token available for check-in status");
+        return null;
+      }
+
+      // First try the points GET endpoint
+      const response = await fetch(
+        `https://fastapi.edgevideo.ai/points/get?user_email=${encodeURIComponent(
+          this.userEmail
+        )}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        console.warn(`Check-in status API failed: ${response.status}`);
+        return null;
+      }
+
+      const data = await response.json();
+      console.log("Check-in status API response:", data);
+
+      // Log what fields are available for debugging
+      console.log("Available API fields:", Object.keys(data));
+      console.log("Points:", data.points);
+      console.log("Streak fields:", {
+        streak: data.streak,
+        checkin_streak: data.checkin_streak,
+        daily_streak: data.daily_streak,
+        current_streak: data.current_streak,
+      });
+      console.log("Check-in timing fields:", {
+        last_checkin_time: data.last_checkin_time,
+        lastCheckinTime: data.lastCheckinTime,
+        last_checkin: data.last_checkin,
+        can_checkin: data.can_checkin,
+        next_checkin: data.next_checkin,
+        server_time: data.server_time,
+      });
+
+      // If the GET endpoint doesn't provide check-in status,
+      // we'll need to test with a check-in request to determine status
+      const hasCheckinData =
+        data.last_checkin_time ||
+        data.lastCheckinTime ||
+        data.last_checkin ||
+        data.can_checkin !== undefined;
+
+      if (!hasCheckinData) {
+        // API doesn't provide check-in status, so we'll rely on local storage
+        // and let the actual check-in request determine server status
+        console.log(
+          "API doesn't provide check-in status, using local validation"
+        );
+        return {
+          canCheckin: true, // Default to allow attempt
+          streak:
+            data.days ||
+            data.streak ||
+            data.checkin_streak ||
+            data.daily_streak ||
+            0,
+          serverTime: new Date().toISOString(),
+        };
+      }
+
+      // Handle different possible API response formats
+      return {
+        lastCheckinTime:
+          data.last_checkin_time || data.lastCheckinTime || data.last_checkin,
+        canCheckin: data.can_checkin !== false && data.canCheckin !== false, // Default to true if not specified
+        serverTime:
+          data.server_time || data.serverTime || new Date().toISOString(),
+        nextCheckinTime:
+          data.next_checkin_time || data.nextCheckinTime || data.next_checkin,
+        streak:
+          data.days ||
+          data.streak ||
+          data.checkin_streak ||
+          data.daily_streak ||
+          0,
+      };
+    } catch (error) {
+      console.error("Failed to get check-in status:", error);
+      return null;
+    }
+  }
+
+  // Test check-in availability without actually checking in
+  async testCheckinAvailability() {
+    try {
+      if (!this.userEmail) {
+        return { canCheckin: false, reason: "No user email" };
+      }
+
+      const token =
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("access_token");
+      if (!token) {
+        return { canCheckin: false, reason: "No auth token" };
+      }
+
+      // We'll test by making the actual check-in request
+      // If it fails with "Already checked in", we know the status
+      const response = await fetch(
+        "https://fastapi.edgevideo.ai/points/checkin",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_email: this.userEmail,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      console.log("Check-in test response:", data, "Status:", response.status);
+
+      // Log what fields are available in check-in response
+      if (data) {
+        console.log("Check-in response fields:", Object.keys(data));
+        if (data.error) {
+          console.log("Error response - available fields:", Object.keys(data));
+        } else {
+          console.log("Success response fields:", {
+            points: data.points,
+            reward: data.reward,
+            streak: data.streak,
+            days: data.days,
+            total_points: data.total_points,
+            message: data.message,
+          });
+        }
+      }
+
+      if (!response.ok) {
+        if (data.error && data.error.includes("Already checked in")) {
+          console.log("Already checked in response data:", data);
+          return {
+            canCheckin: false,
+            reason: "Already checked in today",
+            alreadyCheckedIn: true,
+            // Since API doesn't provide streak in error response, we'll determine it elsewhere
+            streak:
+              data.days || data.streak || data.current_streak || undefined,
+            data: data, // Include full response data
+          };
+        }
+
+        // Check for wallet requirement error
+        if (
+          data.error &&
+          (data.error.includes("wallet") || data.error.includes("linked"))
+        ) {
+          console.log("Wallet requirement error:", data.error);
+          // Emit wallet requirement event
+          const event = new CustomEvent("walletRequiredForPoints", {
+            detail: {
+              error: data.error,
+              requiresWallet: true,
+            },
+          });
+          window.dispatchEvent(event);
+
+          return {
+            canCheckin: false,
+            reason: data.error,
+            requiresWallet: true,
+          };
+        }
+
+        return {
+          canCheckin: false,
+          reason: data.error || data.message || "Unknown error",
+        };
+      }
+
+      // If successful, it means check-in was available and we just executed it
+      return {
+        canCheckin: true,
+        checkinExecuted: true,
+        data: data,
+      };
+    } catch (error) {
+      console.error("Failed to test check-in availability:", error);
+      return { canCheckin: false, reason: "Network error" };
+    }
+  }
+
+  // Automatic daily check-in with server-side validation
+  async performAutoCheckin() {
+    try {
+      if (!this.userEmail) {
+        console.warn("No user email available for check-in");
+        return null;
+      }
+
+      // Prevent multiple simultaneous check-in attempts
+      if (this.isCheckingIn) {
+        console.log("Check-in already in progress, skipping duplicate attempt");
+        return null;
+      }
+
+      this.isCheckingIn = true;
+
+      // Use the new test method instead of the old logic
+      const availabilityTest = await this.testCheckinAvailability();
+
+      if (!availabilityTest.canCheckin) {
+        console.log(`Check-in not available: ${availabilityTest.reason}`);
+
+        // If already checked in, update local state
+        if (availabilityTest.alreadyCheckedIn) {
+          const today = new Date().toISOString().split("T")[0];
+          localStorage.setItem("lastDailyCheckin", today);
+
+          // For streak, use existing value or default to 1 if no stored value
+          let streakValue = availabilityTest.streak;
+          if (streakValue === undefined) {
+            const storedStreak = localStorage.getItem("dailyCheckinStreak");
+            streakValue = parseInt(storedStreak) || 1; // Default to 1 if checked in today
+          }
+
+          // Store streak information
+          localStorage.setItem("dailyCheckinStreak", streakValue.toString());
+
+          // Emit status update event with streak info
+          const event = new CustomEvent("checkinStatusUpdate", {
+            detail: {
+              isCheckedIn: true,
+              streak: streakValue,
+              alreadyCheckedIn: true,
+            },
+          });
+          window.dispatchEvent(event);
+        }
+
+        return null;
+      }
+
+      // If testCheckinAvailability returned canCheckin=true and checkinExecuted=true,
+      // it means the check-in was successful
+      if (availabilityTest.checkinExecuted && availabilityTest.data) {
+        const data = availabilityTest.data;
+        const today = new Date().toISOString().split("T")[0];
+
+        // Mark as checked in
+        localStorage.setItem("lastDailyCheckin", today);
+
+        // Store the streak from the API response (using 'days' field)
+        const streakValue = data.days || data.streak || 1;
+        localStorage.setItem("dailyCheckinStreak", streakValue.toString());
+
+        // Update points
+        setTimeout(() => this.updatePoints(), 500);
+
+        // Emit event for UI components
+        const event = new CustomEvent("dailyCheckinReward", {
+          detail: {
+            days: streakValue,
+            value: data.reward || data.points || 10,
+            total: data.points || data.total_points || data.total || 10,
+          },
+        });
+        window.dispatchEvent(event);
+
+        return data;
+      }
+
+      return null;
+    } catch (error) {
+      console.error("Auto check-in failed:", error);
+      return null;
+    } finally {
+      // Always clear the checking flag
+      this.isCheckingIn = false;
+    }
+  }
+
   // Set user email for points fetching
   setUserEmail(email) {
     this.userEmail = email;
-    // Referrals API disabled - skip automatic points update
-    // TODO: Re-enable when referrals endpoint is working
-    // if (email) {
-    //   this.updatePoints();
-    // }
+    if (email) {
+      // Update points when email is set
+      this.updatePoints();
+
+      // Perform automatic daily check-in
+      setTimeout(() => {
+        this.performAutoCheckin();
+      }, 1000); // Small delay to ensure auth token is available
+    }
   }
 
   // Set channel ID for WebSocket connection
@@ -279,6 +601,82 @@ class PointsService {
     this.channelId = null;
     this.disconnect();
     this.notifyListeners();
+  }
+
+  // Debug function to test API endpoints and see available data
+  async debugAPIData() {
+    if (!this.userEmail) {
+      console.log("❌ No user email available for API testing");
+      return;
+    }
+
+    const token =
+      localStorage.getItem("authToken") || localStorage.getItem("access_token");
+    if (!token) {
+      console.log("❌ No auth token available for API testing");
+      return;
+    }
+
+    console.log("🔍 Testing EdgeVideo API endpoints...");
+    console.log("User email:", this.userEmail);
+
+    try {
+      // Test GET /points
+      console.log("\n📊 Testing GET /points:");
+      const pointsResponse = await fetch(
+        `https://fastapi.edgevideo.ai/points/get?user_email=${encodeURIComponent(
+          this.userEmail
+        )}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (pointsResponse.ok) {
+        const pointsData = await pointsResponse.json();
+        console.log("✅ GET /points response:", pointsData);
+        console.log("Available fields:", Object.keys(pointsData));
+      } else {
+        console.log("❌ GET /points failed:", pointsResponse.status);
+      }
+
+      // Test POST /checkin (this will either work or show "already checked in")
+      console.log("\n📅 Testing POST /checkin:");
+      const checkinResponse = await fetch(
+        "https://fastapi.edgevideo.ai/points/checkin",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_email: this.userEmail }),
+        }
+      );
+
+      const checkinData = await checkinResponse.json();
+      console.log("POST /checkin response:", checkinData);
+      console.log("Status:", checkinResponse.status);
+      console.log("Available fields:", Object.keys(checkinData));
+
+      if (checkinResponse.ok) {
+        console.log("✅ Check-in successful! Response data:", checkinData);
+        console.log("🎯 Streak (days field):", checkinData.days);
+        console.log("🎯 Reward points:", checkinData.reward);
+        console.log("🎯 Total points:", checkinData.points);
+      } else {
+        console.log(
+          "ℹ️ Check-in not available (likely already checked in):",
+          checkinData
+        );
+      }
+    } catch (error) {
+      console.error("❌ API testing failed:", error);
+    }
   }
 }
 

@@ -6,7 +6,7 @@ import { useWallet } from "../contexts/WalletContext";
 import LogoutButton from "../auth/LogoutButton";
 import GoogleSignInButton from "../auth/GoogleSignInButton";
 import PointsDisplay from "./PointsDisplay";
-import DailyCheckIn from "./DailyCheckIn";
+import CheckInStatus from "./CheckInStatus";
 import Socials from "./Socials";
 import FAQ from "./FAQ";
 import { useState } from "react";
@@ -117,7 +117,7 @@ export default function ProfileSidebar({ isOpen, onClose }) {
               <h5 className="block-title">Rewards</h5>
               <div className="sidebar-rewards">
                 <PointsDisplay size="normal" showLabel={true} />
-                <DailyCheckIn />
+                <CheckInStatus />
               </div>
             </div>
 

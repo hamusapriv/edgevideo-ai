@@ -430,6 +430,7 @@ section {
   min-width: 0;
   gap: 10px;
   min-height: 110%;
+  max-width: 100%;
 }
 
 .liveshopping-container {

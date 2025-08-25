@@ -148,7 +148,8 @@ export default function FloatingProfile() {
           const status = await rainbowKitWalletService.isWalletLinked();
           console.log("🔍 Wallet link status:", status);
 
-          setIsWalletLinked(status.isLinked || status.isCurrentWalletLinked);
+          // Only show as verified if wallet is truly linked, not just if current wallet could be linked
+          setIsWalletLinked(status.isLinked);
 
           if (status.isLinked && status.linkedAddress) {
             setLinkedWalletInfo({
@@ -273,7 +274,9 @@ export default function FloatingProfile() {
                     <span className="status-badge connected">🔗 Connected</span>
                   )}
                   {isWalletLinked && (
-                    <span className="status-badge verified">✓ Verified</span>
+                    <span className="status-badge verified">
+                      ✓ Verified & Linked
+                    </span>
                   )}
                 </div>
               </div>

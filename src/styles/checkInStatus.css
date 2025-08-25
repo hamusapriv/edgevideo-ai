@@ -1,0 +1,323 @@
+/* Check-In Status Styles */
+
+.checkin-status {
+  background: var(--bg-primary, #ffffff);
+  border: 1px solid var(--border-light, #e1e5e9);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.checkin-status:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.checkin-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.checkin-status-header h4 {
+  margin: 0;
+  color: var(--color-text, #333);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.checkin-indicator {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.checkin-indicator.checked-in {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+}
+
+.checkin-indicator.available {
+  background: linear-gradient(135deg, #2196f3, #1976d2);
+  color: white;
+  box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
+  animation: pulse 2s infinite;
+}
+
+.checkin-indicator.unavailable {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  color: white;
+  box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.checkin-status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-light, #f0f0f0);
+}
+
+.status-item:last-of-type {
+  border-bottom: none;
+}
+
+.status-label {
+  color: var(--color-text-secondary, #666);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.status-value {
+  color: var(--color-text, #333);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.status-value.server-validated {
+  color: var(--color-success, #4caf50);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.status-message {
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.status-message small {
+  opacity: 0.8;
+  font-size: 0.75rem;
+}
+
+.status-message:not(.available) {
+  background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+  color: var(--color-success, #4caf50);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.status-message.available {
+  background: linear-gradient(135deg, #e3f2fd, #f1f8ff);
+  color: var(--color-primary, #2196f3);
+  border: 1px solid rgba(33, 150, 243, 0.2);
+  animation: glow 3s ease-in-out infinite alternate;
+}
+
+.status-message.unavailable {
+  background: linear-gradient(135deg, #fff3e0, #ffeaa7);
+  color: var(--color-warning, #ff9800);
+  border: 1px solid rgba(255, 152, 0, 0.2);
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 5px rgba(33, 150, 243, 0.2);
+  }
+  to {
+    box-shadow: 0 0 15px rgba(33, 150, 243, 0.4);
+  }
+}
+
+/* Dark theme support */
+[data-theme="dark"] .checkin-status {
+  background: var(--bg-primary-dark, #1a1a1a);
+  border-color: var(--border-dark, #333);
+  color: var(--color-text-dark, #ffffff);
+}
+
+[data-theme="dark"] .checkin-status-header h4 {
+  color: var(--color-text-dark, #ffffff);
+}
+
+[data-theme="dark"] .status-label {
+  color: var(--color-text-secondary-dark, #b0b0b0);
+}
+
+[data-theme="dark"] .status-value {
+  color: var(--color-text-dark, #ffffff);
+}
+
+[data-theme="dark"] .status-value.server-validated {
+  color: var(--color-success, #4caf50);
+}
+
+[data-theme="dark"] .status-item {
+  border-bottom-color: var(--border-dark, #333);
+}
+
+[data-theme="dark"] .status-message:not(.available) {
+  background: rgba(76, 175, 80, 0.1);
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+[data-theme="dark"] .status-message.available {
+  background: rgba(33, 150, 243, 0.1);
+  border-color: rgba(33, 150, 243, 0.3);
+}
+
+[data-theme="dark"] .status-message.unavailable {
+  background: rgba(255, 152, 0, 0.1);
+  border-color: rgba(255, 152, 0, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .checkin-status {
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+  }
+
+  .checkin-status-header h4 {
+    font-size: 1rem;
+  }
+
+  .checkin-indicator {
+    width: 20px;
+    height: 20px;
+    font-size: 0.8rem;
+  }
+
+  .status-label,
+  .status-value {
+    font-size: 0.85rem;
+  }
+
+  .status-message {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+
+  .weekly-grid {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+  }
+
+  .day-checkin {
+    font-size: 0.7rem;
+  }
+
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+  }
+}
+
+/* Weekly Check-ins Grid Styles */
+.weekly-checkins {
+  margin-bottom: 1rem;
+}
+
+.weekly-checkins h5 {
+  margin: 0 0 0.75rem 0;
+  color: var(--color-text, #333);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.weekly-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 8px;
+  border: 1px solid var(--border-light, #e1e5e9);
+}
+
+.day-checkin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.day-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.checkbox {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.checkbox.checked {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+  transform: scale(1.05);
+}
+
+.checkbox.unchecked {
+  background: var(--bg-primary, #ffffff);
+  color: var(--color-text-secondary, #999);
+  border: 2px solid var(--border-light, #e1e5e9);
+}
+
+/* Dark theme support for weekly grid */
+[data-theme="dark"] .weekly-checkins h5 {
+  color: var(--color-text-dark, #ffffff);
+}
+
+[data-theme="dark"] .weekly-grid {
+  background: var(--bg-secondary-dark, #2a2a2a);
+  border-color: var(--border-dark, #333);
+}
+
+[data-theme="dark"] .day-name {
+  color: var(--color-text-secondary-dark, #b0b0b0);
+}
+
+[data-theme="dark"] .checkbox.unchecked {
+  background: var(--bg-primary-dark, #1a1a1a);
+  color: var(--color-text-secondary-dark, #666);
+  border-color: var(--border-dark, #333);
+}
