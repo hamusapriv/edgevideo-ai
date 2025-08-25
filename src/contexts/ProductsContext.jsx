@@ -55,10 +55,7 @@ export function ProductsProvider({ children }) {
       return;
     }
 
-    console.log(
-      "🚀 Pre-fetching cached products from page 50 for one-by-one serving..."
-    );
-
+    // Silently pre-fetch cached products from page 50
     try {
       // Fetch page 50 directly - should contain ~50 products in one call
       const response = await fetch(
@@ -96,7 +93,6 @@ export function ProductsProvider({ children }) {
       }
 
       if (cachedProductData.length === 0) {
-        console.log("� No cached products returned from page 50");
         setHasMoreCachedProducts(false);
         return;
       }
@@ -110,15 +106,7 @@ export function ProductsProvider({ children }) {
 
       setPreFetchedPool(cachedProductData);
       setPoolInitialized(true);
-
-      console.log(
-        `🎯 Pre-fetch complete: ${cachedProductData.length} products ready for one-by-one serving`
-      );
-      console.log(
-        `📊 Time range: newest = ${cachedProductData[0]?.time}, oldest = ${
-          cachedProductData[cachedProductData.length - 1]?.time
-        }`
-      );
+      // Pre-fetch complete - products ready for serving
     } catch (error) {
       console.error("Error during pre-fetch:", error);
     }
@@ -148,7 +136,6 @@ export function ProductsProvider({ children }) {
       );
 
       if (availableProducts.length === 0) {
-        console.log("📭 No more cached products available from pool");
         setHasMoreCachedProducts(false);
         return;
       }
@@ -159,19 +146,8 @@ export function ProductsProvider({ children }) {
       // Add one product to cached products
       setCachedProducts((prev) => [...prev, nextProduct]);
 
-      console.log(
-        `➕ Added cached product from pool: ${nextProduct.title ||
-          nextProduct.id}`
-      );
-      console.log(
-        `📊 Product time: ${
-          nextProduct.time
-        }, Products remaining in pool: ${availableProducts.length - 1}`
-      );
-
       // Check if we have more products left
       if (availableProducts.length <= 1) {
-        console.log("📭 Pool exhausted, no more cached products available");
         setHasMoreCachedProducts(false);
       }
     } catch (error) {

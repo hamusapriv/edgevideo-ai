@@ -285,15 +285,25 @@ class RainbowKitWalletService {
 
       const data = await response.json();
 
-      // Handle both old single wallet format and new array format
-      if (data.walletAddresses && Array.isArray(data.walletAddresses)) {
-        // New array format from CTO's backend
+      // Handle NEW backend format: { wallets: [{ address, chain, blacklisted, reason }] }
+      if (data.wallets && Array.isArray(data.wallets)) {
+        const walletAddresses = data.wallets
+          .filter((wallet) => !wallet.blacklisted) // Only include non-blacklisted wallets
+          .map((wallet) => wallet.address);
+
         return {
-          walletAddress: data.walletAddresses[0] || null, // Backward compatibility
+          walletAddress: walletAddresses[0] || null, // Primary wallet
+          walletAddresses: walletAddresses,
+          wallets: data.wallets, // Full wallet info with chains
+        };
+      }
+      // Handle OLD format for backward compatibility
+      else if (data.walletAddresses && Array.isArray(data.walletAddresses)) {
+        return {
+          walletAddress: data.walletAddresses[0] || null,
           walletAddresses: data.walletAddresses,
         };
       } else if (data.walletAddress) {
-        // Old single wallet format - convert to array format
         return {
           walletAddress: data.walletAddress,
           walletAddresses: [data.walletAddress],
@@ -422,6 +432,7 @@ class RainbowKitWalletService {
         currentAddress: account.address,
         isCurrentWalletLinked: isCurrentWalletLinked,
         blockReason: linkedWallet.blockReason || null,
+        wallets: linkedWallet.wallets, // Include full wallet info with chains
       };
     } catch (error) {
       console.error("Failed to check wallet link status:", error);
@@ -432,6 +443,7 @@ class RainbowKitWalletService {
         currentAddress: getAccount(wagmiConfig).address,
         isCurrentWalletLinked: false,
         blockReason: null,
+        wallets: [],
       };
     }
   }
