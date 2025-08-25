@@ -128,7 +128,7 @@
     pointer-events: none;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding: 15px;
+    padding: 15px 15px 100px 15px;
     gap: 10px;
     min-height: 110px;
     min-width: 200px;

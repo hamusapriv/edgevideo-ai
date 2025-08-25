@@ -376,7 +376,7 @@ export default function LiveShopping() {
       }
     }
 
-    box.addEventListener("scroll", updateFocusDuringScroll, { passive: true });
+    box.addEventListener("scroll", updateFocusDuringScroll, { passive: false });
     // run once on mount so one is already focused
     requestAnimationFrame(updateFocusDuringScroll);
 
