@@ -88,10 +88,12 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       // Disable minification and enable source maps for staging
-      minify: !isStaging,
+      minify: !isStaging ? 'esbuild' : false, // Use faster esbuild for minification
       sourcemap: false, // Disable source maps for faster builds
       // Increase chunk size warning limit to reduce warnings
       chunkSizeWarningLimit: 1000,
+      // Optimize build performance
+      target: 'esnext', // Use modern JS for faster builds
       // Copy additional files to dist
       rollupOptions: {
         input: {
@@ -99,10 +101,24 @@ export default defineConfig(({ mode }) => {
         },
         output: {
           // Suppress Rollup warnings for external dependencies
-          manualChunks: {
-            vendor: ["react", "react-dom"],
-            three: ["three"],
-            wallet: ["@rainbow-me/rainbowkit", "@tanstack/react-query", "viem"],
+          manualChunks: (id) => {
+            // More aggressive chunking for faster builds
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('react-dom')) {
+                return 'vendor';
+              }
+              if (id.includes('three')) {
+                return 'three';
+              }
+              if (id.includes('@rainbow-me') || id.includes('wagmi') || id.includes('viem')) {
+                return 'wallet';
+              }
+              if (id.includes('hls.js')) {
+                return 'hls';
+              }
+              // Group all other vendor libs
+              return 'vendor-misc';
+            }
           },
           ...(isStaging && {
             // Keep readable chunk names in staging
@@ -120,9 +136,26 @@ export default defineConfig(({ mode }) => {
           if (warning.message?.includes("/*#__PURE__*/")) return;
           if (warning.message?.includes("ox/_esm")) return;
           if (warning.code === "LARGE_BUNDLE") return; // Suppress large bundle warnings
+          if (warning.code === "CIRCULAR_DEPENDENCY") return; // Suppress circular dependency warnings
           warn(warning);
         },
       },
+      // Enable faster builds with these optimizations
+      commonjsOptions: {
+        transformMixedEsModules: true,
+      },
+    },
+    // Add build optimizations
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'react-router-dom',
+        'hls.js',
+        '@rainbow-me/rainbowkit',
+      ],
+      // Force pre-bundling of these deps for faster dev/build
+      force: false,
     },
   };
 });
