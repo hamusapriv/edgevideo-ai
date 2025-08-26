@@ -31,6 +31,7 @@ const BrandsPage = lazy(() => import("./pages/BrandsPage"));
 const ViewersPage = lazy(() => import("./pages/ViewersPage"));
 const CookieSettingsPage = lazy(() => import("./pages/CookieSettingsPage"));
 const SandboxPage = lazy(() => import("./pages/SandboxPage"));
+const EuronewsTravelPage = lazy(() => import("./pages/EuronewsTravelPage"));
 import BuildInfo from "./components/BuildInfo";
 
 // OAuth callback
@@ -90,6 +91,7 @@ export default function App() {
           <Route path="/brands" element={<BrandsPage />} />
           <Route path="/viewers" element={<ViewersPage />} />
           <Route path="/sandbox" element={<SandboxPage />} />
+          <Route path="/euronews-travel" element={<EuronewsTravelPage />} />
 
           {/* Backward compatibility redirects for old URLs */}
           <Route

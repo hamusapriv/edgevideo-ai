@@ -86,9 +86,7 @@ export default function SandboxPage() {
         >
           🎨
         </div>
-        <h2 style={{ margin: "0 0 10px 0", fontSize: "28px" }}>
-          3D Sandbox
-        </h2>
+        <h2 style={{ margin: "0 0 10px 0", fontSize: "28px" }}>3D Sandbox</h2>
         <p style={{ margin: 0, fontSize: "16px", opacity: 0.8 }}>
           Interactive 3D components and demos
         </p>
