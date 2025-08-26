@@ -1,30 +1,5 @@
 import React from "react";
 
-// Simple placeholder component to replace the deleted ThreePlates
-const SandboxPlaceholder = () => (
-  <div
-    style={{
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      height: "100%",
-      color: "white",
-      fontSize: "18px",
-      textAlign: "center",
-      padding: "2rem",
-    }}
-  >
-    <div>
-      <h2 style={{ marginBottom: "1rem", fontSize: "2rem" }}>🎨 Sandbox Area</h2>
-      <p style={{ opacity: 0.8, lineHeight: 1.6 }}>
-        This is a development sandbox for testing new features and components.
-        <br />
-        Future 3D components and interactive demos will be showcased here.
-      </p>
-    </div>
-  </div>
-);
-
 export default function SandboxPage() {
   return (
     <div
@@ -90,8 +65,34 @@ export default function SandboxPage() {
         </a>
       </div>
 
-      {/* Sandbox Content */}
-      <SandboxPlaceholder />
+      {/* 3D Sandbox Placeholder */}
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          textAlign: "center",
+          color: "white",
+          zIndex: 50,
+        }}
+      >
+        <div
+          style={{
+            fontSize: "48px",
+            marginBottom: "20px",
+            opacity: 0.8,
+          }}
+        >
+          🎨
+        </div>
+        <h2 style={{ margin: "0 0 10px 0", fontSize: "28px" }}>
+          3D Sandbox
+        </h2>
+        <p style={{ margin: 0, fontSize: "16px", opacity: 0.8 }}>
+          Interactive 3D components and demos
+        </p>
+      </div>
     </div>
   );
 }
