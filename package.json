@@ -8,6 +8,8 @@
     "build": "vite build --mode production",
     "build:staging": "vite build --mode staging",
     "build:production": "vite build --mode production",
+    "deploy:staging": "npm run build && firebase deploy --only hosting:edgevideo-staging --project edgevideo-ai-8753a",
+    "deploy:production": "npm run build && firebase deploy --only hosting:edgevideo-production --project edgevideo-ai-8753a",
     "lint": "eslint .",
     "preview": "vite preview",
     "dev:sandbox": "vite sandbox.html",

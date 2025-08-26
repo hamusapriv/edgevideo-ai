@@ -28,7 +28,7 @@ jobs:
           npm ci --prefer-offline --no-audit --no-fund --silent
           
       - name: Build project
-        run: npm run build:staging
+        run: npm run build
       
       - name: Deploy to Firebase Hosting (Staging)
         env:
