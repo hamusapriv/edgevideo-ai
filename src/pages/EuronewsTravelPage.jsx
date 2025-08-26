@@ -67,19 +67,33 @@ const EuronewsTravelPage = () => {
         levelLoadingMaxRetry: 3,
         fragLoadingTimeOut: 20000,
         fragLoadingMaxRetry: 3,
+        // Minimize logging and network noise
+        capLevelToPlayerSize: true,
+        maxBufferHole: 0.5,
+        // Reduce frequency of network requests
+        manifestLoadingMaxRetryTimeout: 64000,
+        levelLoadingMaxRetryTimeout: 64000,
+        fragLoadingMaxRetryTimeout: 64000,
+        // Suppress internal logging in production
+        debugVerbose: false,
+        logLevel: process.env.NODE_ENV === "production" ? "NONE" : "ERROR",
       });
 
       // HLS event handlers
       hlsInstance.on(Hls.Events.MEDIA_ATTACHED, () => {
-        console.log("Media attached to HLS");
+        // Media attached silently
       });
 
       hlsInstance.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-        console.log("HLS manifest parsed, levels:", data.levels);
+        // Manifest parsed silently - only log in development
+        if (process.env.NODE_ENV === "development") {
+          console.log("HLS manifest parsed, levels:", data.levels);
+        }
       });
 
       hlsInstance.on(Hls.Events.LEVEL_LOADED, () => {
-        console.log("Level loaded");
+        // Level loaded silently - this fires frequently for each segment
+        // Only log in development if needed for debugging
       });
 
       hlsInstance.on(Hls.Events.FRAG_LOADED, () => {

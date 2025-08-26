@@ -1,101 +1,120 @@
-# EdgeVideo AI - React + Vite Application
+# EdgeVideo AI - React Application
 
-This is the EdgeVideo AI React application built with Vite, featuring both staging and production build modes for flexible deployment workflows.
+Modern React application for EdgeVideo AI platform featuring live streaming, user authentication, and interactive video experiences.
 
-## Deployment Workflows
+## 🚀 **Features**
 
-### Automated GitHub Actions Deployment
+### **Core Platform**
 
-The project uses GitHub Actions for automated deployment:
+- ✅ React 18 with Vite for fast development
+- ✅ Responsive design with mobile optimization
+- ✅ Dark/light theme support
+- ✅ SEO optimization with dynamic meta tags
+- ✅ Progressive Web App capabilities
 
-#### Staging Deployment (Automatic)
+### **Video Streaming**
 
-**Trigger:** Push to `main` branch
+- ✅ HLS.js integration for live streams
+- ✅ Multi-channel support with quality switching
+- ✅ Dedicated stream pages (e.g., `/euronews-travel`)
+- ✅ Video error handling and recovery
+- ✅ Optimized loading states
+
+### **User Experience**
+
+- ✅ Google OAuth authentication
+- ✅ Points system with daily check-ins
+- ✅ Wallet integration (WalletConnect, Rainbow)
+- ✅ Live shopping features
+- ✅ Social sharing and analytics
+
+## 🛠 **Development**
+
+### **Quick Start**
 
 ```bash
-git push origin main
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Run linting
+npm run lint
 ```
 
-**Result:** https://staging--edgevideo-ai-8753a.web.app
+### **Available Scripts**
 
-- ✅ Unminified JavaScript bundles with source maps
-- ✅ Automatic deployment via GitHub Actions
-- ✅ Uses `npm run build:staging`
+- `npm run dev` - Development server with hot reload
+- `npm run build` - Production build (optimized)
+- `npm run build:staging` - Staging build (with source maps)
+- `npm run preview` - Preview built application
+- `npm run lint` - ESLint code checking
 
-#### Pull Request Previews (Automatic)
+## 📦 **Build Modes**
 
-**Trigger:** Create pull request
-**Result:** Temporary preview URL (GitHub will comment the URL)
+- **Development**: Hot reload, source maps, debugging tools
+- **Staging**: Unminified with source maps for testing
+- **Production**: Minified, optimized, no source maps
 
-- ✅ Staging build for testing features
-- ✅ Temporary preview channel
+## 🌐 **Deployment**
 
-#### Production Deployment (Future)
+### **Automated GitHub Actions**
 
-**Trigger:** Push to `production` branch
+- **Staging**: Auto-deploy on push to `main` branch
+- **Production**: Deploy via `production` branch
+- **Preview**: Automatic PR preview deployments
 
-```bash
-git push origin production
-```
-
-**Result:** edgevideo.ai (when DNS is switched from Webflow)
-
-- ✅ Minified and optimized bundles
-- ✅ Uses `npm run build` for maximum performance
-
-### Manual Deployment (Alternative)
-
-For manual deployments when needed:
+### **Manual Deployment**
 
 ```bash
-# Staging deployment to preview channel
+# Staging
 npm run build:staging && firebase hosting:channel:deploy staging
 
-# Production deployment (future)
+# Production
 npm run build && firebase deploy --only hosting
 ```
 
-**Result:** edgevideo.ai (when DNS is switched from Webflow)
+## 📁 **Project Structure**
 
-- ✅ Minified and optimized bundles
-- ✅ No source maps (smaller bundle size)
-- ✅ Maximum performance optimization
+```
+src/
+├── components/     # Reusable UI components
+├── pages/         # Page components and routes
+├── contexts/      # React context providers
+├── hooks/         # Custom React hooks
+├── services/      # API and external services
+├── styles/        # CSS stylesheets
+├── utils/         # Utility functions
+└── assets/        # Static assets
+```
 
-## Available Scripts
+## 🔧 **Technical Stack**
 
-- `npm run dev` - Start development server
-- `npm run build` - Production build (minified, no source maps)
-- `npm run build:staging` - Staging build (unminified, with source maps)
-- `npm run preview` - Preview built application locally
-- `npm run lint` - Run ESLint
+- **Framework**: React 18
+- **Build Tool**: Vite
+- **Routing**: React Router
+- **Styling**: CSS Modules
+- **Video**: HLS.js
+- **Authentication**: Google OAuth + JWT
+- **Deployment**: Firebase Hosting
 
-## Build Modes
+## 🌍 **Live URLs**
 
-The Vite configuration automatically detects build modes:
+- **Staging**: https://staging--edgevideo-ai-8753a.web.app
+- **Production**: edgevideo.ai (when DNS switched from Webflow)
 
-- **Staging Mode** (`--mode staging`): Unminified builds with source maps for easier debugging
-- **Production Mode** (default): Minified builds without source maps for optimal performance
+## 📝 **Key Pages**
 
-## Firebase Hosting Configuration
-
-The `firebase.json` is configured with:
-
-- `predeploy: "npm run build:staging"` - Automatically builds staging version before preview channel deploys
-- Single Page Application routing support
-- Static asset serving from `dist/` directory
-
-## Template Information
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Directory Structure
-
-Only the root `index.html` is used for hosting. The former `edgevideo-ai/` folder has been removed.
-
-Legacy non-React scripts now reside in the top-level `legacy/` directory.
-React context providers live in `src/contexts` instead of scattered folders.
+- `/` - Landing page
+- `/app` - Main application
+- `/demo` - Video streaming demo
+- `/euronews-travel` - Dedicated HLS stream
+- `/channels`, `/brands`, `/viewers` - Information pages
+- `/privacy`, `/terms` - Legal pages
