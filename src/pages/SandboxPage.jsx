@@ -1,5 +1,29 @@
 import React from "react";
-import ThreePlates from "../sandbox/examples/ThreePlates";
+
+// Simple placeholder component to replace the deleted ThreePlates
+const SandboxPlaceholder = () => (
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100%",
+      color: "white",
+      fontSize: "18px",
+      textAlign: "center",
+      padding: "2rem",
+    }}
+  >
+    <div>
+      <h2 style={{ marginBottom: "1rem", fontSize: "2rem" }}>🎨 Sandbox Area</h2>
+      <p style={{ opacity: 0.8, lineHeight: 1.6 }}>
+        This is a development sandbox for testing new features and components.
+        <br />
+        Future 3D components and interactive demos will be showcased here.
+      </p>
+    </div>
+  </div>
+);
 
 export default function SandboxPage() {
   return (
@@ -66,8 +90,8 @@ export default function SandboxPage() {
         </a>
       </div>
 
-      {/* 3D Rotating Plates Component */}
-      <ThreePlates />
+      {/* Sandbox Content */}
+      <SandboxPlaceholder />
     </div>
   );
 }
