@@ -1,9 +1,66 @@
 // src/pages/DocsPage.jsx
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/docsPage.css";
+import edgeVideoLogo from "../assets/edgevideoai-logo.png";
 
 export default function DocsPage() {
+  const [copiedStates, setCopiedStates] = useState({});
+
+  const copyToClipboard = async (text, id) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedStates((prev) => ({ ...prev, [id]: true }));
+      setTimeout(() => {
+        setCopiedStates((prev) => ({ ...prev, [id]: false }));
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
+  };
+
+  const CopyIcon = () => (
+    <svg
+      className="copy-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect
+        x="9"
+        y="9"
+        width="13"
+        height="13"
+        rx="2"
+        ry="2"
+        stroke="currentColor"
+        strokeWidth="2"
+        fill="none"
+      />
+      <path
+        d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+        stroke="currentColor"
+        strokeWidth="2"
+        fill="none"
+      />
+    </svg>
+  );
+
+  const CheckIcon = () => (
+    <svg
+      className="copy-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <polyline
+        points="20,6 9,17 4,12"
+        stroke="currentColor"
+        strokeWidth="2"
+        fill="none"
+      />
+    </svg>
+  );
   return (
     <div className="docs-page">
       <div className="docs-container">
@@ -12,6 +69,11 @@ export default function DocsPage() {
         </Link>
 
         <div className="header-section">
+          <img
+            src={edgeVideoLogo}
+            alt="EdgeVideo AI Logo"
+            className="docs-logo"
+          />
           <h1>Developer Documentation</h1>
           <p className="subtitle">
             WebSocket and API Integration Guide for EdgeVideo Platform
@@ -80,6 +142,53 @@ export default function DocsPage() {
             <div className="code-section">
               <h4>JavaScript Example (Browser or Node.js)</h4>
               <pre>
+                <button
+                  className={`copy-button ${
+                    copiedStates["js-websocket"] ? "copied" : ""
+                  }`}
+                  onClick={() =>
+                    copyToClipboard(
+                      `const wsUrl = 'wss://slave-ws-service-342233178764.us-west1.run.app';
+let ws;
+
+function initializeWebSocket(channelId) {
+  ws = new WebSocket(wsUrl);
+  
+  ws.onopen = () => {
+    console.log('Connected to WebSocket');
+    // Send subscription messages (see Section 2)
+    ws.send(JSON.stringify({ "subscribe": \`product-\${channelId}\` }));
+    // Optionally subscribe to other topics like shopping-ai-status or face
+  };
+  
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    // Process product messages (see Section 3)
+    if ('id' in data) {
+      console.log('Received product:', data);
+      // Handle the product data (e.g., display in UI)
+    }
+  };
+  
+  ws.onclose = () => {
+    console.log('WebSocket closed. Reconnecting...');
+    setTimeout(() => initializeWebSocket(channelId), 5000);
+  };
+  
+  ws.onerror = (err) => {
+    console.error('WebSocket error:', err);
+  };
+}
+
+// Usage: Call with your channelId
+// initializeWebSocket('your-channel-id-here');`,
+                      "js-websocket"
+                    )
+                  }
+                >
+                  {copiedStates["js-websocket"] ? <CheckIcon /> : <CopyIcon />}
+                  {copiedStates["js-websocket"] ? "Copied!" : "Copy"}
+                </button>
                 <code>{`const wsUrl = 'wss://slave-ws-service-342233178764.us-west1.run.app';
 let ws;
 
@@ -120,6 +229,42 @@ function initializeWebSocket(channelId) {
             <div className="code-section">
               <h4>Python Example (using websockets library)</h4>
               <pre>
+                <button
+                  className={`copy-button ${
+                    copiedStates["python-websocket"] ? "copied" : ""
+                  }`}
+                  onClick={() =>
+                    copyToClipboard(
+                      `import asyncio
+import websockets
+import json
+
+async def connect_websocket(channel_id):
+    uri = "wss://slave-ws-service-342233178764.us-west1.run.app"
+    async with websockets.connect(uri) as ws:
+        print("Connected to WebSocket")
+        await ws.send(json.dumps({"subscribe": f"product-{channel_id}"}))
+        
+        while True:
+            message = await ws.recv()
+            data = json.loads(message)
+            if "id" in data:
+                print("Received product:", data)
+                # Handle product data
+
+# Usage: Run with your channelId
+# asyncio.run(connect_websocket("your-channel-id-here"))`,
+                      "python-websocket"
+                    )
+                  }
+                >
+                  {copiedStates["python-websocket"] ? (
+                    <CheckIcon />
+                  ) : (
+                    <CopyIcon />
+                  )}
+                  {copiedStates["python-websocket"] ? "Copied!" : "Copy"}
+                </button>
                 <code>{`import asyncio
 import websockets
 import json
@@ -189,6 +334,20 @@ async def connect_websocket(channel_id):
             <h3>Example in JavaScript:</h3>
             <div className="code-section">
               <pre>
+                <button
+                  className={`copy-button ${
+                    copiedStates["js-subscribe"] ? "copied" : ""
+                  }`}
+                  onClick={() =>
+                    copyToClipboard(
+                      `ws.send(JSON.stringify({ "subscribe": \`product-\${channelId}\` }));`,
+                      "js-subscribe"
+                    )
+                  }
+                >
+                  {copiedStates["js-subscribe"] ? <CheckIcon /> : <CopyIcon />}
+                  {copiedStates["js-subscribe"] ? "Copied!" : "Copy"}
+                </button>
                 <code>{`ws.send(JSON.stringify({ "subscribe": \`product-\${channelId}\` }));`}</code>
               </pre>
             </div>
@@ -341,6 +500,30 @@ async def connect_websocket(channel_id):
             <div className="code-section">
               <h4>Example: Standard Product</h4>
               <pre>
+                <button
+                  className={`copy-button ${
+                    copiedStates["json-standard"] ? "copied" : ""
+                  }`}
+                  onClick={() =>
+                    copyToClipboard(
+                      `{
+  "id": "12345",
+  "title": "Wireless Headphones",
+  "image": "https://example.com/headphones.jpg",
+  "link": "https://amazon.com/product/12345",
+  "explanation": "These headphones were mentioned in the video for their noise-cancellation feature.",
+  "price": 99.99,
+  "currency": "USD",
+  "domain_url": "amazon.com",
+  "matchType": "HEARD"
+}`,
+                      "json-standard"
+                    )
+                  }
+                >
+                  {copiedStates["json-standard"] ? <CheckIcon /> : <CopyIcon />}
+                  {copiedStates["json-standard"] ? "Copied!" : "Copy"}
+                </button>
                 <code>{`{
   "id": "12345",
   "title": "Wireless Headphones",
@@ -358,6 +541,29 @@ async def connect_websocket(channel_id):
             <div className="code-section">
               <h4>Example: Ticket Type</h4>
               <pre>
+                <button
+                  className={`copy-button ${
+                    copiedStates["json-ticket"] ? "copied" : ""
+                  }`}
+                  onClick={() =>
+                    copyToClipboard(
+                      `{
+  "id": "67890",
+  "type": "ticket",
+  "title": "Concert Ticket",
+  "image": "https://example.com/ticket.jpg",
+  "link": "https://viator.com/ticket/67890",
+  "date": "2025-09-01T19:00:00",
+  "location": "New York, NY",
+  "explanation": "Event matching the video's location discussion."
+}`,
+                      "json-ticket"
+                    )
+                  }
+                >
+                  {copiedStates["json-ticket"] ? <CheckIcon /> : <CopyIcon />}
+                  {copiedStates["json-ticket"] ? "Copied!" : "Copy"}
+                </button>
                 <code>{`{
   "id": "67890",
   "type": "ticket",
@@ -374,6 +580,32 @@ async def connect_websocket(channel_id):
             <div className="code-section">
               <h4>Example: Deal Type</h4>
               <pre>
+                <button
+                  className={`copy-button ${
+                    copiedStates["json-deal"] ? "copied" : ""
+                  }`}
+                  onClick={() =>
+                    copyToClipboard(
+                      `{
+  "id": "11223",
+  "type": "deal",
+  "title": "50% Off Coupon",
+  "image": "https://example.com/coupon.jpg",
+  "link": "https://example.com/deal/11223",
+  "vendor_name": "Local Store",
+  "date": {"date": "2025-09-01", "time": "10:00"},
+  "location": "Online",
+  "coupon": "SAVE50",
+  "description": "Discount on selected items.",
+  "terms": "Valid until end of month."
+}`,
+                      "json-deal"
+                    )
+                  }
+                >
+                  {copiedStates["json-deal"] ? <CheckIcon /> : <CopyIcon />}
+                  {copiedStates["json-deal"] ? "Copied!" : "Copy"}
+                </button>
                 <code>{`{
   "id": "11223",
   "type": "deal",
@@ -419,8 +651,8 @@ async def connect_websocket(channel_id):
 
             <ul>
               <li>
-                <strong>Endpoint:</strong>{" "}
-                <code>
+                <strong>Endpoint:</strong>
+                <code className="endpoint">
                   GET
                   https://fastapi.edgevideo.ai/product_search/recent_products/
                   {`{channelId}`}/{`{limit}`}
@@ -454,6 +686,36 @@ async def connect_websocket(channel_id):
             <h3>Example in JavaScript (Fetch API):</h3>
             <div className="code-section">
               <pre>
+                <button
+                  className={`copy-button ${
+                    copiedStates["js-fetch"] ? "copied" : ""
+                  }`}
+                  onClick={() =>
+                    copyToClipboard(
+                      `async function getRecentProducts(channelId, limit = 4) {
+  try {
+    const response = await fetch(\`https://fastapi.edgevideo.ai/product_search/recent_products/\${channelId}/\${limit}\`);
+    if (!response.ok) {
+      throw new Error(\`Failed with status \${response.status}\`);
+    }
+    const products = await response.json();
+    console.log('Recent products:', products);
+    // Process products (e.g., display in UI)
+    return products;
+  } catch (error) {
+    console.error('Error fetching recent products:', error);
+  }
+}
+
+// Usage:
+// await getRecentProducts('your-channel-id-here', 10);`,
+                      "js-fetch"
+                    )
+                  }
+                >
+                  {copiedStates["js-fetch"] ? <CheckIcon /> : <CopyIcon />}
+                  {copiedStates["js-fetch"] ? "Copied!" : "Copy"}
+                </button>
                 <code>{`async function getRecentProducts(channelId, limit = 4) {
   try {
     const response = await fetch(\`https://fastapi.edgevideo.ai/product_search/recent_products/\${channelId}/\${limit}\`);
@@ -477,6 +739,28 @@ async def connect_websocket(channel_id):
             <div className="code-section">
               <h4>Example Response</h4>
               <pre>
+                <button
+                  className={`copy-button ${
+                    copiedStates["json-response"] ? "copied" : ""
+                  }`}
+                  onClick={() =>
+                    copyToClipboard(
+                      `[
+  {
+    "id": "12345",
+    "title": "Wireless Headphones",
+    "image": "https://example.com/headphones.jpg",
+    // ... other fields as in Section 3
+  },
+  // ... more products
+]`,
+                      "json-response"
+                    )
+                  }
+                >
+                  {copiedStates["json-response"] ? <CheckIcon /> : <CopyIcon />}
+                  {copiedStates["json-response"] ? "Copied!" : "Copy"}
+                </button>
                 <code>{`[
   {
     "id": "12345",

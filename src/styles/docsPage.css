@@ -71,6 +71,22 @@
   padding: 2rem 0;
 }
 
+.docs-logo {
+  width: 120px;
+  height: auto;
+  margin-bottom: 1.5rem;
+  filter: brightness(1.1) contrast(1.1);
+  transition: all 0.3s ease;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.docs-logo:hover {
+  transform: scale(1.05);
+  filter: brightness(1.2) contrast(1.2);
+}
+
 .header-section h1 {
   font-size: 3rem;
   margin-bottom: 1rem;
@@ -307,6 +323,7 @@
 
 .code-section {
   margin: 2rem 0;
+  position: relative;
 }
 
 .code-section h4 {
@@ -329,6 +346,7 @@
   font-family: "Monaco", "Menlo", monospace;
   font-size: 0.85rem;
   line-height: 1.5;
+  position: relative;
 }
 
 .code-section pre code {
@@ -338,6 +356,42 @@
   border: none;
   font-size: inherit;
   white-space: pre;
+}
+
+.copy-button {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(120, 119, 198, 0.2);
+  border: 1px solid rgba(120, 119, 198, 0.4);
+  border-radius: 6px;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--color-primary);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  backdrop-filter: blur(10px);
+}
+
+.copy-button:hover {
+  background: rgba(120, 119, 198, 0.3);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.copy-button.copied {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.copy-icon {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
 }
 
 /* Responsive Design */
