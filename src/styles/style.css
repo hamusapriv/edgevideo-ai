@@ -792,7 +792,7 @@ section {
   pointer-events: none;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 10px;
+  padding: 10px 10px 10px 200px;
   min-height: 140px;
 }
 
