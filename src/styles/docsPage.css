@@ -346,7 +346,6 @@
   font-family: "Monaco", "Menlo", monospace;
   font-size: 0.85rem;
   line-height: 1.5;
-  position: relative;
 }
 
 .code-section pre code {
@@ -360,8 +359,8 @@
 
 .copy-button {
   position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
+  top: 8px;
+  right: 8px;
   background: rgba(120, 119, 198, 0.2);
   border: 1px solid rgba(120, 119, 198, 0.4);
   border-radius: 6px;

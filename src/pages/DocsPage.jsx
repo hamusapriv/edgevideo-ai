@@ -187,7 +187,7 @@ function initializeWebSocket(channelId) {
                   }
                 >
                   {copiedStates["js-websocket"] ? <CheckIcon /> : <CopyIcon />}
-                  {copiedStates["js-websocket"] ? "Copied!" : "Copy"}
+                  {copiedStates["js-websocket"] ? "" : ""}
                 </button>
                 <code>{`const wsUrl = 'wss://slave-ws-service-342233178764.us-west1.run.app';
 let ws;
@@ -263,7 +263,7 @@ async def connect_websocket(channel_id):
                   ) : (
                     <CopyIcon />
                   )}
-                  {copiedStates["python-websocket"] ? "Copied!" : "Copy"}
+                  {copiedStates["python-websocket"] ? "" : ""}
                 </button>
                 <code>{`import asyncio
 import websockets
@@ -331,8 +331,8 @@ async def connect_websocket(channel_id):
               subscription. Send these as soon as the connection opens.
             </div>
 
-            <h3>Example in JavaScript:</h3>
             <div className="code-section">
+              <h4>Example in JavaScript:</h4>
               <pre>
                 <button
                   className={`copy-button ${
@@ -346,7 +346,7 @@ async def connect_websocket(channel_id):
                   }
                 >
                   {copiedStates["js-subscribe"] ? <CheckIcon /> : <CopyIcon />}
-                  {copiedStates["js-subscribe"] ? "Copied!" : "Copy"}
+                  {copiedStates["js-subscribe"] ? "" : ""}
                 </button>
                 <code>{`ws.send(JSON.stringify({ "subscribe": \`product-\${channelId}\` }));`}</code>
               </pre>
@@ -522,7 +522,7 @@ async def connect_websocket(channel_id):
                   }
                 >
                   {copiedStates["json-standard"] ? <CheckIcon /> : <CopyIcon />}
-                  {copiedStates["json-standard"] ? "Copied!" : "Copy"}
+                  {copiedStates["json-standard"] ? "" : ""}
                 </button>
                 <code>{`{
   "id": "12345",
@@ -562,7 +562,7 @@ async def connect_websocket(channel_id):
                   }
                 >
                   {copiedStates["json-ticket"] ? <CheckIcon /> : <CopyIcon />}
-                  {copiedStates["json-ticket"] ? "Copied!" : "Copy"}
+                  {copiedStates["json-ticket"] ? "" : ""}
                 </button>
                 <code>{`{
   "id": "67890",
@@ -604,7 +604,7 @@ async def connect_websocket(channel_id):
                   }
                 >
                   {copiedStates["json-deal"] ? <CheckIcon /> : <CopyIcon />}
-                  {copiedStates["json-deal"] ? "Copied!" : "Copy"}
+                  {copiedStates["json-deal"] ? "" : ""}
                 </button>
                 <code>{`{
   "id": "11223",
@@ -683,8 +683,8 @@ async def connect_websocket(channel_id):
               </li>
             </ul>
 
-            <h3>Example in JavaScript (Fetch API):</h3>
             <div className="code-section">
+              <h4>Example in JavaScript (Fetch API):</h4>
               <pre>
                 <button
                   className={`copy-button ${
@@ -714,7 +714,7 @@ async def connect_websocket(channel_id):
                   }
                 >
                   {copiedStates["js-fetch"] ? <CheckIcon /> : <CopyIcon />}
-                  {copiedStates["js-fetch"] ? "Copied!" : "Copy"}
+                  {copiedStates["js-fetch"] ? "" : ""}
                 </button>
                 <code>{`async function getRecentProducts(channelId, limit = 4) {
   try {
@@ -759,7 +759,7 @@ async def connect_websocket(channel_id):
                   }
                 >
                   {copiedStates["json-response"] ? <CheckIcon /> : <CopyIcon />}
-                  {copiedStates["json-response"] ? "Copied!" : "Copy"}
+                  {copiedStates["json-response"] ? "" : ""}
                 </button>
                 <code>{`[
   {
