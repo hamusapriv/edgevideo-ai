@@ -1,6 +1,7 @@
 import React, { forwardRef } from "react";
 import { useProducts } from "../contexts/ProductsContext";
 import { handleImageErrorWithPlaceholder } from "../utils/imageValidation";
+import useIsMobilePortrait from "../hooks/useIsMobilePortrait";
 
 const FrameGallery = forwardRef(function FrameGallery(
   { selectedId, items },
@@ -8,6 +9,10 @@ const FrameGallery = forwardRef(function FrameGallery(
 ) {
   const { products } = useProducts();
   const frames = items || products;
+  const isMobilePortrait = useIsMobilePortrait();
+
+  // Reverse the order only for mobile portrait mode to show newest frames on the right
+  const displayFrames = isMobilePortrait ? [...frames].reverse() : frames;
 
   const handleFrameImageError = (e, imageUrl) => {
     handleImageErrorWithPlaceholder(e, imageUrl, null);
@@ -17,7 +22,7 @@ const FrameGallery = forwardRef(function FrameGallery(
 
   return (
     <div className="ai-frame-gallery" ref={ref}>
-      {frames.map((p) =>
+      {displayFrames.map((p) =>
         p.back_image ? (
           <div
             className={`frame-gallery-item frame-gallery-container${

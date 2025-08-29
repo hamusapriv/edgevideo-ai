@@ -12,6 +12,7 @@ import { useAIStatus } from "../contexts/AIStatusContext";
 import { useProductAIStatus } from "../hooks/useProductAIStatus";
 import FrameGallery from "./FrameGallery";
 import useIsMobile from "../hooks/useIsMobile";
+import useIsMobilePortrait from "../hooks/useIsMobilePortrait";
 import useIsTouchDevice from "../hooks/useIsTouchDevice";
 import useLayoutPreference from "../hooks/useLayoutPreference";
 import AIStatusDisplay from "./AIStatusDisplay";
@@ -110,6 +111,7 @@ export default function LiveShopping() {
   allProductsRef.current = allProducts;
 
   const isMobile = useIsMobile(); // For CSS styling (hover capability)
+  const isMobilePortrait = useIsMobilePortrait(); // For frame gallery order and scroll sync
   const isTouchDevice = useIsTouchDevice(); // For touch behavior (scroll-to-focus)
   const layoutPreference = useLayoutPreference(); // For UI layout decisions
 
@@ -398,7 +400,7 @@ export default function LiveShopping() {
       // 1) how far container can scroll vertically
       const maxContainerScroll =
         container.scrollHeight - container.clientHeight;
-      const ratio =
+      let ratio =
         maxContainerScroll > 0 ? container.scrollTop / maxContainerScroll : 0;
 
       // 2) decide if gallery is horizontal (mobile) or vertical (desktop)
@@ -407,7 +409,11 @@ export default function LiveShopping() {
       if (isGalleryHorizontal) {
         // mobile: map to horizontal scroll
         const maxGalleryScroll = gallery.scrollWidth - gallery.clientWidth;
-        gallery.scrollLeft = ratio * maxGalleryScroll;
+
+        // For mobile portrait mode, we reversed the frame order, so we need to invert the scroll ratio
+        // When at beginning of products (ratio = 0), we want to show the end of frame gallery (ratio = 1)
+        const scrollRatio = isMobilePortrait ? 1 - ratio : ratio;
+        gallery.scrollLeft = scrollRatio * maxGalleryScroll;
       } else {
         // desktop: map to vertical scroll
         const maxGalleryScroll = gallery.scrollHeight - gallery.clientHeight;
@@ -421,7 +427,7 @@ export default function LiveShopping() {
     return () => {
       container.removeEventListener("scroll", syncFromContainer);
     };
-  }, []);
+  }, [isMobilePortrait]); // Add isMobilePortrait to dependencies since we use it in syncFromContainer
 
   // Direct scroll-based pull-to-load logic
   useEffect(() => {
