@@ -13,6 +13,7 @@ class PointsService {
     this.channelId = null;
     this.userEmail = null;
     this.isCheckingIn = false; // Prevent multiple simultaneous check-ins
+    this.lastCheckinAttempt = 0; // Timestamp of last check-in attempt
   }
 
   /**
@@ -280,6 +281,21 @@ class PointsService {
   // Automatic daily check-in with server-side validation
   async performAutoCheckin() {
     try {
+      console.log(
+        "PointsService: performAutoCheckin called for user:",
+        this.userEmail
+      );
+
+      // Debounce: prevent multiple check-ins within 5 seconds
+      const now = Date.now();
+      if (now - this.lastCheckinAttempt < 5000) {
+        console.log(
+          "PointsService: Check-in debounced - too soon since last attempt"
+        );
+        return null;
+      }
+      this.lastCheckinAttempt = now;
+
       if (!this.userEmail) {
         console.warn("No user email available for check-in");
         return null;
@@ -292,9 +308,14 @@ class PointsService {
       }
 
       this.isCheckingIn = true;
+      console.log("PointsService: Starting check-in process...");
 
       // Use the new test method instead of the old logic
       const availabilityTest = await this.testCheckinAvailability();
+      console.log(
+        "PointsService: Check-in availability test result:",
+        availabilityTest
+      );
 
       if (!availabilityTest.canCheckin) {
         // If already checked in, this is normal - not an error
@@ -337,6 +358,8 @@ class PointsService {
         const data = availabilityTest.data;
         const today = new Date().toISOString().split("T")[0];
 
+        console.log("🎉 Check-in successful! Data:", data);
+
         // Mark as checked in
         localStorage.setItem("lastDailyCheckin", today);
 
@@ -348,6 +371,16 @@ class PointsService {
         setTimeout(() => this.updatePoints(), 500);
 
         // Emit event for UI components
+        console.log(
+          "PointsService: Dispatching dailyCheckinReward event with data:",
+          {
+            days: data.days || streakValue,
+            value: data.value || 100,
+            total: data.total,
+            success: true,
+          }
+        );
+
         const event = new CustomEvent("dailyCheckinReward", {
           detail: {
             days: data.days || streakValue, // Use backend 'days' field
@@ -361,6 +394,7 @@ class PointsService {
         return data;
       }
 
+      console.log("PointsService: Check-in completed but no data returned");
       return null;
     } catch (error) {
       console.error("Auto check-in failed:", error);
@@ -368,20 +402,35 @@ class PointsService {
     } finally {
       // Always clear the checking flag
       this.isCheckingIn = false;
+      console.log("PointsService: Check-in process completed");
     }
   }
 
   // Set user email for points fetching
   setUserEmail(email) {
+    console.log("PointsService: Setting user email:", email);
+
+    // Prevent duplicate calls with the same email
+    if (this.userEmail === email) {
+      console.log("PointsService: Email unchanged, skipping duplicate setup");
+      return;
+    }
+
     this.userEmail = email;
     if (email) {
       // Update points when email is set
       this.updatePoints();
 
-      // Perform automatic daily check-in
-      setTimeout(() => {
-        this.performAutoCheckin();
-      }, 1000); // Small delay to ensure auth token is available
+      // Perform automatic daily check-in (only if not already checking in)
+      if (!this.isCheckingIn) {
+        console.log("PointsService: Scheduling auto check-in for user:", email);
+        setTimeout(() => {
+          console.log("PointsService: Performing auto check-in...");
+          this.performAutoCheckin();
+        }, 1000); // Small delay to ensure auth token is available
+      } else {
+        console.log("PointsService: Check-in already in progress, skipping");
+      }
     }
   }
 

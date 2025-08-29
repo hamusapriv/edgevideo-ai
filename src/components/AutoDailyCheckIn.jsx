@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { usePoints } from "../contexts/PointsContext";
 import pointsService from "../services/pointsService";
 import "../styles/dailyCheckIn.css";
+import "../utils/checkinDebug"; // Import debug utilities
 
 export default function AutoDailyCheckIn() {
   const { user } = useAuth();
@@ -11,41 +12,24 @@ export default function AutoDailyCheckIn() {
 
   const [showModal, setShowModal] = useState(false);
   const [rewardData, setRewardData] = useState(null);
-  const [isCheckedIn, setIsCheckedIn] = useState(false);
-
-  // Check if user has already checked in today
-  useEffect(() => {
-    const checkTodayCheckin = () => {
-      const lastCheckin = localStorage.getItem("lastDailyCheckin");
-      const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format in UTC
-
-      if (lastCheckin === today) {
-        setIsCheckedIn(true);
-      } else {
-        setIsCheckedIn(false);
-      }
-    };
-
-    checkTodayCheckin();
-
-    // Check every minute in case date changes
-    const interval = setInterval(checkTodayCheckin, 60000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Listen for daily check-in rewards from automatic check-in
   useEffect(() => {
     const handleCheckinReward = (event) => {
+      console.log(
+        "🎉 AutoDailyCheckIn: Received dailyCheckinReward event",
+        event.detail
+      );
+
       const { days, value, total } = event.detail;
 
       setRewardData({
-        days,
-        value,
-        total,
+        days: days || 1,
+        value: value || 100,
+        total: total || value || 100,
       });
 
       setShowModal(true);
-      setIsCheckedIn(true);
 
       // Mark as checked in for today using UTC date
       localStorage.setItem(
@@ -54,7 +38,7 @@ export default function AutoDailyCheckIn() {
       );
 
       // Store the streak days for the status component
-      localStorage.setItem("dailyCheckinStreak", days.toString());
+      localStorage.setItem("dailyCheckinStreak", (days || 1).toString());
 
       // Refresh points after reward
       setTimeout(() => {
@@ -62,12 +46,21 @@ export default function AutoDailyCheckIn() {
       }, 1000);
     };
 
-    window.addEventListener("dailyCheckinReward", handleCheckinReward);
+    // Only add listener if user is authenticated
+    if (user) {
+      window.addEventListener("dailyCheckinReward", handleCheckinReward);
+      console.log(
+        "AutoDailyCheckIn: Event listener registered for dailyCheckinReward"
+      );
+    }
 
     return () => {
-      window.removeEventListener("dailyCheckinReward", handleCheckinReward);
+      if (user) {
+        window.removeEventListener("dailyCheckinReward", handleCheckinReward);
+        console.log("AutoDailyCheckIn: Event listener removed");
+      }
     };
-  }, [refreshPoints]);
+  }, [refreshPoints, user]); // Added user as dependency to prevent multiple registrations
 
   // Close modal
   const closeModal = () => {

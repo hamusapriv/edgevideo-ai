@@ -5,6 +5,11 @@
    ─────────────────────────────────────────────────────────────────────────────
 */
 
+:root {
+  --frame-gallery-width: 280px;
+  --frame-gallery-padding: 12px;
+}
+
 /* ─── Tabs (main navigation at bottom)/* ─────── "Focused" card: scale + shadow ─────── */
 .item-container.focused {
   transform: scale(1);
@@ -788,7 +793,7 @@ section {
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: 10px 150px 10px 10px;
-  min-height: 120px;
+  min-height: 140px;
 }
 
 .ai-frame-gallery::-webkit-scrollbar {
@@ -801,7 +806,7 @@ section {
 }
 
 .frame-gallery-item {
-  width: 160px;
+  width: 200px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -871,6 +876,69 @@ section {
 
 .ai-frame-gallery .frame-gallery-item img {
   object-fit: cover;
+}
+
+/* Frame Gallery Specific Styles */
+.frame-gallery-container {
+  position: relative;
+}
+
+.frame-gallery-image {
+  width: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.frame-gallery-overlay {
+  position: absolute;
+  bottom: 0;
+  padding: 4px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.frame-gallery-match-type {
+  font-size: 0.8rem;
+  color: #fff;
+  margin-top: 4px;
+  max-width: 160px;
+  white-space: normal;
+}
+
+.frame-gallery-explanation {
+  font-size: 0.7rem;
+  color: #fff;
+  text-align: left;
+  margin-top: 4px;
+  max-width: 160px;
+  white-space: normal;
+}
+
+/* Desktop-specific larger frame gallery */
+@media (min-width: 768px) {
+  .frame-gallery-item {
+    width: 100%;
+  }
+
+  .frame-gallery-match-type,
+  .frame-gallery-explanation {
+    max-width: 240px;
+  }
+
+  .frame-gallery-match-type {
+    font-size: 0.9rem;
+  }
+
+  .frame-gallery-explanation {
+    font-size: 0.8rem;
+  }
 }
 
 /* Cached Products Container Styles */

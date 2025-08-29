@@ -61,12 +61,9 @@ export function PointsProvider({ children }) {
 
   // Set user email when user is authenticated
   useEffect(() => {
-    if (user && user.email) {
-      pointsService.setUserEmail(user.email);
-    } else {
-      pointsService.setUserEmail(null);
-    }
-  }, [user]);
+    const userEmail = user?.email || null;
+    pointsService.setUserEmail(userEmail);
+  }, [user?.email]); // Only trigger when email specifically changes
 
   // Set channel ID
   useEffect(() => {

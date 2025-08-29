@@ -131,7 +131,7 @@
     padding: 15px 15px 100px 15px;
     gap: 10px;
     min-height: 110px;
-    min-width: 200px;
+    min-width: 300px;
   }
 
   .ai-frame-gallery {
@@ -198,5 +198,11 @@
 
   .cached-products-scroll-container {
     max-height: 500px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (max-width: 768px) {
+  .ai-frame-gallery {
+    min-width: 240px;
   }
 }
