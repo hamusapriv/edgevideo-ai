@@ -5,6 +5,7 @@ import { useTypingAnimation } from "../hooks/useTypingAnimation";
 
 export default function AIStatusDisplay() {
   const { shoppingAIStatus } = useAIStatus();
+  const [triggerKey, setTriggerKey] = React.useState(0);
 
   // Safety check for AI status
   const safeAIStatus = React.useMemo(() => {
@@ -13,6 +14,11 @@ export default function AIStatusDisplay() {
     }
     return shoppingAIStatus;
   }, [shoppingAIStatus]);
+
+  // Force typing animation restart when status changes
+  React.useEffect(() => {
+    setTriggerKey((prev) => prev + 1);
+  }, [safeAIStatus]);
 
   // Fast typing animation: 1s for any status
   const typingSpeed = React.useMemo(() => {
@@ -25,7 +31,10 @@ export default function AIStatusDisplay() {
     typingSpeed
   );
 
-  const statusKey = React.useMemo(() => safeAIStatus, [safeAIStatus]);
+  const statusKey = React.useMemo(() => `${safeAIStatus}-${triggerKey}`, [
+    safeAIStatus,
+    triggerKey,
+  ]);
 
   // Safe text rendering with fallback
   const renderText = React.useMemo(() => {

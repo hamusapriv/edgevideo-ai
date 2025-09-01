@@ -2,19 +2,25 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AIStatusContext = createContext({
-  shoppingAIStatus: "Searching for products...",
+  shoppingAIStatus: "Connecting...",
   setShoppingAIStatus: () => {},
 });
 
 export function AIStatusProvider({ children }) {
-  const [shoppingAIStatus, setShoppingAIStatus] = useState(
-    "Searching for products..."
-  );
+  const [shoppingAIStatus, setShoppingAIStatus] = useState("Connecting...");
 
   // CONSOLIDATED: Listen for legacy AI status events to unify state management
   useEffect(() => {
     const handleAIStatusUpdate = (event) => {
-      setShoppingAIStatus(event.detail.status);
+      const newStatus = event.detail.status;
+      setShoppingAIStatus(newStatus);
+
+      // Auto-transition from "Connected!" to "Searching for products..." after 2 seconds
+      if (newStatus === "Connected!") {
+        setTimeout(() => {
+          setShoppingAIStatus("Searching for products...");
+        }, 2000);
+      }
     };
 
     window.addEventListener("ai-status-update", handleAIStatusUpdate);

@@ -8,6 +8,7 @@ import React, {
   useState,
   useEffect,
 } from "react";
+import { useLocation } from "react-router-dom";
 import { getChannelId } from "../legacy/modules/useChannelModule";
 
 const ProductsContext = createContext({
@@ -21,6 +22,7 @@ const ProductsContext = createContext({
 });
 
 export function ProductsProvider({ children }) {
+  const location = useLocation();
   const [products, setProducts] = useState([]);
   const [cachedProducts, setCachedProducts] = useState([]);
   const [cachedProductsLoading, setCachedProductsLoading] = useState(false);
@@ -106,13 +108,39 @@ export function ProductsProvider({ children }) {
 
       setPreFetchedPool(cachedProductData);
       setPoolInitialized(true);
+
+      // Add first 5 products one by one with 0.3s delay between each
+      const initialProducts = cachedProductData.slice(0, 5);
+      console.log(
+        `🚀 Starting to add ${initialProducts.length} initial products with 0.3s delays`
+      );
+
+      initialProducts.forEach((product, index) => {
+        setTimeout(() => {
+          console.log(
+            `📦 Adding cached product ${index + 1}/5: ${product.name ||
+              product.id}`
+          );
+          setProducts((prev) => {
+            if (prev.some((p) => p.id === product.id)) return prev;
+            const next = [...prev, product];
+            return next.slice(-10); // Maintain 10-product limit
+          });
+        }, index * 500); // 300ms (0.3s) delay between each product
+      });
+
+      setCachedProductsInitialized(true);
+
+      console.log(
+        `✅ Pre-fetch complete: ${cachedProductData.length} products fetched, first ${initialProducts.length} added as live products`
+      );
+
       // Pre-fetch complete - products ready for serving
     } catch (error) {
       console.error("Error during pre-fetch:", error);
     }
   }, [poolInitialized]);
 
-  // Load one cached product at a time from pre-fetched pool
   // Load one cached product at a time from pre-fetched pool
   const loadMoreCachedProducts = useCallback(async () => {
     if (cachedProductsLoading || !hasMoreCachedProducts) return;
@@ -127,6 +155,7 @@ export function ProductsProvider({ children }) {
 
     try {
       // Filter pool to exclude live products and already added cached products
+      // The first 5 products are now in the live products array
       const existingCachedIds = new Set(cachedProducts.map((p) => p.id));
       const liveProductIds = new Set(products.map((p) => p.id));
 
@@ -140,7 +169,7 @@ export function ProductsProvider({ children }) {
         return;
       }
 
-      // Get the newest available product (first in sorted array)
+      // Get the next available product
       const nextProduct = availableProducts[0];
 
       // Add one product to cached products
@@ -165,10 +194,18 @@ export function ProductsProvider({ children }) {
     preFetchCachedProducts,
   ]);
 
-  // Pre-fetch cached products on page load
+  // Pre-fetch cached products on page load (only on routes that need channel data)
   useEffect(() => {
-    preFetchCachedProducts();
-  }, [preFetchCachedProducts]);
+    // Only pre-fetch on routes that actually need channel-specific product data
+    const needsChannelData =
+      location.pathname.startsWith("/app") ||
+      location.pathname.startsWith("/demo") ||
+      location.pathname.includes("channel");
+
+    if (needsChannelData) {
+      preFetchCachedProducts();
+    }
+  }, [preFetchCachedProducts, location.pathname]);
 
   // CONSOLIDATED: Listen for legacy product events to unify data flow
   useEffect(() => {

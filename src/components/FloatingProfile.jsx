@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useWallet } from "../contexts/WalletContext";
+import { usePoints } from "../contexts/PointsContext";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import GoogleSignInButton from "../auth/GoogleSignInButton";
@@ -20,6 +21,13 @@ export default function FloatingProfile() {
   const profileRef = useRef(null);
   const { user } = useAuth();
   const { address, isConnected } = useAccount();
+  const {
+    points,
+    loading: pointsLoading,
+    error: pointsError,
+    formatPoints,
+    refreshPoints,
+  } = usePoints();
   const {
     wallet,
     connectWallet,
@@ -261,6 +269,64 @@ export default function FloatingProfile() {
                 </div>
               </div>
             </div>
+
+            {/* Points Section */}
+            {user && (
+              <div className="profile-section points-section">
+                <div className="section-header">
+                  <div className="section-title">
+                    <h4>Points</h4>
+                    <svg
+                      className="points-icon-header"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="points-content">
+                  <div className="points-balance">
+                    <span className="points-value">
+                      {pointsLoading ? "..." : formatPoints(points)}
+                    </span>
+                    <span className="points-label">Available Points</span>
+                  </div>
+
+                  {pointsError && (
+                    <div className="points-error">
+                      <span>⚠️ {pointsError}</span>
+                    </div>
+                  )}
+
+                  <button
+                    className="profile-btn profile-btn--refresh-points"
+                    onClick={refreshPoints}
+                    disabled={pointsLoading}
+                    title="Refresh points balance"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className={pointsLoading ? "spinning-icon" : ""}
+                    >
+                      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                      <path d="M21 3v5h-5" />
+                      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                      <path d="M3 21v-5h5" />
+                    </svg>
+                    {pointsLoading ? "Refreshing..." : "Refresh"}
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Enhanced Wallet Section */}
             <div className="profile-section">

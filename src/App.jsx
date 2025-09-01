@@ -5,7 +5,6 @@ import ProfileSidebar from "./components/ProfileSidebar";
 import { useSidebar } from "./contexts/SidebarContext";
 import LoadingOverlay from "./components/LoadingOverlay";
 import CookieConsent from "./components/CookieConsent";
-import AutoDailyCheckIn from "./components/AutoDailyCheckIn";
 import SEOHead, { seoConfigs } from "./components/SEOHead";
 import DynamicSEO from "./components/DynamicSEO";
 import {
@@ -127,7 +126,6 @@ export default function App() {
       </Suspense>
 
       {/* Global components */}
-      <AutoDailyCheckIn />
       <CookieConsent />
       <BuildInfo />
     </MarketingThemeProvider>

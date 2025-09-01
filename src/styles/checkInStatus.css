@@ -1,17 +1,16 @@
 /* Check-In Status Styles */
 
 .checkin-status {
-  background: var(--bg-primary, #ffffff);
-  border: 1px solid var(--border-light, #e1e5e9);
+  background: transparent;
   border-radius: 12px;
   padding: 1rem;
-  margin: 1rem 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding-bottom: 0;
+  margin: 0;
   transition: all 0.3s ease;
 }
 
 .checkin-status:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--border-light, rgba(255, 255, 255, 0.2));
   transform: translateY(-1px);
 }
 
@@ -24,9 +23,12 @@
 
 .checkin-status-header h4 {
   margin: 0;
-  color: var(--color-text, #333);
+  color: white;
   font-size: 1.1rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .checkin-indicator {
@@ -86,7 +88,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border-light, #f0f0f0);
+  border-bottom: 1px solid var(--border-light, rgba(255, 255, 255, 0.1));
+  transition: all 0.3s ease;
+}
+
+.status-item:hover {
+  padding-left: 0.25rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
 }
 
 .status-item:last-of-type {
@@ -94,13 +103,13 @@
 }
 
 .status-label {
-  color: var(--color-text-secondary, #666);
+  color: rgba(255, 255, 255);
   font-size: 0.9rem;
   font-weight: 500;
 }
 
 .status-value {
-  color: var(--color-text, #333);
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -126,22 +135,23 @@
 }
 
 .status-message:not(.available) {
-  background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+  background: rgba(0, 0, 0, 0.1);
   color: var(--color-success, #4caf50);
-  border: 1px solid rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  box-shadow: 0px 0px 5px rgba(76, 175, 80, 0.5);
 }
 
 .status-message.available {
-  background: linear-gradient(135deg, #e3f2fd, #f1f8ff);
+  background: rgba(0, 0, 0, 0.1);
   color: var(--color-primary, #2196f3);
-  border: 1px solid rgba(33, 150, 243, 0.2);
+  border: 1px solid rgba(33, 150, 243, 0.3);
   animation: glow 3s ease-in-out infinite alternate;
 }
 
 .status-message.unavailable {
-  background: linear-gradient(135deg, #fff3e0, #ffeaa7);
+  background: rgba(255, 152, 0, 0.1);
   color: var(--color-warning, #ff9800);
-  border: 1px solid rgba(255, 152, 0, 0.2);
+  border: 1px solid rgba(255, 152, 0, 0.3);
 }
 
 @keyframes glow {
@@ -155,9 +165,13 @@
 
 /* Dark theme support */
 [data-theme="dark"] .checkin-status {
-  background: var(--bg-primary-dark, #1a1a1a);
-  border-color: var(--border-dark, #333);
+  background: transparent;
+  border-color: var(--border-dark, rgba(255, 255, 255, 0.1));
   color: var(--color-text-dark, #ffffff);
+}
+
+[data-theme="dark"] .checkin-status:hover {
+  border-color: var(--border-dark, rgba(255, 255, 255, 0.2));
 }
 
 [data-theme="dark"] .checkin-status-header h4 {

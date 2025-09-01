@@ -5,6 +5,7 @@ import ChannelLogo from "../components/ChannelLogo";
 import Tabs from "../components/Tabs";
 import ScreenInitializer from "../screen/ScreenInitializer";
 import { useSidebar } from "../contexts/SidebarContext";
+import AutoDailyCheckIn from "../components/AutoDailyCheckIn";
 
 // Tab‐pane components
 import ShoppingTab from "../components/ShoppingTab";
@@ -149,6 +150,9 @@ function AppPage() {
       />
 
       <AppBg />
+
+      {/* Check-in functionality - only loads on app page */}
+      <AutoDailyCheckIn />
     </>
   );
 }

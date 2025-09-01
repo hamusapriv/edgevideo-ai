@@ -418,18 +418,32 @@ class PointsService {
 
     this.userEmail = email;
     if (email) {
-      // Update points when email is set
+      // Always update points when email is set (for display purposes)
       this.updatePoints();
 
-      // Perform automatic daily check-in (only if not already checking in)
-      if (!this.isCheckingIn) {
-        console.log("PointsService: Scheduling auto check-in for user:", email);
-        setTimeout(() => {
-          console.log("PointsService: Performing auto check-in...");
-          this.performAutoCheckin();
-        }, 1000); // Small delay to ensure auth token is available
+      // Only perform check-in functionality on specific routes
+      const isAppPage = window.location.pathname.startsWith("/app");
+      const isDemoPage = window.location.pathname.startsWith("/demo");
+      const needsCheckinFeatures = isAppPage || isDemoPage;
+
+      if (needsCheckinFeatures) {
+        // Perform automatic daily check-in (only if not already checking in)
+        if (!this.isCheckingIn) {
+          console.log(
+            "PointsService: Scheduling auto check-in for user:",
+            email
+          );
+          setTimeout(() => {
+            console.log("PointsService: Performing auto check-in...");
+            this.performAutoCheckin();
+          }, 1000); // Small delay to ensure auth token is available
+        } else {
+          console.log("PointsService: Check-in already in progress, skipping");
+        }
       } else {
-        console.log("PointsService: Check-in already in progress, skipping");
+        console.log(
+          `PointsService: Points updated for display. Check-in functionality disabled on route: ${window.location.pathname}`
+        );
       }
     }
   }

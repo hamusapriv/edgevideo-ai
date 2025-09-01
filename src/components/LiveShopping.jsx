@@ -612,7 +612,7 @@ export default function LiveShopping() {
           <div className="separator-text">Live Now</div>
         </div>
         <div id="itemContent" ref={beltRef} style={{ display: "flex" }}>
-          {/* Live Products */}
+          {/* Live Products (including the first 5 cached products that were added immediately) */}
           {displayProducts.map((p) => (
             <ProductCard
               key={p.id}
@@ -624,8 +624,9 @@ export default function LiveShopping() {
               onImageError={handleProductImageError}
             />
           ))}
+
           <div style={{ maxWidth: "100%" }}>
-            {/* Recently Matched Separator - only show if there are cached products and no duplicates */}
+            {/* Recently Matched Separator - only show if there are cached products */}
             {cachedProducts.filter(
               (p) => !displayProducts.some((live) => live.id === p.id)
             ).length > 0 && (
@@ -634,7 +635,7 @@ export default function LiveShopping() {
               </div>
             )}
 
-            {/* Cached Products (excluding duplicates of live products) */}
+            {/* Additional Cached Products (loaded through scroll, excluding duplicates) */}
             {cachedProducts
               .filter((p) => !displayProducts.some((live) => live.id === p.id))
               .map((p) => (
