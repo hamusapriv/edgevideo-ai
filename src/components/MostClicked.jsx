@@ -5,24 +5,140 @@ export default function MostClicked() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  // Cache key for localStorage
+  const CACHE_KEY = "mostClicked_cache";
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+  // Load from cache if available and not expired
+  const loadFromCache = () => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        const isExpired = Date.now() - timestamp > CACHE_DURATION;
+
+        if (!isExpired && data.length > 0) {
+          console.log("Loading most clicked from cache");
+          setItems(data);
+          return true;
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to load from cache:", err);
+    }
+    return false;
+  };
+
+  // Save to cache
+  const saveToCache = (data) => {
+    try {
+      localStorage.setItem(
+        CACHE_KEY,
+        JSON.stringify({
+          data,
+          timestamp: Date.now(),
+        })
+      );
+    } catch (err) {
+      console.warn("Failed to save to cache:", err);
+    }
+  };
+
+  const fetchMostClicked = async () => {
+    try {
+      setError(null);
+      const data = await apiService.fetchMostClicked();
+      setItems(data);
+      saveToCache(data);
+      setRetryCount(0);
+    } catch (err) {
+      console.error("Failed to load most-clicked:", err);
+      setError("Could not load featured products");
+
+      // If fetch fails and we have no items, try to load from cache as fallback
+      if (items.length === 0) {
+        const cacheLoaded = loadFromCache();
+        if (cacheLoaded) {
+          setError("Showing cached results (connection issues)");
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRetry = () => {
+    setRetryCount((prev) => prev + 1);
+    setLoading(true);
+    setError(null);
+    fetchMostClicked();
+  };
 
   useEffect(() => {
-    apiService
-      .fetchMostClicked()
-      .then((data) => setItems(data))
-      .catch((err) => {
-        console.error("Failed to load most-clicked:", err);
-        setError("Could not load clicked products");
-      })
-      .finally(() => setLoading(false));
+    // Try to load from cache first for faster initial load
+    const cacheLoaded = loadFromCache();
+    if (cacheLoaded) {
+      setLoading(false);
+      // Still fetch fresh data in background
+      fetchMostClicked();
+    } else {
+      // No cache, fetch immediately
+      fetchMostClicked();
+    }
   }, []);
 
-  if (loading) return <p>Loading featured…</p>;
-  if (error) return <p className="error">{error}</p>;
+  if (loading) {
+    return (
+      <div className="most-clicked">
+        <h4>Featured Products</h4>
+        <p>
+          Loading featured products
+          {retryCount > 0 ? ` (attempt ${retryCount + 1})` : ""}…
+        </p>
+      </div>
+    );
+  }
+
+  if (error && items.length === 0) {
+    return (
+      <div className="most-clicked">
+        <h4>Featured Products</h4>
+        <div className="error-state">
+          <p className="error">{error}</p>
+          <button
+            onClick={handleRetry}
+            className="retry-btn"
+            style={{
+              marginTop: "8px",
+              padding: "6px 12px",
+              fontSize: "12px",
+              backgroundColor: "rgba(138, 43, 226, 0.8)",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="most-clicked">
       <h4>Featured Products</h4>
+      {error && items.length > 0 && (
+        <div
+          className="warning"
+          style={{ fontSize: "12px", color: "#f39c12", marginBottom: "8px" }}
+        >
+          {error}
+        </div>
+      )}
       <ul id="clicked-list">
         {items.map((p, idx) => (
           <li className="product-card" key={idx}>

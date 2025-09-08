@@ -784,18 +784,6 @@ section {
   }
 }
 
-.ai-frame-gallery {
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  overflow-x: auto;
-  pointer-events: none;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  padding: 10px 10px 10px 200px;
-  min-height: 140px;
-}
-
 .ai-frame-gallery::-webkit-scrollbar {
   display: none;
 }
@@ -836,13 +824,21 @@ section {
 }
 
 .ai-frame-gallery {
+  display: flex;
+  position: relative;
+  align-items: center;
+  flex-direction: row;
+  overflow-x: auto;
+  pointer-events: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 10px 10px 10px 200px;
+  min-height: 140px;
+
   /* your own padding/margins still apply here */
   --hole-size: 6px;
   --hole-gap: 20px;
   --frame-border: 2px;
-
-  display: flex;
-  position: relative;
 
   background-color: black;
   background-image: repeating-linear-gradient(

@@ -16,7 +16,6 @@ export default function FloatingProfile() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState(null);
-  const [isWalletLinked, setIsWalletLinked] = useState(false);
   const [linkedWalletInfo, setLinkedWalletInfo] = useState(null);
   const profileRef = useRef(null);
   const { user } = useAuth();
@@ -30,10 +29,12 @@ export default function FloatingProfile() {
   } = usePoints();
   const {
     wallet,
+    linkedWallet,
     connectWallet,
     verifyWallet,
     disconnectWallet,
     loading,
+    isCheckingLinkedWallet,
     error,
   } = useWallet();
 
@@ -83,8 +84,8 @@ export default function FloatingProfile() {
       const result = await rainbowKitWalletService.verifyWalletOwnership();
       console.log("Wallet verification successful:", result);
 
-      // Update local state
-      setIsWalletLinked(true);
+      // Refresh wallet status from context
+      // The WalletContext will automatically update linkedWallet state
 
       // Refresh wallet status
       const status = await rainbowKitWalletService.isWalletLinked();
@@ -156,9 +157,8 @@ export default function FloatingProfile() {
           const status = await rainbowKitWalletService.isWalletLinked();
           console.log("🔍 Wallet link status:", status);
 
-          // Only show as verified if wallet is truly linked, not just if current wallet could be linked
-          setIsWalletLinked(status.isLinked);
-
+          // The WalletContext will handle linkedWallet.isLinked state
+          // We only need to update linkedWalletInfo for display purposes
           if (status.isLinked && status.linkedAddress) {
             setLinkedWalletInfo({
               address: status.linkedAddress,
@@ -174,11 +174,9 @@ export default function FloatingProfile() {
           }
         } catch (error) {
           console.error("Failed to check wallet link status:", error);
-          setIsWalletLinked(false);
           setLinkedWalletInfo(null);
         }
       } else {
-        setIsWalletLinked(false);
         setLinkedWalletInfo(null);
       }
     };
@@ -339,7 +337,7 @@ export default function FloatingProfile() {
                   {wallet.isConnected && (
                     <span className="status-badge connected">🔗 Connected</span>
                   )}
-                  {isWalletLinked && (
+                  {linkedWallet.isLinked && (
                     <span className="status-badge verified">
                       ✓ Verified & Linked
                     </span>
@@ -440,7 +438,7 @@ export default function FloatingProfile() {
 
                   <div className="wallet-inline-actions">
                     {/* Only show verify button if wallet is connected but not linked */}
-                    {!isWalletLinked && user && isConnected && (
+                    {!linkedWallet.isLinked && user && isConnected && (
                       <button
                         className="profile-btn profile-btn--verify"
                         onClick={handleVerifyWallet}
@@ -532,8 +530,14 @@ export default function FloatingProfile() {
                     </div>
                   )}
 
-                  {/* Only show connect wallet option if user doesn't have a linked wallet */}
-                  {!isWalletLinked ? (
+                  {/* Show loading state while checking linked wallet */}
+                  {isCheckingLinkedWallet ? (
+                    <div className="wallet-loading">
+                      <p>Checking wallet connection...</p>
+                      <div className="loading-spinner"></div>
+                    </div>
+                  ) : /* Only show connect wallet option if user doesn't have a linked wallet */
+                  !linkedWallet.isLinked ? (
                     <>
                       {!wallet.hasMetaMask ? (
                         <div className="wallet-install-prompt">
@@ -606,7 +610,7 @@ export default function FloatingProfile() {
             {/* Enhanced Actions Section */}
             <div className="profile-section actions-section">
               <div className="profile-actions">
-                {isWalletLinked && (
+                {linkedWallet.isLinked && (
                   <a
                     href="/app?channelId=3d8c4c38-2d6e-483c-bdc5-e1eeeadd155e"
                     className="profile-btn profile-btn--app"

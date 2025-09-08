@@ -27,6 +27,7 @@ const WalletContext = createContext({
   verifyWallet: () => {},
   disconnectWallet: () => {},
   loading: false,
+  isCheckingLinkedWallet: false,
   error: null,
 });
 
@@ -48,6 +49,7 @@ export function WalletProvider({ children }) {
     isLinked: false,
   });
   const [loading, setLoading] = useState(false);
+  const [isCheckingLinkedWallet, setIsCheckingLinkedWallet] = useState(false);
   const [error, setError] = useState(null);
 
   // Format short address
@@ -95,10 +97,12 @@ export function WalletProvider({ children }) {
         shortAddress: "",
         isLinked: false,
       });
+      setIsCheckingLinkedWallet(false);
       return;
     }
 
     try {
+      setIsCheckingLinkedWallet(true);
       const linkedWalletData = await rainbowKitWalletService.getLinkedWallet();
       if (linkedWalletData.walletAddress) {
         setLinkedWallet({
@@ -120,6 +124,8 @@ export function WalletProvider({ children }) {
         shortAddress: "",
         isLinked: false,
       });
+    } finally {
+      setIsCheckingLinkedWallet(false);
     }
   }, [user, formatShortAddress]);
 
@@ -373,6 +379,7 @@ export function WalletProvider({ children }) {
     disconnectWallet,
     checkServerLinkedWallet,
     loading,
+    isCheckingLinkedWallet,
     error,
   };
 

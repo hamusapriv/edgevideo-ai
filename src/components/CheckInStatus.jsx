@@ -210,27 +210,11 @@ export default function CheckInStatus() {
           <span className="status-value">{timeRemaining}</span>
         </div>
 
-        {isCheckedIn && (
-          <div className="status-message">
-            Checked in ✓
-            {serverStatus && (
-              <small>
-                <br />
-                Status verified by server
-              </small>
-            )}
-          </div>
-        )}
+        {isCheckedIn && <div className="status-message">Checked in ✓</div>}
 
         {!isCheckedIn && !walletRequired && (
           <div className="status-message available">
             Check-in available! Refresh the page to claim your daily reward.
-            {serverStatus && (
-              <small>
-                <br />
-                Server confirms availability
-              </small>
-            )}
           </div>
         )}
 

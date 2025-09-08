@@ -59,6 +59,54 @@ class ApiService {
     return fetch(url, options);
   }
 
+  // Retry utility with exponential backoff
+  async makeRequestWithRetry(url, options = {}, maxRetries = 3) {
+    const baseDelay = 1000; // 1 second base delay
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await this.makeRequest(url, options);
+
+        // If response is successful or it's a client error (4xx), don't retry
+        if (response.ok || (response.status >= 400 && response.status < 500)) {
+          return response;
+        }
+
+        // If this is the last attempt, return the failed response
+        if (attempt === maxRetries) {
+          console.warn(`Max retries (${maxRetries}) reached for ${url}`);
+          return response;
+        }
+
+        // Calculate exponential backoff delay
+        const delay = baseDelay * Math.pow(2, attempt);
+        console.warn(
+          `Request failed for ${url}, attempt ${attempt + 1}/${maxRetries +
+            1}. Retrying in ${delay}ms...`
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      } catch (error) {
+        // If this is the last attempt, throw the error
+        if (attempt === maxRetries) {
+          console.error(
+            `Network error after ${maxRetries + 1} attempts for ${url}:`,
+            error
+          );
+          throw error;
+        }
+
+        // Calculate exponential backoff delay
+        const delay = baseDelay * Math.pow(2, attempt);
+        console.warn(
+          `Network error for ${url}, attempt ${attempt + 1}/${maxRetries +
+            1}. Retrying in ${delay}ms...`,
+          error
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+  }
+
   // Authentication APIs
   async fetchUserDetails(token) {
     const response = await this.makeRequest(API_ENDPOINTS.AUTH_DETAILS, {
@@ -160,11 +208,15 @@ class ApiService {
   }
 
   async fetchMostLiked() {
-    const response = await this.makeRequest(API_ENDPOINTS.PRODUCTS_MOST_LIKED);
+    const response = await this.makeRequestWithRetry(
+      API_ENDPOINTS.PRODUCTS_MOST_LIKED,
+      {}, // default GET options
+      3 // retry up to 3 times
+    );
 
     if (!response.ok) {
       throw new Error(
-        `Failed to fetch most liked products: ${response.status}`
+        `Failed to fetch most liked products: ${response.status} ${response.statusText}`
       );
     }
 
@@ -172,13 +224,15 @@ class ApiService {
   }
 
   async fetchMostClicked() {
-    const response = await this.makeRequest(
-      API_ENDPOINTS.PRODUCTS_MOST_CLICKED
+    const response = await this.makeRequestWithRetry(
+      API_ENDPOINTS.PRODUCTS_MOST_CLICKED,
+      {}, // default GET options
+      3 // retry up to 3 times
     );
 
     if (!response.ok) {
       throw new Error(
-        `Failed to fetch most clicked products: ${response.status}`
+        `Failed to fetch most clicked products: ${response.status} ${response.statusText}`
       );
     }
 

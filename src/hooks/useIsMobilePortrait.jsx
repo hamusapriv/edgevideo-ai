@@ -5,19 +5,22 @@ export default function useIsMobilePortrait() {
   const [isMobilePortrait, setIsMobilePortrait] = useState(() => {
     if (typeof window === "undefined") return false;
 
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    // Check if it's actually a mobile device (no hover capability)
+    const isMobileDevice = window.matchMedia("(hover: none)").matches;
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-    return isMobile && isPortrait;
+
+    // Only reverse frames for actual mobile devices in portrait, not narrow desktop windows
+    return isMobileDevice && isPortrait;
   });
 
   useEffect(() => {
-    const mobileQuery = window.matchMedia("(max-width: 768px)");
+    const mobileQuery = window.matchMedia("(hover: none)");
     const orientationQuery = window.matchMedia("(orientation: portrait)");
 
     function handleChange() {
-      const isMobile = mobileQuery.matches;
+      const isMobileDevice = mobileQuery.matches;
       const isPortrait = orientationQuery.matches;
-      setIsMobilePortrait(isMobile && isPortrait);
+      setIsMobilePortrait(isMobileDevice && isPortrait);
     }
 
     mobileQuery.addEventListener("change", handleChange);
