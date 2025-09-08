@@ -188,6 +188,32 @@ export default function LiveShopping() {
     }, 500);
   }, []);
 
+  // Function to trigger frame gallery sync with minimal scroll disruption
+  const scrollContainerAfterAddition = useCallback(() => {
+    const container = scrollRef.current;
+    if (container && isMobilePortrait) {
+      // Store the initial scroll position
+      const initialScroll = container.scrollTop;
+
+      // Use requestAnimationFrame to ensure DOM updates are complete
+      requestAnimationFrame(() => {
+        // Check if we're still at the same position
+        const currentScroll = container.scrollTop;
+
+        // Only proceed if scroll position hasn't changed significantly
+        if (Math.abs(currentScroll - initialScroll) < 5) {
+          // Small instantaneous scroll to trigger sync
+          container.scrollTop = currentScroll + 1;
+
+          // Immediately return to original position
+          requestAnimationFrame(() => {
+            container.scrollTop = initialScroll;
+          });
+        }
+      });
+    }
+  }, [isMobilePortrait]);
+
   useEffect(() => {
     async function handler(e) {
       const p = e.detail;
@@ -215,6 +241,9 @@ export default function LiveShopping() {
           return [{ ...validProduct, _status: "enter" }, ...prev];
         });
         scheduleEnterRemoval(validProduct.id);
+
+        // Trigger scroll alignment for mobile portrait mode
+        scrollContainerAfterAddition();
       }
     }
 
@@ -248,6 +277,9 @@ export default function LiveShopping() {
           return [{ ...validProduct, _status: "enter" }, ...prev];
         });
         scheduleEnterRemoval(validProduct.id);
+
+        // Trigger scroll alignment for mobile portrait mode
+        scrollContainerAfterAddition();
       }
     }
 
@@ -305,9 +337,19 @@ export default function LiveShopping() {
       additions.forEach((p) => scheduleEnterRemoval(p.id));
       removals.forEach((p) => scheduleExitRemoval(p.id));
 
+      // Trigger scroll alignment if products were added
+      if (additions.length > 0) {
+        setTimeout(() => scrollContainerAfterAddition(), 0);
+      }
+
       return updated;
     });
-  }, [products, scheduleEnterRemoval, scheduleExitRemoval]);
+  }, [
+    products,
+    scheduleEnterRemoval,
+    scheduleExitRemoval,
+    scrollContainerAfterAddition,
+  ]);
 
   useEffect(() => {
     if (!selectedId && products.length) {
@@ -393,8 +435,10 @@ export default function LiveShopping() {
     if (!gallery || !container) return;
 
     let lock = false;
+    let smoothScrolling = false;
+
     function syncFromContainer() {
-      if (lock) return;
+      if (lock || smoothScrolling) return;
       lock = true;
 
       // 1) how far container can scroll vertically
@@ -403,33 +447,257 @@ export default function LiveShopping() {
       let ratio =
         maxContainerScroll > 0 ? container.scrollTop / maxContainerScroll : 0;
 
-      // 2) decide if gallery is horizontal (mobile) or vertical (desktop)
-      const isGalleryHorizontal = gallery.scrollWidth > gallery.clientWidth;
-
-      if (isGalleryHorizontal) {
-        // mobile: map to horizontal scroll
+      // 2) For mobile portrait, we always want to sync horizontally regardless of whether gallery is scrollable
+      if (isMobilePortrait) {
+        // Mobile portrait: map vertical products scroll to horizontal gallery scroll
         const maxGalleryScroll = gallery.scrollWidth - gallery.clientWidth;
 
-        // For mobile portrait mode, we reversed the frame order, so we need to invert the scroll ratio
-        // When at beginning of products (ratio = 0), we want to show the end of frame gallery (ratio = 1)
-        const scrollRatio = isMobilePortrait ? 1 - ratio : ratio;
-        gallery.scrollLeft = scrollRatio * maxGalleryScroll;
+        if (maxGalleryScroll > 0) {
+          // Gallery is scrollable - use inverted ratio since frames are reversed
+          const scrollRatio = 1 - ratio;
+          gallery.scrollLeft = scrollRatio * maxGalleryScroll;
+        } else {
+          // Gallery is not scrollable yet, but position based on scroll ratio to show relevant frames
+          // Since frames are reversed, we need to decide which frames to show based on product position
+          if (gallery.children.length > 0) {
+            const galleryWidth = gallery.clientWidth;
+            const totalWidth = gallery.scrollWidth;
+
+            // If gallery is wider than container, we can still position it
+            if (totalWidth > galleryWidth) {
+              // We can scroll a bit even if maxGalleryScroll was <= 0 due to rounding
+              const actualMaxScroll = totalWidth - galleryWidth;
+              const scrollRatio = 1 - ratio; // Inverted for mobile portrait
+              gallery.scrollLeft = scrollRatio * actualMaxScroll;
+            } else {
+              // Gallery fits entirely, position based on scroll state
+              if (ratio <= 0.3) {
+                // Near top of products - show newest frames (right side for reversed)
+                gallery.scrollLeft = Math.max(0, totalWidth - galleryWidth);
+              } else if (ratio >= 0.7) {
+                // Near bottom of products - show oldest frames (left side for reversed)
+                gallery.scrollLeft = 0;
+              } else {
+                // Middle area - show middle frames
+                gallery.scrollLeft = Math.max(
+                  0,
+                  (totalWidth - galleryWidth) * 0.5
+                );
+              }
+            }
+          }
+        }
       } else {
-        // desktop: map to vertical scroll
-        const maxGalleryScroll = gallery.scrollHeight - gallery.clientHeight;
-        gallery.scrollTop = ratio * maxGalleryScroll;
+        // Desktop or mobile landscape: decide if gallery is horizontal or vertical
+        const isGalleryHorizontal = gallery.scrollWidth > gallery.clientWidth;
+
+        if (isGalleryHorizontal) {
+          // mobile landscape: map to horizontal scroll
+          const maxGalleryScroll = gallery.scrollWidth - gallery.clientWidth;
+          if (maxGalleryScroll > 0) {
+            gallery.scrollLeft = ratio * maxGalleryScroll;
+          }
+        } else {
+          // desktop: map to vertical scroll
+          const maxGalleryScroll = gallery.scrollHeight - gallery.clientHeight;
+          if (maxGalleryScroll > 0) {
+            gallery.scrollTop = ratio * maxGalleryScroll;
+          }
+        }
       }
 
       lock = false;
     }
 
+    // Smooth scroll function for frame gallery adjustments
+    function smoothSyncFromContainer(targetRatio = null) {
+      if (lock || smoothScrolling) return;
+
+      smoothScrolling = true;
+
+      // Use current ratio if not provided
+      const maxContainerScroll =
+        container.scrollHeight - container.clientHeight;
+      const ratio =
+        targetRatio !== null
+          ? targetRatio
+          : maxContainerScroll > 0
+          ? container.scrollTop / maxContainerScroll
+          : 0;
+
+      const isGalleryHorizontal = gallery.scrollWidth > gallery.clientWidth;
+
+      if (isGalleryHorizontal) {
+        const maxGalleryScroll = gallery.scrollWidth - gallery.clientWidth;
+
+        if (maxGalleryScroll > 0) {
+          // Gallery is scrollable
+          const scrollRatio = isMobilePortrait ? 1 - ratio : ratio;
+          const targetScrollLeft = scrollRatio * maxGalleryScroll;
+
+          // Use smooth scrolling
+          gallery.scrollTo({
+            left: targetScrollLeft,
+            behavior: "smooth",
+          });
+        } else if (isMobilePortrait) {
+          // Gallery not scrollable yet, but position based on scroll ratio for mobile portrait
+          if (gallery.children.length > 0) {
+            const galleryWidth = gallery.clientWidth;
+            const totalWidth = gallery.scrollWidth;
+
+            if (totalWidth > galleryWidth) {
+              // We can scroll a bit even if maxGalleryScroll was <= 0
+              const actualMaxScroll = totalWidth - galleryWidth;
+              const scrollRatio = 1 - ratio; // Inverted for mobile portrait
+              const targetScrollLeft = scrollRatio * actualMaxScroll;
+
+              gallery.scrollTo({
+                left: targetScrollLeft,
+                behavior: "smooth",
+              });
+            } else {
+              // Gallery fits entirely, position based on scroll state
+              let targetPosition;
+              if (ratio <= 0.3) {
+                // Near top - show newest frames (right side for reversed)
+                targetPosition = Math.max(0, totalWidth - galleryWidth);
+              } else if (ratio >= 0.7) {
+                // Near bottom - show oldest frames (left side for reversed)
+                targetPosition = 0;
+              } else {
+                // Middle - show middle frames
+                targetPosition = Math.max(0, (totalWidth - galleryWidth) * 0.5);
+              }
+
+              gallery.scrollTo({
+                left: targetPosition,
+                behavior: "smooth",
+              });
+            }
+          }
+        }
+
+        // Reset smoothScrolling flag after animation completes
+        setTimeout(() => {
+          smoothScrolling = false;
+        }, 300); // Typical smooth scroll duration
+      } else {
+        const maxGalleryScroll = gallery.scrollHeight - gallery.clientHeight;
+
+        if (maxGalleryScroll > 0) {
+          const targetScrollTop = ratio * maxGalleryScroll;
+
+          gallery.scrollTo({
+            top: targetScrollTop,
+            behavior: "smooth",
+          });
+        }
+
+        setTimeout(() => {
+          smoothScrolling = false;
+        }, 300);
+      }
+    }
+
+    // Initial sync when component mounts
+    syncFromContainer();
+
     container.addEventListener("scroll", syncFromContainer, { passive: true });
+
+    // Store the smooth sync function on the gallery element for external access
+    gallery._smoothSync = smoothSyncFromContainer;
+
     return () => {
       container.removeEventListener("scroll", syncFromContainer);
+      if (gallery._smoothSync) {
+        delete gallery._smoothSync;
+      }
     };
-  }, [isMobilePortrait]); // Add isMobilePortrait to dependencies since we use it in syncFromContainer
+  }, [isMobilePortrait]);
 
-  // Direct scroll-based pull-to-load logic
+  // Handle smooth scroll adjustment when products are added in mobile portrait mode
+  useEffect(() => {
+    if (!isMobilePortrait) return;
+
+    const gallery = galleryRef.current;
+    const container = scrollRef.current;
+    if (!gallery || !container) return;
+
+    // For mobile portrait, when a new product is added, we want to maintain visual alignment
+    // Check if the products container has enough content to scroll
+    const maxContainerScroll = container.scrollHeight - container.clientHeight;
+
+    // We need the products container to be scrollable, but frame gallery might not be scrollable yet
+    // when there are fewer products - that's okay, we'll still position it correctly
+    if (maxContainerScroll <= 0) return;
+
+    const maxGalleryScroll = gallery.scrollWidth - gallery.clientWidth;
+    const isGalleryScrollable = maxGalleryScroll > 0;
+
+    // Calculate what the scroll position should be based on current product position
+    const currentRatio = container.scrollTop / maxContainerScroll;
+
+    if (isGalleryScrollable) {
+      // Gallery is scrollable - use smooth sync
+      const targetScrollRatio = 1 - currentRatio; // Inverted for mobile portrait
+      const targetGalleryScroll = targetScrollRatio * maxGalleryScroll;
+
+      // If the gallery scroll is significantly off from where it should be, smooth scroll to correct position
+      const currentGalleryScroll = gallery.scrollLeft;
+      const scrollDifference = Math.abs(
+        currentGalleryScroll - targetGalleryScroll
+      );
+
+      // Only adjust if the difference is significant (more than 10% of a frame width)
+      const frameWidth =
+        gallery.children.length > 0 ? gallery.children[0].offsetWidth : 100;
+      if (scrollDifference > frameWidth * 0.1) {
+        if (gallery._smoothSync) {
+          setTimeout(() => {
+            gallery._smoothSync(currentRatio);
+          }, 100);
+        }
+      }
+    } else {
+      // Gallery is not scrollable yet (not enough frames), but we should still position it
+      // For mobile portrait with non-scrollable gallery, we need to position frames to align with products
+      // Since frames are reversed and products are not, we need to calculate the visual alignment
+
+      if (gallery.children.length > 0) {
+        // Calculate which frame should be "visually aligned" with the current product position
+        // currentRatio = 0 means top product (index 0) should align with leftmost visible frame
+        // currentRatio = 1 means bottom product (last index) should align with rightmost visible frame
+
+        // Since frames are reversed in mobile portrait, the first frame (index 0) is actually the newest
+        // We want to position the gallery so the appropriate frame is in view
+        const totalFrames = gallery.children.length;
+        const galleryWidth = gallery.clientWidth;
+        const frameWidth = gallery.children[0].offsetWidth;
+        const framesVisible = Math.floor(galleryWidth / frameWidth);
+
+        // Calculate which frame index should be at the left edge of the visible area
+        // Since frames are reversed, frame 0 is the newest (rightmost in original order)
+        const targetFrameIndex = Math.floor(currentRatio * (totalFrames - 1));
+
+        // Position gallery to show the target frame
+        // For a non-scrollable gallery, we can't scroll, but we can at least ensure
+        // we're positioned to show the most relevant frames
+        const maxVisiblePosition = Math.max(
+          0,
+          gallery.scrollWidth - gallery.clientWidth
+        );
+
+        if (currentRatio <= 0.5) {
+          // Show newer frames (start of reversed array = right side of original)
+          gallery.scrollLeft = maxVisiblePosition;
+        } else {
+          // Show older frames (end of reversed array = left side of original)
+          gallery.scrollLeft = 0;
+        }
+      }
+    }
+  }, [allProducts.length, isMobilePortrait]); // Direct scroll-based pull-to-load logic
   useEffect(() => {
     const indicator = pullIndicatorRef.current;
     const container = scrollRef.current;
@@ -597,20 +865,6 @@ export default function LiveShopping() {
         <SafeComponent fallback="AI Status Loading...">
           <AIStatusDisplay />
         </SafeComponent>{" "}
-        <div
-          className="recently-matched-separator live-separator scroll-to-top-btn"
-          onClick={() => {
-            const container = scrollRef.current;
-            if (container) {
-              container.scrollTo({
-                top: 0,
-                behavior: "smooth",
-              });
-            }
-          }}
-        >
-          <div className="separator-text">Live Now</div>
-        </div>
         <div id="itemContent" ref={beltRef} style={{ display: "flex" }}>
           {/* Live Products (including the first 5 cached products that were added immediately) */}
           {displayProducts.map((p) => (
