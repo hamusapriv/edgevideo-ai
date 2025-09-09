@@ -313,13 +313,13 @@ export default function ProductCard({
                 color: "#fff",
                 textAlign: "center",
                 textDecoration: "none",
-                padding: "6px 10px",
+                padding: "6px",
                 borderRadius: "6px",
                 fontSize: "0.95rem",
                 fontWeight: "bold",
               }}
             >
-              <p>View Product</p>
+              <p style={{ fontSize: "0.8rem" }}>View Product</p>
             </a>
           )}
           <div
