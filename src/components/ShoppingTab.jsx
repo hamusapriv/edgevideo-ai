@@ -3,8 +3,10 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import HomeTab from "./HomeTab";
 import LiveShopping from "./LiveShopping";
 import FavoritesTab from "./FavoritesTab";
+import { useFavorites } from "../contexts/FavoritesContext";
 
 export default function ShoppingTab({ openProfileSidebar }) {
+  const { totalFavoritesCount, isPulsing } = useFavorites();
   const nestedConfig = useMemo(
     () => [
       { key: "live", label: "Live Now", Component: LiveShopping },
@@ -16,6 +18,11 @@ export default function ShoppingTab({ openProfileSidebar }) {
 
   const [refreshFavoritesKey, setRefreshFavoritesKey] = useState(0);
   const [active, setActive] = useState(nestedConfig[0].key);
+
+  // Handle favorites tab activation (no special logic needed now)
+  const handleTabClick = (key) => {
+    setActive(key);
+  };
 
   const prevRef = useRef(0);
   const panelRefs = useRef([]);
@@ -72,10 +79,15 @@ export default function ShoppingTab({ openProfileSidebar }) {
         {nestedConfig.map(({ key, label }) => (
           <button
             key={key}
-            className={`nested-tab${active === key ? " active" : ""}`}
-            onClick={() => setActive(key)}
+            className={`nested-tab${active === key ? " active" : ""}${
+              key === "favorites" && isPulsing ? " has-notification" : ""
+            }`}
+            onClick={() => handleTabClick(key)}
           >
             {label}
+            {key === "favorites" && totalFavoritesCount > 0 && (
+              <span className="notification-badge">{totalFavoritesCount}</span>
+            )}
           </button>
         ))}
       </nav>

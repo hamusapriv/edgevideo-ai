@@ -319,7 +319,7 @@ export default function ProductCard({
                 fontWeight: "bold",
               }}
             >
-              <p>Buy Now</p>
+              <p>View Product</p>
             </a>
           )}
           <div

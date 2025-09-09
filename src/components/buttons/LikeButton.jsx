@@ -9,7 +9,7 @@ import { useFavorites } from "../../contexts/FavoritesContext";
 export default function LikeButton({ itemId, itemTypeName, onSuccess }) {
   const { user } = useAuth();
   const { openSidebar } = useSidebar();
-  const { favorites, fetchFavorites } = useFavorites();
+  const { favorites, fetchFavorites, triggerPulse } = useFavorites();
   const [active, setActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -66,6 +66,15 @@ export default function LikeButton({ itemId, itemTypeName, onSuccess }) {
 
     try {
       await upvoteProduct(id, typeName);
+
+      // Only trigger pulse if this item wasn't already liked
+      const wasAlreadyLiked = favorites.some(
+        (f) => String(f.item_id) === String(id)
+      );
+      if (!wasAlreadyLiked) {
+        triggerPulse();
+      }
+
       // Refresh favorites in background (don't wait for it)
       fetchFavorites().catch((err) =>
         console.warn("Failed to refresh favorites:", err)

@@ -436,7 +436,7 @@ export default function FavouritesTab({
                       rel="noopener noreferrer"
                       className="fav-buy-button"
                     >
-                      Buy Now
+                      View Product
                     </a>
                   )}
 
