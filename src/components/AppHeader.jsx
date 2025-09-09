@@ -6,7 +6,7 @@ import ChannelLogo from "./ChannelLogo";
 export default function AppHeader({ channelId }) {
   return (
     <header className="header">
-      <img src={EdgeLogo} alt="EdgeVideo" height="30" />
+      {/* <img src={EdgeLogo} alt="EdgeVideo" height="30" /> */}
       {/* The sidebar‐toggle button has been removed from here */}
 
       {channelId && (

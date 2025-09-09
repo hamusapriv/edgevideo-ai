@@ -47,30 +47,16 @@ export default function LiveShopping() {
   const [loadProgress, setLoadProgress] = useState(0); // 0-100% visibility progress
   const pullIndicatorRef = useRef(null);
 
-  // Request deduplication and failure handling
+  // Request deduplication handling
   const loadRequestRef = useRef(null);
-  const lastLoadAttemptRef = useRef(0);
-  const loadCooldownRef = useRef(false);
 
   // Safe cached product loading with deduplication
   const safeLoadMoreCachedProducts = useCallback(async () => {
-    const now = Date.now();
-
-    // Prevent duplicate calls within 2 seconds
-    if (loadCooldownRef.current || now - lastLoadAttemptRef.current < 2000) {
-      console.log("Cached product load blocked: cooldown active");
-      return Promise.resolve();
-    }
-
     // Cancel any existing request
     if (loadRequestRef.current) {
       console.log("Cancelling existing cached product request");
       // Note: We can't actually cancel the API call, but we can ignore its result
     }
-
-    // Set cooldown and track attempt
-    loadCooldownRef.current = true;
-    lastLoadAttemptRef.current = now;
 
     console.log("Starting cached product load...");
 
@@ -78,16 +64,11 @@ export default function LiveShopping() {
     const requestPromise = loadMoreCachedProducts()
       .then((result) => {
         console.log("Cached product load successful");
-        loadCooldownRef.current = false;
         loadRequestRef.current = null;
         return result;
       })
       .catch((error) => {
         console.error("Cached product load failed:", error);
-        // Shorter cooldown on failure to allow retry
-        setTimeout(() => {
-          loadCooldownRef.current = false;
-        }, 1000);
         loadRequestRef.current = null;
         throw error;
       });

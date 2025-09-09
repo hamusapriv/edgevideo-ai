@@ -559,11 +559,10 @@ section {
   bottom: 0px;
   left: 0;
   right: 0;
-  backdrop-filter: blur(10px);
 }
 
 .channel-logo {
-  height: 32px;
+  height: 50px;
   width: auto;
   object-fit: cover;
   border-radius: 6px;
@@ -572,9 +571,7 @@ section {
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: white;
-  padding: 4px 8px;
+  margin: auto;
 }
 
 .live-product-name {
@@ -1007,7 +1004,7 @@ section {
   margin: 0 auto;
   padding: 0;
   position: sticky;
-  top: 70px;
+  top: 36px;
   z-index: 20;
 }
 
@@ -1100,7 +1097,6 @@ section {
   font-size: 11px;
   text-align: center;
   transition: all 0.3s ease;
-  opacity: 0;
   transform: translateY(20px);
 }
 

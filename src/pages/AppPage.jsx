@@ -101,8 +101,8 @@ function AppPage() {
       <ScreenInitializer features={["products", "faces", "auth"]} />
       {/* Injected AppHeader content directly */}
       <header className="header">
-        <img src={EdgeLogo} alt="EdgeVideo" height="30" />
-
+        {/*         <img src={EdgeLogo} alt="EdgeVideo" height="30" />
+         */}
         {/* Use channelId from useChannelId hook (state/prop, not window) */}
         {channelId && (
           <ChannelLogo channelId={channelId} className="channel-logo" />
