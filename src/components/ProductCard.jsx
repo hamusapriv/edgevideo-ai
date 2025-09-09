@@ -331,7 +331,7 @@ export default function ProductCard({
             }}
           >
             <LikeButton itemId={product.id} itemTypeName={itemTypeName} />
-            <DislikeButton itemId={product.id} itemTypeName={itemTypeName} />
+            {/*  <DislikeButton itemId={product.id} itemTypeName={itemTypeName} /> */}
             <ShareButton title={product.title} url={product.link} />
           </div>
         </div>

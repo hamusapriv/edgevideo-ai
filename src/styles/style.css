@@ -607,14 +607,13 @@ section {
 }
 .product-cta.like-button.clicked svg,
 .product-cta.like-button.clicked svg path {
-  fill: var(--color-red);
-  stroke: var(--color-red);
+  fill: white;
 }
-.product-cta.dislike-button.clicked svg,
+/* .product-cta.dislike-button.clicked svg,
 .product-cta.dislike-button.clicked svg path {
   fill: var(--color-black);
   stroke: var(--color-black);
-}
+} */
 
 /* Loading and error states for vote buttons */
 .product-cta.loading {
