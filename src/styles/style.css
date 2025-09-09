@@ -608,6 +608,7 @@ section {
 .product-cta.like-button.clicked svg,
 .product-cta.like-button.clicked svg path {
   fill: white;
+  stroke: white;
 }
 /* .product-cta.dislike-button.clicked svg,
 .product-cta.dislike-button.clicked svg path {

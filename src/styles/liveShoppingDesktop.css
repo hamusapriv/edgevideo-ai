@@ -25,14 +25,11 @@
   .product-cta svg path {
     stroke: var(--color-purple-text);
   }
-  .product-cta svg {
-    fill: var(--color-purple-text);
-  }
   .product-cta svg:hover path {
     stroke: white;
   }
   .product-cta svg:hover {
-    fill: white;
+    stroke: white;
   }
 
   .item-container {
