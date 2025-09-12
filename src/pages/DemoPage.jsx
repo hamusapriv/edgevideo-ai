@@ -17,6 +17,16 @@ export default function DemoPage() {
   const urlChannelId = searchParams.get("channelId");
   const currentChannel = channels.find((c) => c.id === urlChannelId);
 
+  // Default channelId for demo redirect
+  const defaultChannelId = "3d8c4c38-2d6e-483c-bdc5-e1eeeadd155e";
+
+  // Redirect to demo with default channelId if no channelId is provided
+  useEffect(() => {
+    if (!urlChannelId) {
+      navigate(`/demo?channelId=${defaultChannelId}`, { replace: true });
+    }
+  }, [urlChannelId, navigate]);
+
   const [videoLoading, setVideoLoading] = useState(false);
   const [videoError, setVideoError] = useState(null);
   const [liveProducts, setLiveProducts] = useState([]);
