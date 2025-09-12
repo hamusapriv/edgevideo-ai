@@ -23,8 +23,12 @@ export default function DemoPage() {
   const [wsConnected, setWsConnected] = useState(false);
   const [aiStatus, setAiStatus] = useState("Connecting...");
 
+  // Custom dropdown state
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const videoRef = useRef(null);
   const wsRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   // WebSocket URL
   const wsUrl = "wss://slave-ws-service-342233178764.us-west1.run.app";
@@ -33,37 +37,50 @@ export default function DemoPage() {
   const initWebSocket = (channelId) => {
     if (!channelId) return;
 
-    // Close existing connection
+    // Close existing connection and clear any pending reconnections
     if (wsRef.current) {
+      wsRef.current.onclose = null; // Prevent reconnection attempts
       wsRef.current.close();
+      wsRef.current = null;
     }
+
+    // Clear products immediately when initializing new WebSocket
+    setLiveProducts([]);
+    setWsConnected(false);
+    setAiStatus("Connecting...");
 
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
     ws.onopen = () => {
-      console.log("Demo WebSocket connected");
+      // Double-check this is still the current WebSocket
+      if (wsRef.current !== ws) {
+        ws.close();
+        return;
+      }
+
       setWsConnected(true);
       setAiStatus("Connected - Listening for products...");
 
       // Subscribe to channel for real products only
       ws.send(JSON.stringify({ subscribe: `product-${channelId}` }));
       ws.send(JSON.stringify({ subscribe: `shopping-ai-status-${channelId}` }));
-
-      console.log(`Demo: Subscribed to real products for channel ${channelId}`);
     };
 
     ws.onmessage = (event) => {
+      // Double-check this is still the current WebSocket
+      if (wsRef.current !== ws) {
+        return;
+      }
+
       try {
         const data = JSON.parse(event.data);
 
         if (data.ai) {
           setAiStatus(data.ai);
-          console.log(`Demo: AI status update - ${data.ai}`);
         } else if (data.id) {
-          // Real product from WebSocket
-          console.log("Demo: Received real product from WebSocket:", data);
-          addProduct(data);
+          // Real product from WebSocket - verify it's for the current channel
+          addProduct(data, channelId);
         }
       } catch (err) {
         console.error("Error processing WebSocket message:", err);
@@ -71,19 +88,32 @@ export default function DemoPage() {
     };
 
     ws.onclose = () => {
-      console.log("Demo WebSocket disconnected");
+      // Only handle close if this is still the current WebSocket
+      if (wsRef.current !== ws) {
+        return;
+      }
+
       setWsConnected(false);
       setAiStatus("Disconnected");
 
-      // Attempt to reconnect after 5 seconds
+      // Attempt to reconnect after 5 seconds only if we still have the same channel
       setTimeout(() => {
-        if (currentChannel) {
-          initWebSocket(currentChannel.id);
+        if (
+          wsRef.current === ws &&
+          currentChannel &&
+          currentChannel.id === channelId
+        ) {
+          initWebSocket(channelId);
         }
       }, 5000);
     };
 
     ws.onerror = (error) => {
+      // Only handle error if this is still the current WebSocket
+      if (wsRef.current !== ws) {
+        return;
+      }
+
       console.error("Demo WebSocket error:", error);
       setWsConnected(false);
       setAiStatus("Connection Error");
@@ -91,8 +121,13 @@ export default function DemoPage() {
   };
 
   // Add product to the list (REAL products only)
-  const addProduct = (product) => {
+  const addProduct = (product, expectedChannelId) => {
     if (!product || !currentChannel) return;
+
+    // Verify the product is for the current channel to prevent cross-channel contamination
+    if (expectedChannelId && currentChannel.id !== expectedChannelId) {
+      return;
+    }
 
     setLiveProducts((prev) => {
       // Check if product already exists
@@ -100,10 +135,6 @@ export default function DemoPage() {
 
       // Add new product to the beginning, keep max 15 products
       const updated = [product, ...prev].slice(0, 15);
-      console.log(
-        `Demo: Added REAL product ${product.title ||
-          product.name} for channel ${currentChannel.name}`
-      );
 
       return updated;
     });
@@ -116,12 +147,18 @@ export default function DemoPage() {
 
   // Handle channel selection
   const handleSelectChannel = (c) => {
-    console.log(`Demo: Switching to channel ${c.id} (${c.name})`);
+    // Close current WebSocket immediately to prevent race conditions
+    if (wsRef.current) {
+      wsRef.current.onclose = null; // Prevent reconnection attempts
+      wsRef.current.close();
+      wsRef.current = null;
+    }
 
-    // Clear products and reset state
+    // Clear products and reset state immediately
     setLiveProducts([]);
     setIsWidgetVisible(false);
-    setAiStatus("Connecting...");
+    setWsConnected(false);
+    setAiStatus("Switching channels...");
 
     // Navigate to the demo page with the channel ID
     navigate(`/demo?channelId=${c.id}`);
@@ -136,6 +173,30 @@ export default function DemoPage() {
     navigate("/demo");
   };
 
+  // Custom dropdown handlers
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleChannelSelect = (channel) => {
+    setIsDropdownOpen(false);
+    handleSelectChannel(channel);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // Product widget functionality
   const handleDownload = async (product) => {
     await downloadProduct(product);
@@ -143,25 +204,35 @@ export default function DemoPage() {
 
   // Initialize WebSocket when channel changes
   useEffect(() => {
+    // Close any existing WebSocket first
+    if (wsRef.current) {
+      wsRef.current.onclose = null; // Prevent reconnection attempts
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+
     if (urlChannelId) {
-      console.log(`Demo: URL channel changed to ${urlChannelId}`);
-      initWebSocket(urlChannelId);
+      // Clear products first, then initialize WebSocket
+      setLiveProducts([]);
+      setWsConnected(false);
+      setAiStatus("Connecting...");
+
+      // Small delay to ensure state is cleared before connecting
+      setTimeout(() => {
+        initWebSocket(urlChannelId);
+      }, 100);
     } else {
-      console.log("Demo: No channel in URL, clearing");
-      // Close WebSocket if no channel
-      if (wsRef.current) {
-        wsRef.current.close();
-        wsRef.current = null;
-      }
       setLiveProducts([]);
       setWsConnected(false);
       setAiStatus("No Channel Selected");
     }
 
-    // Cleanup on unmount
+    // Cleanup on unmount or channel change
     return () => {
       if (wsRef.current) {
+        wsRef.current.onclose = null; // Prevent reconnection attempts
         wsRef.current.close();
+        wsRef.current = null;
       }
     };
   }, [urlChannelId]);
@@ -243,9 +314,8 @@ export default function DemoPage() {
       });
 
       hlsInstance.on(Hls.Events.ERROR, (event, data) => {
-        console.error("HLS Error for", currentChannel.name, ":", data);
-
         if (data.fatal) {
+          console.error("HLS Fatal Error:", data);
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
               setVideoError(
@@ -321,27 +391,28 @@ export default function DemoPage() {
 
       {/* Channel Selection */}
       <div className="demo-channel-section">
-        <div className="channel-selector">
-          <label htmlFor="channelSelect">Select Channel</label>
-          <div className="select-wrapper">
-            <select
-              id="channelSelect"
-              value={currentChannel?.id || ""}
-              onChange={(e) => {
-                const selected = channels.find((c) => c.id === e.target.value);
-                if (selected) handleSelectChannel(selected);
-              }}
-            >
-              <option value="" disabled>
+        <label htmlFor="channelSelect">Select Channel</label>
+        <div className="custom-dropdown" ref={dropdownRef}>
+          <div
+            className={`dropdown-trigger ${isDropdownOpen ? "open" : ""}`}
+            onClick={toggleDropdown}
+          >
+            {currentChannel ? (
+              <div className="selected-channel-display">
+                <ChannelLogo
+                  channelId={currentChannel.id}
+                  className="channel-icon-small"
+                />
+                <span>{currentChannel.name}</span>
+              </div>
+            ) : (
+              <span className="placeholder-text">
                 Choose a channel to start
-              </option>
-              {channels.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            <div className="select-arrow">
+              </span>
+            )}
+            <div
+              className={`dropdown-arrow ${isDropdownOpen ? "rotated" : ""}`}
+            >
               <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
                 <path
                   d="M1 1L6 6L11 1"
@@ -353,29 +424,57 @@ export default function DemoPage() {
               </svg>
             </div>
           </div>
-        </div>
 
-        {currentChannel && (
-          <div className="selected-channel">
-            <ChannelLogo
-              channelId={currentChannel.id}
-              className="channel-icon"
-            />
-            <div className="channel-details">
-              <span className="channel-name">{currentChannel.name}</span>
-              <span className="channel-status">
-                <span className="status-indicator"></span>
-                {wsConnected ? "Live" : "Connecting..."}
-              </span>
+          {isDropdownOpen && (
+            <div className="dropdown-menu">
+              <div className="dropdown-header">
+                <span>Available Channels</span>
+              </div>
+              <div className="dropdown-options">
+                {channels.map((channel) => (
+                  <div
+                    key={channel.id}
+                    className={`dropdown-option ${
+                      currentChannel?.id === channel.id ? "selected" : ""
+                    }`}
+                    onClick={() => handleChannelSelect(channel)}
+                  >
+                    <div className="channel-icon-container">
+                      <ChannelLogo
+                        channelId={channel.id}
+                        className="channel-icon-bg"
+                      />
+                      <ChannelLogo
+                        channelId={channel.id}
+                        className="channel-icon"
+                      />
+                    </div>
+                    <div className="channel-info">
+                      <span className="channel-name">{channel.name}</span>
+                      <span className="channel-description">
+                        {channel.description || "Live streaming channel"}
+                      </span>
+                    </div>
+                    {currentChannel?.id === channel.id && (
+                      <div className="selected-indicator">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <polyline points="20,6 9,17 4,12"></polyline>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-            <button
-              onClick={handleBackToChannels}
-              className="clear-selection-btn"
-            >
-              Clear Selection
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Main Content */}
@@ -443,14 +542,6 @@ export default function DemoPage() {
                     ></div>
                     <span>AI Status: {aiStatus}</span>
                   </div>
-                </div>
-
-                {/* Inline Product Widget */}
-                <div
-                  className={`demo-product-widget ${
-                    isWidgetVisible ? "visible" : ""
-                  }`}
-                >
                   <div className="widget-header">
                     <div className="widget-header-content">
                       <h3>Live Shopping - Real Products</h3>
@@ -463,7 +554,14 @@ export default function DemoPage() {
                       </div>
                     </div>
                   </div>
+                </div>
 
+                {/* Inline Product Widget */}
+                <div
+                  className={`demo-product-widget ${
+                    isWidgetVisible ? "visible" : ""
+                  }`}
+                >
                   <div className="widget-content">
                     <div className="products-list">
                       {liveProducts.length > 0 ? (
@@ -478,15 +576,44 @@ export default function DemoPage() {
                               animationDelay: `${index * 0.1}s`,
                             }}
                           >
-                            {/* New Product Badge */}
-                            {index === 0 && (
-                              <div className="new-product-badge">
-                                <span>New</span>
+                            <div className="demo-ai-frame">
+                              <img
+                                alt={`AI Frame for ${product.title ||
+                                  "Product"}`}
+                                className="demo-ai-frame-image"
+                                src={
+                                  product.frame_url ||
+                                  product.back_image ||
+                                  "/assets/main-frame.png"
+                                }
+                                loading="lazy"
+                              />
+                              <div className="ai-frame-overlay">
+                                {/* Match Type */}
+                                {product.matchType && (
+                                  <span>AI {product.matchType}</span>
+                                )}
                               </div>
-                            )}
-
-                            {/* Top Images Section */}
-                            <div className="demo-product-images">
+                              {/* AI Explanation */}
+                              <div className="demo-ai-description">
+                                <p>
+                                  {product.explanation ||
+                                    product.description ||
+                                    `Detected ${product.title ||
+                                      product.name ||
+                                      "product"} in video stream with AI recognition technology.`}
+                                </p>
+                              </div>
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                width: "100%",
+                              }}
+                            >
                               <div className="demo-product-image">
                                 {product.image ? (
                                   <img
@@ -518,45 +645,17 @@ export default function DemoPage() {
                                     <small>No image</small>
                                   </div>
                                 )}
-                              </div>
-
-                              <div className="demo-ai-frame">
-                                <img
-                                  alt={`AI Frame for ${product.title ||
-                                    "Product"}`}
-                                  className="demo-ai-frame-image"
-                                  src={
-                                    product.frame_url ||
-                                    product.back_image ||
-                                    "/assets/main-frame.png"
-                                  }
-                                  loading="lazy"
-                                />
-                                <div className="ai-frame-overlay">
-                                  <span>AI Detection</span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Product Details Section */}
-                            <div className="demo-product-main">
-                              <div className="demo-product-info">
-                                <div className="demo-product-header">
-                                  <h4 className="demo-product-name">
-                                    {product.title ||
-                                      product.name ||
-                                      "Unknown Product"}
-                                  </h4>
-
-                                  {/* Match Type */}
-                                  {product.matchType && (
-                                    <div className="demo-match-badge">
-                                      <span>AI {product.matchType}</span>
-                                    </div>
-                                  )}
-                                </div>
-
-                                <div className="demo-product-actions">
+                              </div>{" "}
+                              <div className="demo-product-actions">
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "0.5rem",
+                                  }}
+                                >
                                   <button
                                     className="demo-download-button"
                                     title="Download product markup as JSON"
@@ -575,12 +674,6 @@ export default function DemoPage() {
                                       <line x1="12" y1="15" x2="12" y2="3" />
                                     </svg>
                                   </button>
-
-                                  {product.price && (
-                                    <div className="demo-product-price">
-                                      ${product.price}
-                                    </div>
-                                  )}
 
                                   {product.link && (
                                     <a
@@ -605,16 +698,22 @@ export default function DemoPage() {
                                     </a>
                                   )}
                                 </div>
-
-                                {/* AI Explanation */}
-                                <div className="demo-ai-description">
-                                  <p>
-                                    {product.explanation ||
-                                      product.description ||
-                                      `Detected ${product.title ||
-                                        product.name ||
-                                        "product"} in video stream with AI recognition technology.`}
-                                  </p>
+                                {product.price && (
+                                  <div className="demo-product-price">
+                                    ${product.price}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            {/* Product Details Section */}
+                            <div className="demo-product-main">
+                              <div className="demo-product-info">
+                                <div className="demo-product-header">
+                                  <h4 className="demo-product-name">
+                                    {product.title ||
+                                      product.name ||
+                                      "Unknown Product"}
+                                  </h4>
                                 </div>
 
                                 {/* Additional Product Info */}
