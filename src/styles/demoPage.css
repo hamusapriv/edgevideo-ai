@@ -148,6 +148,7 @@
 
 /* Channel Selection Section */
 .demo-channel-section {
+  grid-area: channel-selection;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -217,7 +218,11 @@
 .demo-content-grid {
   display: grid;
   grid-template-columns: 1fr 300px;
-  gap: 3rem;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "channel-selection widget"
+    "video widget";
+  gap: 1rem;
   align-items: start;
 }
 
@@ -567,6 +572,7 @@
 }
 
 .video-container {
+  grid-area: video;
   background: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(24px);
   border: 1px solid rgba(99, 102, 241, 0.15);
@@ -648,6 +654,7 @@
 }
 
 .widget-container {
+  grid-area: widget;
   display: flex;
   flex-direction: column;
   background: rgba(255, 255, 255, 0.02);
@@ -735,7 +742,7 @@
 }
 
 .widget-header {
-  padding: 1.5rem 0 1rem;
+  padding: 1rem 0;
   border-bottom: 1px solid rgba(99, 102, 241, 0.15);
   color: white;
 }
@@ -1257,15 +1264,41 @@
 @media (max-width: 1200px) {
   .demo-content-grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    grid-template-areas:
+      "channel-selection"
+      "video"
+      "widget";
+  }
+
+  .products-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .demo-product-card {
+    flex: 1 1 calc(50% - 1rem);
+    max-width: calc(50% - 1rem);
   }
 }
 
 @media (max-width: 768px) {
+  .demo-content-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "channel-selection"
+      "video"
+      "widget";
+    gap: 1.5rem;
+  }
+
   .demo-channel-section {
     flex-direction: column;
     padding: 1rem;
     gap: 1.5rem;
+  }
+
+  .widget-container {
+    position: static;
+    max-height: none;
   }
 
   .channel-selector {
@@ -1329,6 +1362,7 @@
   }
 
   .products-list {
+    display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
     padding: 8px;
@@ -1336,6 +1370,8 @@
 
   .demo-product-card {
     min-height: auto;
+    flex: 1 1 100%;
+    max-width: 100%;
   }
 
   .widget-header-content {
@@ -1352,6 +1388,15 @@
 }
 
 @media (max-width: 480px) {
+  .demo-content-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "channel-selection"
+      "video"
+      "widget";
+    gap: 1rem;
+  }
+
   .demo-header-content {
     padding: 1rem;
   }

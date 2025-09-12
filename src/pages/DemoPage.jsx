@@ -7,6 +7,7 @@ import { downloadProduct } from "../utils/downloadProduct";
 import Hls from "hls.js";
 import edgevideoIcon from "/assets/logo.png";
 import "../styles/reset.css";
+import ShoppingSvg from "../components/svgs/ShoppingSvg";
 
 export default function DemoPage() {
   const [searchParams] = useSearchParams();
@@ -389,144 +390,104 @@ export default function DemoPage() {
         </p>
       </div>
 
-      {/* Channel Selection */}
-      <div className="demo-channel-section">
-        <label htmlFor="channelSelect">Select Channel</label>
-        <div className="custom-dropdown" ref={dropdownRef}>
-          <div
-            className={`dropdown-trigger ${isDropdownOpen ? "open" : ""}`}
-            onClick={toggleDropdown}
-          >
-            {currentChannel ? (
-              <div className="selected-channel-display">
-                <ChannelLogo
-                  channelId={currentChannel.id}
-                  className="channel-icon-small"
-                />
-                <span>{currentChannel.name}</span>
-              </div>
-            ) : (
-              <span className="placeholder-text">
-                Choose a channel to start
-              </span>
-            )}
-            <div
-              className={`dropdown-arrow ${isDropdownOpen ? "rotated" : ""}`}
-            >
-              <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
-                <path
-                  d="M1 1L6 6L11 1"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-          </div>
-
-          {isDropdownOpen && (
-            <div className="dropdown-menu">
-              <div className="dropdown-header">
-                <span>Available Channels</span>
-              </div>
-              <div className="dropdown-options">
-                {channels.map((channel) => (
-                  <div
-                    key={channel.id}
-                    className={`dropdown-option ${
-                      currentChannel?.id === channel.id ? "selected" : ""
-                    }`}
-                    onClick={() => handleChannelSelect(channel)}
-                  >
-                    <div className="channel-icon-container">
-                      <ChannelLogo
-                        channelId={channel.id}
-                        className="channel-icon-bg"
-                      />
-                      <ChannelLogo
-                        channelId={channel.id}
-                        className="channel-icon"
-                      />
-                    </div>
-                    <div className="channel-info">
-                      <span className="channel-name">{channel.name}</span>
-                      <span className="channel-description">
-                        {channel.description || "Live streaming channel"}
-                      </span>
-                    </div>
-                    {currentChannel?.id === channel.id && (
-                      <div className="selected-indicator">
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <polyline points="20,6 9,17 4,12"></polyline>
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
       {/* Main Content */}
       <main className="demo-main">
         <div className="demo-container">
           {currentChannel && (
             <div className="demo-content-grid">
-              <div className="video-container">
-                <div className="video-wrapper">
-                  {videoLoading && (
-                    <div className="video-loading">
-                      <div className="loading-spinner"></div>
-                      <span>Loading stream...</span>
-                    </div>
-                  )}
-                  {videoError && (
-                    <div className="video-error">
-                      <span>⚠️ {videoError}</span>
-                    </div>
-                  )}
-
-                  {/* YouTube Embed for special channels */}
-                  {currentChannel.isYouTubeEmbed &&
-                  currentChannel.youtubeUrl ? (
-                    <iframe
-                      src={currentChannel.youtubeUrl}
-                      title={`${currentChannel.name} Live Stream`}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                      className="demo-video youtube-embed"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        border: "none",
-                        display: videoLoading || videoError ? "none" : "block",
-                      }}
-                    />
-                  ) : (
-                    /* Regular HLS Video */
-                    <video
-                      ref={videoRef}
-                      controls
-                      autoPlay
-                      muted
-                      playsInline
-                      className="demo-video"
-                      style={{
-                        display: videoLoading || videoError ? "none" : "block",
-                      }}
+              {/* Channel Selection */}
+              <div className="demo-channel-section">
+                <label htmlFor="channelSelect">Select Channel</label>
+                <div className="custom-dropdown" ref={dropdownRef}>
+                  <div
+                    className={`dropdown-trigger ${
+                      isDropdownOpen ? "open" : ""
+                    }`}
+                    onClick={toggleDropdown}
+                  >
+                    {currentChannel ? (
+                      <div className="selected-channel-display">
+                        <ChannelLogo
+                          channelId={currentChannel.id}
+                          className="channel-icon-small"
+                        />
+                        <span>{currentChannel.name}</span>
+                      </div>
+                    ) : (
+                      <span className="placeholder-text">
+                        Choose a channel to start
+                      </span>
+                    )}
+                    <div
+                      className={`dropdown-arrow ${
+                        isDropdownOpen ? "rotated" : ""
+                      }`}
                     >
-                      Your browser does not support the video tag.
-                    </video>
+                      <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                        <path
+                          d="M1 1L6 6L11 1"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {isDropdownOpen && (
+                    <div className="dropdown-menu">
+                      <div className="dropdown-header">
+                        <span>Available Channels</span>
+                      </div>
+                      <div className="dropdown-options">
+                        {channels.map((channel) => (
+                          <div
+                            key={channel.id}
+                            className={`dropdown-option ${
+                              currentChannel?.id === channel.id
+                                ? "selected"
+                                : ""
+                            }`}
+                            onClick={() => handleChannelSelect(channel)}
+                          >
+                            <div className="channel-icon-container">
+                              <ChannelLogo
+                                channelId={channel.id}
+                                className="channel-icon-bg"
+                              />
+                              <ChannelLogo
+                                channelId={channel.id}
+                                className="channel-icon"
+                              />
+                            </div>
+                            <div className="channel-info">
+                              <span className="channel-name">
+                                {channel.name}
+                              </span>
+                              <span className="channel-description">
+                                {channel.description ||
+                                  "Live streaming channel"}
+                              </span>
+                            </div>
+                            {currentChannel?.id === channel.id && (
+                              <div className="selected-indicator">
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                >
+                                  <polyline points="20,6 9,17 4,12"></polyline>
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
@@ -534,22 +495,22 @@ export default function DemoPage() {
               <div className="widget-container">
                 {/* AI Status */}
                 <div className="ai-status-header">
-                  <div className="ai-status-indicator">
-                    <div
-                      className={`status-dot ${
-                        wsConnected ? "connected" : "disconnected"
-                      }`}
-                    ></div>
-                    <span>AI Status: {aiStatus}</span>
-                  </div>
                   <div className="widget-header">
                     <div className="widget-header-content">
                       <h3>Live Shopping - Real Products</h3>
+                      <div className="ai-status-indicator">
+                        <div
+                          className={`status-dot ${
+                            wsConnected ? "connected" : "disconnected"
+                          }`}
+                        ></div>
+                        <span>AI Status: {aiStatus}</span>
+                      </div>
                       <div className="widget-status">
-                        <div className="status-indicator"></div>
+                        <ShoppingSvg />
                         <span>
                           {liveProducts.length} product
-                          {liveProducts.length !== 1 ? "s" : ""} detected
+                          {liveProducts.length !== 1 ? "s" : ""}
                         </span>
                       </div>
                     </div>
@@ -759,6 +720,54 @@ export default function DemoPage() {
                       )}
                     </div>
                   </div>
+                </div>
+              </div>
+              <div className="video-container">
+                <div className="video-wrapper">
+                  {videoLoading && (
+                    <div className="video-loading">
+                      <div className="loading-spinner"></div>
+                      <span>Loading stream...</span>
+                    </div>
+                  )}
+                  {videoError && (
+                    <div className="video-error">
+                      <span>⚠️ {videoError}</span>
+                    </div>
+                  )}
+
+                  {/* YouTube Embed for special channels */}
+                  {currentChannel.isYouTubeEmbed &&
+                  currentChannel.youtubeUrl ? (
+                    <iframe
+                      src={currentChannel.youtubeUrl}
+                      title={`${currentChannel.name} Live Stream`}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      className="demo-video youtube-embed"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        border: "none",
+                        display: videoLoading || videoError ? "none" : "block",
+                      }}
+                    />
+                  ) : (
+                    /* Regular HLS Video */
+                    <video
+                      ref={videoRef}
+                      controls
+                      autoPlay
+                      muted
+                      playsInline
+                      className="demo-video"
+                      style={{
+                        display: videoLoading || videoError ? "none" : "block",
+                      }}
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
                 </div>
               </div>
             </div>
